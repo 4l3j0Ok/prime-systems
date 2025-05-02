@@ -1,4 +1,4 @@
-namespace Prime_stem
+namespace PrimeSystems
 {
     internal static class Program
     {

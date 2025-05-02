@@ -1,4 +1,4 @@
-﻿namespace Prime_stem
+﻿namespace PrimeSystems
 {
     partial class Form1
     {
