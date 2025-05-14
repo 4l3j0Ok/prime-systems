@@ -1,0 +1,2 @@
+CREATE DATABASE PrimeSystemsCompras;
+CREATE DATABASE PrimeSystemsVentas;
