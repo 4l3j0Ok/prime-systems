@@ -1,5 +1,10 @@
 USE PrimeSystemsVentas;
-CREATE TABLE Categorias (id_categoria INT, categoria VARCHAR(255));
+
+CREATE TABLE Categorias (
+id_categoria INT PRIMARY KEY,
+ categoria VARCHAR(255)
+ );
+ 
 CREATE TABLE Clientes (
     id_cliente INT IDENTITY(1, 1) PRIMARY KEY,
     CUIT INT,
@@ -128,12 +133,18 @@ CREATE TABLE H_Remito_Detalle (
 );
 CREATE TABLE H_Presupuesto_Detalle (
     id_det_presupuesto INT IDENTITY(1, 1) PRIMARY KEY,
-    id_presupuesto INT FOREIGN KEY REFERENCES H_Presup(id_presupuesto),
+    id_presupuesto INT FOREIGN KEY REFERENCES H_Presupuesto(id_presupuesto),
     cod_art VARCHAR(255),
     descr VARCHAR(255),
     p_unit VARCHAR(255),
     cant VARCHAR(255),
     p_x_cant VARCHAR(255)
+);
+
+CREATE TABLE Subcategoria (
+    id_subcategoria INT IDENTITY(1, 1) PRIMARY KEY,
+    subcategoria VARCHAR(255),
+    id_categoria INT FOREIGN KEY REFERENCES Categorias(id_categoria)
 );
 CREATE TABLE Articulos (
     id_articulo INT IDENTITY(1, 1) PRIMARY KEY,
@@ -150,7 +161,7 @@ CREATE TABLE Stock (
     costo VARCHAR(255),
     ganancia Integer
 );
-CREATE TABLE H_Remito_Detalle (
+CREATE TABLE His_Remito_Detalle (
     id_det_remito INT IDENTITY(1, 1) PRIMARY KEY,
     id_remito INT FOREIGN KEY REFERENCES H_Remito(id_remito),
     cod_art VARCHAR(255),
@@ -162,13 +173,8 @@ CREATE TABLE H_Remito_Detalle (
 );
 CREATE TABLE Proveedores_CtaCte (
     id_ctacte_prov INT IDENTITY(1, 1) PRIMARY KEY,
-    id_proveedor VARCHAR(255) FOREIGN KEY REFERENCES Proveedores(id_proveedor),
+    id_proveedor INT FOREIGN KEY REFERENCES Proveedores(id_proveedor),
     compras VARCHAR(255),
     pagos VARCHAR(255),
     fecha VARCHAR(255)
-);
-CREATE TABLE Subcategoria (
-    id_subcategoria INT IDENTITY(1, 1) PRIMARY KEY,
-    subcategoria VARCHAR(255),
-    id_categoria INT FOREIGN KEY REFERENCES Categorias(id_categoria)
 );

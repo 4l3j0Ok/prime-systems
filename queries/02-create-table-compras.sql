@@ -1,4 +1,4 @@
-USE PrimeSystems;
+USE PrimeSystemsCompras;
 CREATE TABLE Clientes (
     id_cliente INT IDENTITY(1, 1) PRIMARY KEY,
     CUIT INT,
@@ -73,7 +73,7 @@ CREATE TABLE Articulos (
 );
 CREATE TABLE Stock (
     cod_stock INT IDENTITY(1, 1) PRIMARY KEY,
-    cod_articulo VARCHAR(255) NOT NULL PRIMARY KEY,
+    id_articulo INT FOREIGN KEY REFERENCES Articulos(id_articulo),
     cantidad INT,
     costo VARCHAR(255),
     ganancia INT
@@ -88,8 +88,8 @@ CREATE TABLE H_Compras_Detalle (
     p_x_cant VARCHAR(255)
 );
 CREATE TABLE H_Ventas (
-    Stock id_remito INT IDENTITY(1, 1) PRIMARY KEY,
-    cod_usuario INT FOREIGN KEY REFERENCES Usuarios(id_usuario),
+    id_remito INT IDENTITY(1, 1) PRIMARY KEY,
+    id_usuario INT FOREIGN KEY REFERENCES Usuarios(id_usuario),
     fecha_hora VARCHAR(255),
     id_cliente INT FOREIGN KEY REFERENCES Clientes(id_cliente),
     subtotal VARCHAR(255),
