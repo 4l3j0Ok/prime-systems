@@ -1,6 +1,8 @@
+using ReaLTaiizor.Forms;
+
 namespace PrimeSystems
 {
-    public partial class Form1 : Form
+    public partial class Form1 : MaterialForm
     {
         public Form1()
         {
