@@ -1,6 +1,6 @@
 ﻿namespace PrimeSystems
 {
-    partial class Form1
+    partial class FormPrincipal
     {
         /// <summary>
         ///  Required designer variable.
@@ -28,12 +28,32 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Form1";
+            panelPrincipal = new Panel();
+            SuspendLayout();
+            // 
+            // panelPrincipal
+            // 
+            panelPrincipal.Dock = DockStyle.Fill;
+            panelPrincipal.Location = new Point(0, 64);
+            panelPrincipal.Name = "panelPrincipal";
+            panelPrincipal.Size = new Size(842, 423);
+            panelPrincipal.TabIndex = 0;
+            // 
+            // FormPrincipal
+            // 
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(842, 487);
+            Controls.Add(panelPrincipal);
+            Name = "FormPrincipal";
+            Padding = new Padding(0, 64, 0, 0);
+            Text = "Prime Systems";
+            Load += this.FormPrincipal_Load;
+            ResumeLayout(false);
         }
 
         #endregion
+
+        private Panel panelPrincipal;
     }
 }
