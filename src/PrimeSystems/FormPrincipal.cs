@@ -1,3 +1,4 @@
+using System.Windows.Forms;
 using ReaLTaiizor.Forms;
 
 namespace PrimeSystems
@@ -15,7 +16,17 @@ namespace PrimeSystems
             formLogin.Dock = DockStyle.Fill;
             formLogin.Show();
             panelPrincipal.Controls.Add(formLogin);
+            if (!Database.CheckConnection())
+            {
+                MessageBox.Show(
+                    "Conexión a la base de datos fallida. Por favor, verifica la configuración.",
+                    "Error de conexión",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
 
+            }
+            Database.CreateDatabaseIfNotExists();
         }
     }
 }

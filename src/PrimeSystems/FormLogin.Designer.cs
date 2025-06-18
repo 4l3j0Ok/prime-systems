@@ -1,4 +1,9 @@
-﻿namespace PrimeSystems
+﻿using System;
+using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace PrimeSystems
 {
     partial class FormLogin
     {
@@ -28,7 +33,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormLogin));
+            ComponentResourceManager resources = new ComponentResourceManager(typeof(FormLogin));
             tbUsuario = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
             tbContrasenia = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
             materialButton1 = new ReaLTaiizor.Controls.MaterialButton();
@@ -39,7 +44,7 @@
             panel2 = new Panel();
             tableLayoutPanel1 = new TableLayoutPanel();
             tableLayoutPanel2 = new TableLayoutPanel();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            ((ISupportInitialize)pictureBox1).BeginInit();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
@@ -110,20 +115,20 @@
             // 
             // materialButton1
             // 
+            materialButton1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             materialButton1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             materialButton1.Density = ReaLTaiizor.Controls.MaterialButton.MaterialButtonDensity.Default;
             materialButton1.Depth = 0;
-            materialButton1.Dock = DockStyle.Fill;
             materialButton1.Enabled = false;
             materialButton1.HighEmphasis = true;
             materialButton1.Icon = null;
             materialButton1.IconType = ReaLTaiizor.Controls.MaterialButton.MaterialIconType.Rebase;
-            materialButton1.Location = new Point(20, 385);
+            materialButton1.Location = new Point(20, 573);
             materialButton1.Margin = new Padding(20);
             materialButton1.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             materialButton1.Name = "materialButton1";
             materialButton1.NoAccentTextColor = Color.Empty;
-            materialButton1.Size = new Size(621, 52);
+            materialButton1.Size = new Size(621, 36);
             materialButton1.TabIndex = 2;
             materialButton1.Text = "Iniciar sesión";
             materialButton1.Type = ReaLTaiizor.Controls.MaterialButton.MaterialButtonType.Contained;
@@ -137,7 +142,7 @@
             pictureBox1.Location = new Point(30, 30);
             pictureBox1.Margin = new Padding(30);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(601, 214);
+            pictureBox1.Size = new Size(601, 402);
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.TabIndex = 3;
             pictureBox1.TabStop = false;
@@ -199,10 +204,10 @@
             tableLayoutPanel1.Location = new Point(0, 0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 3;
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 60F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 20F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 20F));
-            tableLayoutPanel1.Size = new Size(661, 457);
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle());
+            tableLayoutPanel1.RowStyles.Add(new RowStyle());
+            tableLayoutPanel1.Size = new Size(661, 629);
             tableLayoutPanel1.TabIndex = 8;
             // 
             // tableLayoutPanel2
@@ -213,7 +218,7 @@
             tableLayoutPanel2.Controls.Add(panel1, 0, 0);
             tableLayoutPanel2.Controls.Add(panel2, 1, 0);
             tableLayoutPanel2.Dock = DockStyle.Fill;
-            tableLayoutPanel2.Location = new Point(3, 277);
+            tableLayoutPanel2.Location = new Point(3, 465);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 1;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
@@ -226,8 +231,8 @@
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(tableLayoutPanel1);
             Name = "FormLogin";
-            Size = new Size(661, 457);
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            Size = new Size(661, 629);
+            ((ISupportInitialize)pictureBox1).EndInit();
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             panel2.ResumeLayout(false);

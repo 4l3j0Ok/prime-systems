@@ -1,4 +1,7 @@
-﻿namespace PrimeSystems
+﻿using System.Windows.Forms;
+using System.Drawing;
+
+namespace PrimeSystems
 {
     partial class FormPrincipal
     {
