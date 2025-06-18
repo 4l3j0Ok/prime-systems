@@ -11,7 +11,45 @@ namespace PrimeSystems
 {
     internal class Database
     {
-        public static bool CheckConnection()
+        public static void ExecuteNonQuery(string query)
+        {
+            using (SqlConnection connection = new SqlConnection(Config.sql_connection_string))
+            {
+                try
+                {
+                    connection.Open();
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.ExecuteNonQuery();
+                        Debug.WriteLine($"Consulta ejecutada correctamente: {query}");
+                    }
+                }
+                catch (SqlException ex)
+                {
+                    Debug.WriteLine($"Error al ejecutar la consulta: {ex.Message}");
+                }
+            }
+        }
+
+        public static SqlDataReader ExecuteReader(string query)
+        {
+            SqlConnection connection = new SqlConnection(Config.sql_connection_string);
+            try
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand(query, connection);
+                SqlDataReader reader = command.ExecuteReader();
+                Debug.WriteLine($"Consulta ejecutada correctamente: {query}");
+                return reader;
+            }
+            catch (SqlException ex)
+            {
+                Debug.WriteLine($"Error al ejecutar la consulta: {ex.Message}");
+                connection.Close();
+                throw;
+            }
+        }
+        public static void CheckConnection()
         {
             using (SqlConnection connection = new SqlConnection(Config.sql_connection_string))
             {
@@ -19,35 +57,19 @@ namespace PrimeSystems
                 {
                     Debug.WriteLine($"Intentando conectarse a la base de datos con el connection string {Config.sql_connection_string}");
                     connection.Open();
-                    if (connection.State == System.Data.ConnectionState.Open)
-                        return true;
                 }
                 catch (SqlException ex)
                 {
                     Debug.WriteLine($"Error al conectarse a la base de datos: {ex.Message}");
+                    throw new Exception("No se pudo establecer una conexión con la base de datos. Por favor, verifica la configuración.", ex);
                 }
-                return false;
             }
         }
         public static void CreateDatabaseIfNotExists()
         {
-            using (SqlConnection connection = new SqlConnection(Config.sql_connection_string))
-            {
-                try
-                {
-                    connection.Open();
-                    string createDbQuery = File.ReadAllText(".\\queries\\01-create-databases.sql");
-                    Debug.WriteLine($"Ejecutando consulta para crear la base de datos: {createDbQuery}");
-                    using (SqlCommand command = new SqlCommand(createDbQuery, connection))
-                    {
-                        command.ExecuteNonQuery();
-                    }
-                }
-                catch (SqlException ex)
-                {
-                    Debug.WriteLine($"Error al crear la base de datos: {ex.Message}");
-                }
-            }
+            string createDbQuery = File.ReadAllText(".\\queries\\01-create-databases.sql");
+            ExecuteNonQuery(createDbQuery);
+            Debug.WriteLine($"Ejecutando consulta para crear la base de datos: {createDbQuery}");
         }
     }
 }

@@ -16,15 +16,16 @@ namespace PrimeSystems
             formLogin.Dock = DockStyle.Fill;
             formLogin.Show();
             panelPrincipal.Controls.Add(formLogin);
-            if (!Database.CheckConnection())
+            try
             {
+                Database.CheckConnection();
+            } catch (Exception ex) {
                 MessageBox.Show(
-                    "Conexión a la base de datos fallida. Por favor, verifica la configuración.",
+                    ex.Message,
                     "Error de conexión",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error
                 );
-
             }
             Database.CreateDatabaseIfNotExists();
         }

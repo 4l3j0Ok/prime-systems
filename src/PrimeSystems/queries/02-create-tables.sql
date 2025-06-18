@@ -14,11 +14,17 @@ CREATE TABLE Clientes (
     mail VARCHAR(255)
 )
 END;
-
+IF NOT EXISTS (
+    SELECT *
+    FROM INFORMATION_SCHEMA.TABLES
+    WHERE TABLE_NAME = 'Clientes'
+        AND TABLE_SCHEMA = 'dbo'
+) BEGIN
 CREATE TABLE Categorias (
     id_categoria INT PRIMARY KEY,
     categoria VARCHAR(255)
-);
+)
+END;
 CREATE TABLE Proveedores (
     id_proveedor INT IDENTITY(1, 1) PRIMARY KEY,
     CUIT INT,
