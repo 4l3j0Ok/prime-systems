@@ -68,8 +68,15 @@ namespace PrimeSystems
         public static void CreateDatabaseIfNotExists()
         {
             string createDbQuery = File.ReadAllText(".\\queries\\01-create-databases.sql");
-            ExecuteNonQuery(createDbQuery);
             Debug.WriteLine($"Ejecutando consulta para crear la base de datos: {createDbQuery}");
+            ExecuteNonQuery(createDbQuery);
+        }
+
+        public static void CreateTablesIfNotExists()
+        {
+            string createTablesQuery = File.ReadAllText(".\\queries\\02-create-tables.sql");
+            Debug.WriteLine($"Ejecutando consulta para crear las tablas: {createTablesQuery}");
+            ExecuteNonQuery(createTablesQuery);
         }
     }
 }

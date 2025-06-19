@@ -41,16 +41,12 @@
     <None Update="queries\01-create-databases.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="queries\02-create-table-compras.sql">
+    <None Update="queries\02-create-tables.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="queries\03-create-table-ventas.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="queries\" />
   </ItemGroup>
 
 </Project>

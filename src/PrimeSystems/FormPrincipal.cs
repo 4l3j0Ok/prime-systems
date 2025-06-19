@@ -28,6 +28,7 @@ namespace PrimeSystems
                 );
             }
             Database.CreateDatabaseIfNotExists();
+            Database.CreateTablesIfNotExists();
         }
     }
 }
