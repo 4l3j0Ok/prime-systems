@@ -78,5 +78,57 @@ namespace PrimeSystems
             Debug.WriteLine($"Ejecutando consulta para crear las tablas: {createTablesQuery}");
             ExecuteNonQuery(createTablesQuery);
         }
+
+        public static Dictionary<string, string> CreateAdminUserIfNotExists()
+        {
+            string query = "USE PrimeSystems; SELECT TOP 1 * FROM Usuarios;";
+            Dictionary<string, string> user = new Dictionary<string, string>();
+            SqlDataReader sqlDataReader = ExecuteReader(query);
+            if (!sqlDataReader.HasRows)
+            {
+                string username = "admin";
+                string password = Utils.GenerateRandomString(12);
+                query = File.ReadAllText(".\\queries\\04-insert-user.sql");
+                query = query.Replace(
+                    "{ DNI }",
+                    "00000000"
+                ).Replace(
+                    "{ nombre }",
+                    "Admin"
+                ).Replace(
+                    "{ apellido }",
+                    "Admin"
+                ).Replace(
+                    "{ tel }",
+                    "123456789"
+                ).Replace(
+                    "{ mail }",
+                    "admin@primesystems.com"
+                ).Replace(
+                    "{ nombre_usuario }", username
+                )
+                .Replace(
+                    "{ contrasena }",
+                    password
+                ).Replace(
+                    "{ p_compra }",
+                    "w"
+                ).Replace(
+                    "{ p_venta }",
+                    "w"
+                ).Replace(
+                    "{ p_rrhh }",
+                    "w"
+                ).Replace(
+                    "{ p_contable }",
+                    "w"
+                );
+                Debug.WriteLine(query);
+                ExecuteNonQuery(query);
+                user["username"] = username;
+                user["password"] = password;
+            }
+            return user;
+        }
     }
 }

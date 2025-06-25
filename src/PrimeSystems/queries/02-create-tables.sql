@@ -47,9 +47,10 @@ IF NOT EXISTS (
         AND TABLE_SCHEMA = 'dbo'
 ) BEGIN
 CREATE TABLE Usuarios_Tipo (
-    id_usuario_tipo INT IDENTITY(1, 1) PRIMARY KEY,
-    tipo INT,
-    descripcion VARCHAR(255)
+    id VARCHAR(10) PRIMARY KEY,
+    descripcion VARCHAR(255),
+    escritura BIT,
+    lectura BIT,
 )
 END;
 
@@ -61,12 +62,17 @@ IF NOT EXISTS (
 ) BEGIN
 CREATE TABLE Usuarios (
     id_usuario INT IDENTITY(1, 1) PRIMARY KEY,
-    DNI INT,
+    dni INT,
+    nombre_usuario VARCHAR(50) NOT NULL UNIQUE,
     nombre VARCHAR(255),
     apellido VARCHAR(255),
     tel VARCHAR(255),
     mail VARCHAR(255),
-    id_tipo INT FOREIGN KEY REFERENCES Usuarios_Tipo(id_usuario_tipo),
+    contrasena VARCHAR(255),
+    p_compra CHAR,
+    p_venta CHAR,
+    p_rrhh CHAR,
+    p_contable CHAR
 )
 END;
 
