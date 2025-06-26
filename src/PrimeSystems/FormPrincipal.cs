@@ -33,10 +33,11 @@ namespace PrimeSystems
             if (user.ContainsKey("username") && user.ContainsKey("password"))
             {
                 MessageBox.Show(
-                    text: @$"Se creó el usuario administrador por defecto con los siguientes datos:
-Usuario: {user["username"]}
-Contraseña: {user["password"]}
-Por favor, anotalo para poder loguearte por primera vez. Posteriormente podras eliminarlo si así lo deseas.",
+                    text: $"Se creó el usuario administrador por defecto con los siguientes datos:\n" +
+                            $"Usuario: {user["username"]}\n" +
+                            $"Contraseña: {user["password"]}\n" +
+                            $"Por favor, anotalo para poder loguearte por primera vez.\n" +
+                            $"Posteriormente podras eliminarlo si así lo deseas.",
                     caption: "Usuario administrador creado",
                     buttons: MessageBoxButtons.OK,
                     icon: MessageBoxIcon.Warning

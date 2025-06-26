@@ -8,7 +8,8 @@ namespace PrimeSystems
 {
     internal class Config
     {
-        public static string sql_connection_string = System.Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") ?? "";
+        public static string sql_connection_string = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") ?? "";
         public static string sql_database_name = "PrimeSystems";
+        public static string random_password_characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;':,.<>?/~`";
     }
 }
