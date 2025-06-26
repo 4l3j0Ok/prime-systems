@@ -19,5 +19,33 @@ namespace PrimeSystems
             InitializeComponent();
             this.formPrincipal = formPrincipal;
         }
+
+        private void btnLogin_Click(object sender, EventArgs e)
+        {
+            string username = tbUsuario.Text;
+            string password = tbContrasena.Text;
+            string dbPassword = Database.GetUserPassword(username);
+            if (string.IsNullOrEmpty(dbPassword) || password != dbPassword)
+            {
+                MessageBox.Show(
+                    text: "El usuario o contraseña son inválidos",
+                    caption: "Error de inicio de sesión",
+                    buttons: MessageBoxButtons.OK,
+                    icon: MessageBoxIcon.Error
+                );
+
+
+
+            }
+
+        }
+
+       
+
+        private void tb_TextChanged(object sender, EventArgs e)
+        {
+            if (tbUsuario.Text.Length > 0 && tbContrasena.Text.Length > 0)
+                btnLogin.Enabled = true;
+        }
     }
 }

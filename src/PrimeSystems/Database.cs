@@ -130,5 +130,20 @@ namespace PrimeSystems
             }
             return user;
         }
+        public static string GetUserPassword(string username)
+        {
+            string password = "";
+            string query = File.ReadAllText(".\\queries\\05-select-user-password.sql");
+            query = query.Replace(
+                "{ nombre_usuario }",
+                username);
+            SqlDataReader reader = ExecuteReader(query);
+            if (reader.HasRows)
+                password = reader.GetString(0);
+            Debug.WriteLine(password);
+            return password;
+
+        }
+
     }
 }

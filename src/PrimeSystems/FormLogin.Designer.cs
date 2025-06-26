@@ -35,8 +35,8 @@ namespace PrimeSystems
         {
             ComponentResourceManager resources = new ComponentResourceManager(typeof(FormLogin));
             tbUsuario = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
-            tbContrasenia = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
-            materialButton1 = new ReaLTaiizor.Controls.MaterialButton();
+            tbContrasena = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
+            btnLogin = new ReaLTaiizor.Controls.MaterialButton();
             pictureBox1 = new PictureBox();
             lblUsuario = new ReaLTaiizor.Controls.MaterialLabel();
             lblContrasenia = new ReaLTaiizor.Controls.MaterialLabel();
@@ -81,59 +81,62 @@ namespace PrimeSystems
             tbUsuario.TextAlign = HorizontalAlignment.Left;
             tbUsuario.TrailingIcon = null;
             tbUsuario.UseSystemPasswordChar = false;
+            tbUsuario.TextChanged += tb_TextChanged;
             // 
-            // tbContrasenia
+            // tbContrasena
             // 
-            tbContrasenia.AnimateReadOnly = false;
-            tbContrasenia.AutoCompleteMode = AutoCompleteMode.None;
-            tbContrasenia.AutoCompleteSource = AutoCompleteSource.None;
-            tbContrasenia.BackgroundImageLayout = ImageLayout.None;
-            tbContrasenia.CharacterCasing = CharacterCasing.Normal;
-            tbContrasenia.Depth = 0;
-            tbContrasenia.Dock = DockStyle.Top;
-            tbContrasenia.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
-            tbContrasenia.HideSelection = true;
-            tbContrasenia.LeadingIcon = null;
-            tbContrasenia.Location = new Point(0, 19);
-            tbContrasenia.MaxLength = 32767;
-            tbContrasenia.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
-            tbContrasenia.Name = "tbContrasenia";
-            tbContrasenia.PasswordChar = '*';
-            tbContrasenia.PrefixSuffixText = null;
-            tbContrasenia.ReadOnly = false;
-            tbContrasenia.RightToLeft = RightToLeft.No;
-            tbContrasenia.SelectedText = "";
-            tbContrasenia.SelectionLength = 0;
-            tbContrasenia.SelectionStart = 0;
-            tbContrasenia.ShortcutsEnabled = true;
-            tbContrasenia.Size = new Size(322, 48);
-            tbContrasenia.TabIndex = 1;
-            tbContrasenia.TabStop = false;
-            tbContrasenia.TextAlign = HorizontalAlignment.Left;
-            tbContrasenia.TrailingIcon = null;
-            tbContrasenia.UseSystemPasswordChar = false;
+            tbContrasena.AnimateReadOnly = false;
+            tbContrasena.AutoCompleteMode = AutoCompleteMode.None;
+            tbContrasena.AutoCompleteSource = AutoCompleteSource.None;
+            tbContrasena.BackgroundImageLayout = ImageLayout.None;
+            tbContrasena.CharacterCasing = CharacterCasing.Normal;
+            tbContrasena.Depth = 0;
+            tbContrasena.Dock = DockStyle.Top;
+            tbContrasena.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
+            tbContrasena.HideSelection = true;
+            tbContrasena.LeadingIcon = null;
+            tbContrasena.Location = new Point(0, 19);
+            tbContrasena.MaxLength = 32767;
+            tbContrasena.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
+            tbContrasena.Name = "tbContrasena";
+            tbContrasena.PasswordChar = '*';
+            tbContrasena.PrefixSuffixText = null;
+            tbContrasena.ReadOnly = false;
+            tbContrasena.RightToLeft = RightToLeft.No;
+            tbContrasena.SelectedText = "";
+            tbContrasena.SelectionLength = 0;
+            tbContrasena.SelectionStart = 0;
+            tbContrasena.ShortcutsEnabled = true;
+            tbContrasena.Size = new Size(322, 48);
+            tbContrasena.TabIndex = 1;
+            tbContrasena.TabStop = false;
+            tbContrasena.TextAlign = HorizontalAlignment.Left;
+            tbContrasena.TrailingIcon = null;
+            tbContrasena.UseSystemPasswordChar = false;
+            tbContrasena.TextChanged += tb_TextChanged;
             // 
-            // materialButton1
+            // btnLogin
             // 
-            materialButton1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            materialButton1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            materialButton1.Density = ReaLTaiizor.Controls.MaterialButton.MaterialButtonDensity.Default;
-            materialButton1.Depth = 0;
-            materialButton1.Enabled = false;
-            materialButton1.HighEmphasis = true;
-            materialButton1.Icon = null;
-            materialButton1.IconType = ReaLTaiizor.Controls.MaterialButton.MaterialIconType.Rebase;
-            materialButton1.Location = new Point(20, 573);
-            materialButton1.Margin = new Padding(20);
-            materialButton1.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
-            materialButton1.Name = "materialButton1";
-            materialButton1.NoAccentTextColor = Color.Empty;
-            materialButton1.Size = new Size(621, 36);
-            materialButton1.TabIndex = 2;
-            materialButton1.Text = "Iniciar sesión";
-            materialButton1.Type = ReaLTaiizor.Controls.MaterialButton.MaterialButtonType.Contained;
-            materialButton1.UseAccentColor = false;
-            materialButton1.UseVisualStyleBackColor = true;
+            btnLogin.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            btnLogin.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            btnLogin.Density = ReaLTaiizor.Controls.MaterialButton.MaterialButtonDensity.Default;
+            btnLogin.Depth = 0;
+            btnLogin.Enabled = false;
+            btnLogin.HighEmphasis = true;
+            btnLogin.Icon = null;
+            btnLogin.IconType = ReaLTaiizor.Controls.MaterialButton.MaterialIconType.Rebase;
+            btnLogin.Location = new Point(20, 573);
+            btnLogin.Margin = new Padding(20);
+            btnLogin.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
+            btnLogin.Name = "btnLogin";
+            btnLogin.NoAccentTextColor = Color.Empty;
+            btnLogin.Size = new Size(621, 36);
+            btnLogin.TabIndex = 2;
+            btnLogin.Text = "Iniciar sesión";
+            btnLogin.Type = ReaLTaiizor.Controls.MaterialButton.MaterialButtonType.Contained;
+            btnLogin.UseAccentColor = false;
+            btnLogin.UseVisualStyleBackColor = true;
+            btnLogin.Click += btnLogin_Click;
             // 
             // pictureBox1
             // 
@@ -185,7 +188,7 @@ namespace PrimeSystems
             // 
             // panel2
             // 
-            panel2.Controls.Add(tbContrasenia);
+            panel2.Controls.Add(tbContrasena);
             panel2.Controls.Add(lblContrasenia);
             panel2.Dock = DockStyle.Fill;
             panel2.Location = new Point(330, 3);
@@ -198,7 +201,7 @@ namespace PrimeSystems
             tableLayoutPanel1.ColumnCount = 1;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tableLayoutPanel1.Controls.Add(pictureBox1, 0, 0);
-            tableLayoutPanel1.Controls.Add(materialButton1, 0, 2);
+            tableLayoutPanel1.Controls.Add(btnLogin, 0, 2);
             tableLayoutPanel1.Controls.Add(tableLayoutPanel2, 0, 1);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 0);
@@ -246,8 +249,8 @@ namespace PrimeSystems
         #endregion
 
         private ReaLTaiizor.Controls.MaterialTextBoxEdit tbUsuario;
-        private ReaLTaiizor.Controls.MaterialTextBoxEdit tbContrasenia;
-        private ReaLTaiizor.Controls.MaterialButton materialButton1;
+        private ReaLTaiizor.Controls.MaterialTextBoxEdit tbContrasena;
+        private ReaLTaiizor.Controls.MaterialButton btnLogin;
         private PictureBox pictureBox1;
         private ReaLTaiizor.Controls.MaterialLabel lblUsuario;
         private ReaLTaiizor.Controls.MaterialLabel lblContrasenia;
