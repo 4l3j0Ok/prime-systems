@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -33,15 +34,9 @@ namespace PrimeSystems
                     buttons: MessageBoxButtons.OK,
                     icon: MessageBoxIcon.Error
                 );
-
-
-
             }
-
+            Debug.WriteLine("Las contraseñas coinciden.");
         }
-
-       
-
         private void tb_TextChanged(object sender, EventArgs e)
         {
             if (tbUsuario.Text.Length > 0 && tbContrasena.Text.Length > 0)

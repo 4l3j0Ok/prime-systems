@@ -138,12 +138,9 @@ namespace PrimeSystems
                 "{ nombre_usuario }",
                 username);
             SqlDataReader reader = ExecuteReader(query);
-            if (reader.HasRows)
-                password = reader.GetString(0);
-            Debug.WriteLine(password);
+            if (reader.Read())
+                password = reader["contrasena"].ToString() ?? String.Empty;
             return password;
-
         }
-
     }
 }

@@ -1,4 +1,5 @@
 using System.Windows.Forms;
+using ReaLTaiizor.Enum.Crown;
 using ReaLTaiizor.Forms;
 
 namespace PrimeSystems
@@ -21,10 +22,10 @@ namespace PrimeSystems
                 Database.CheckConnection();
             } catch (Exception ex) {
                 MessageBox.Show(
-                    ex.Message,
-                    "Error de conexión",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
+                    text: ex.Message,
+                    caption: "Error de conexión",
+                    icon: MessageBoxIcon.Error,
+                    buttons: MessageBoxButtons.OK
                 );
             }
             Database.CreateDatabaseIfNotExists();
