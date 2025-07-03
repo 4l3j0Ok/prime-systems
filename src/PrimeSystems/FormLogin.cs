@@ -36,11 +36,18 @@ namespace PrimeSystems
                 );
             }
             Debug.WriteLine("Las contraseñas coinciden.");
+
+            formPrincipal.Controls.Clear();
+            FormInicio formInicio = new FormInicio();
+            formInicio.Dock = DockStyle.Fill;
+            formPrincipal.panelPrincipal.Controls.Add(formInicio);
+            formInicio.Show();
         }
         private void tb_TextChanged(object sender, EventArgs e)
         {
             if (tbUsuario.Text.Length > 0 && tbContrasena.Text.Length > 0)
                 btnLogin.Enabled = true;
         }
+
     }
 }

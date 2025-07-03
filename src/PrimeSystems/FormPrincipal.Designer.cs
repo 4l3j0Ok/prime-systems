@@ -51,12 +51,12 @@ namespace PrimeSystems
             Name = "FormPrincipal";
             Padding = new Padding(0, 64, 0, 0);
             Text = "Prime Systems";
-            Load += this.FormPrincipal_Load;
+            Load += FormPrincipal_Load;
             ResumeLayout(false);
         }
 
         #endregion
 
-        private Panel panelPrincipal;
+        public Panel panelPrincipal;
     }
 }
