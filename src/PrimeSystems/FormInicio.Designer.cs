@@ -38,11 +38,13 @@
             // 
             // pictureBox1
             // 
+            pictureBox1.Dock = DockStyle.Fill;
             pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
             pictureBox1.InitialImage = null;
-            pictureBox1.Location = new Point(3, 3);
+            pictureBox1.Location = new Point(20, 20);
+            pictureBox1.Margin = new Padding(20);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(699, 311);
+            pictureBox1.Size = new Size(815, 292);
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.TabIndex = 0;
             pictureBox1.TabStop = false;
@@ -59,7 +61,7 @@
             tableLayoutPanel1.RowCount = 2;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 76.4976959F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 23.5023041F));
-            tableLayoutPanel1.Size = new Size(705, 434);
+            tableLayoutPanel1.Size = new Size(855, 434);
             tableLayoutPanel1.TabIndex = 1;
             // 
             // materialLabel1
@@ -72,7 +74,7 @@
             materialLabel1.Location = new Point(3, 332);
             materialLabel1.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             materialLabel1.Name = "materialLabel1";
-            materialLabel1.Size = new Size(699, 102);
+            materialLabel1.Size = new Size(849, 102);
             materialLabel1.TabIndex = 1;
             materialLabel1.Text = "Bienvenido a Prime Systems";
             materialLabel1.TextAlign = ContentAlignment.MiddleCenter;
@@ -83,7 +85,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(tableLayoutPanel1);
             Name = "FormInicio";
-            Size = new Size(705, 434);
+            Size = new Size(855, 434);
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();

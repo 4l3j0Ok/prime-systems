@@ -35,9 +35,7 @@ namespace PrimeSystems
                     icon: MessageBoxIcon.Error
                 );
             }
-            Debug.WriteLine("Las contraseñas coinciden.");
-
-            formPrincipal.Controls.Clear();
+            formPrincipal.panelPrincipal.Controls.Clear();
             FormInicio formInicio = new FormInicio();
             formInicio.Dock = DockStyle.Fill;
             formPrincipal.panelPrincipal.Controls.Add(formInicio);
