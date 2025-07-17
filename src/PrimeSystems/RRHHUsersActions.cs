@@ -10,16 +10,11 @@ using System.Windows.Forms;
 
 namespace PrimeSystems
 {
-    public partial class FormInicio : UserControl
+    public partial class RRHHUsersActions : UserControl
     {
-        public FormInicio()
+        public RRHHUsersActions()
         {
             InitializeComponent();
-        }
-
-        private void bigLabel1_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

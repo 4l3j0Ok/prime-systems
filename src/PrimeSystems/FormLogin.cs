@@ -1,26 +1,46 @@
-ï»¿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using ReaLTaiizor.Enum.Crown;
+using ReaLTaiizor.Forms;
 
 namespace PrimeSystems
 {
-    public partial class FormLogin : UserControl
+    public partial class FormLogin : MaterialForm
     {
-        private FormPrincipal formPrincipal;
-
-        public FormLogin(FormPrincipal formPrincipal)
+        public FormLogin()
         {
             InitializeComponent();
-            this.formPrincipal = formPrincipal;
-        }
 
+        }
+        private void FormPrincipal_Load(object sender, EventArgs e)
+        {
+            try
+            {
+                Database.CheckConnection();
+            } catch (Exception ex) {
+                MessageBox.Show(
+                    text: ex.Message,
+                    caption: "Error de conexión",
+                    icon: MessageBoxIcon.Error,
+                    buttons: MessageBoxButtons.OK
+                );
+            }
+            Database.CreateDatabaseIfNotExists();
+            Database.CreateTablesIfNotExists();
+            Dictionary<string, string> user = Database.CreateAdminUserIfNotExists();
+            if (user.ContainsKey("username") && user.ContainsKey("password"))
+            {
+                MessageBox.Show(
+                    text: $"Se creó el usuario administrador por defecto con los siguientes datos:\n" +
+                            $"Usuario: {user["username"]}\n" +
+                            $"Contraseña: {user["password"]}\n" +
+                            $"Por favor, anotalo para poder loguearte por primera vez.\n" +
+                            $"Posteriormente podras eliminarlo si así lo deseas.",
+                    caption: "Usuario administrador creado",
+                    buttons: MessageBoxButtons.OK,
+                    icon: MessageBoxIcon.Warning
+                );
+            }
+        }
         private void btnLogin_Click(object sender, EventArgs e)
         {
             string username = tbUsuario.Text;
@@ -29,23 +49,21 @@ namespace PrimeSystems
             if (string.IsNullOrEmpty(dbPassword) || password != dbPassword)
             {
                 MessageBox.Show(
-                    text: "El usuario o contraseÃ±a son invÃ¡lidos",
-                    caption: "Error de inicio de sesiÃ³n",
+                    text: "El usuario o contraseña son inválidos",
+                    caption: "Error de inicio de sesión",
                     buttons: MessageBoxButtons.OK,
                     icon: MessageBoxIcon.Error
                 );
             }
-            formPrincipal.panelPrincipal.Controls.Clear();
-            FormInicio formInicio = new FormInicio();
-            formInicio.Dock = DockStyle.Fill;
-            formPrincipal.panelPrincipal.Controls.Add(formInicio);
-            formInicio.Show();
+            // Mostramos el formPrincipal
+            FormPrincipal formPrincipal = new FormPrincipal();
+            formPrincipal.Show();
+            this.Hide();
         }
         private void tb_TextChanged(object sender, EventArgs e)
         {
             if (tbUsuario.Text.Length > 0 && tbContrasena.Text.Length > 0)
                 btnLogin.Enabled = true;
         }
-
     }
 }
