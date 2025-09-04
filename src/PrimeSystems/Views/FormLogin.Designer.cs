@@ -234,6 +234,7 @@ namespace PrimeSystems
             Controls.Add(tableLayoutPanel1);
             Name = "FormLogin";
             Padding = new Padding(0, 64, 0, 0);
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Prime Systems";
             Load += FormPrincipal_Load;
             tableLayoutPanel1.ResumeLayout(false);

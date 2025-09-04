@@ -1,6 +1,10 @@
 using System.Windows.Forms;
+using PrimeSystems.Data;
+using PrimeSystems.Views;
+using PrimeSystems.Models;
 using ReaLTaiizor.Enum.Crown;
 using ReaLTaiizor.Forms;
+
 
 namespace PrimeSystems
 {
@@ -9,12 +13,14 @@ namespace PrimeSystems
         public FormLogin()
         {
             InitializeComponent();
+            ColorScheme.GetSkinManager().AddFormToManage(this);
 
         }
         private void FormPrincipal_Load(object sender, EventArgs e)
         {
             try
             {
+                DBInitializer.CreateDatabaseIfNotExists();
                 Database.CheckConnection();
             } catch (Exception ex) {
                 MessageBox.Show(
@@ -24,15 +30,14 @@ namespace PrimeSystems
                     buttons: MessageBoxButtons.OK
                 );
             }
-            Database.CreateDatabaseIfNotExists();
-            Database.CreateTablesIfNotExists();
-            Dictionary<string, string> user = Database.CreateAdminUserIfNotExists();
-            if (user.ContainsKey("username") && user.ContainsKey("password"))
+            DBInitializer.CreateTablesIfNotExists();
+            UserModel? user = UserRepository.CreateAdminUserIfNotExists();
+            if (user != null)
             {
                 MessageBox.Show(
                     text: $"Se creó el usuario administrador por defecto con los siguientes datos:\n" +
-                            $"Usuario: {user["username"]}\n" +
-                            $"Contraseña: {user["password"]}\n" +
+                            $"Usuario: {user.username}\n" +
+                            $"Contraseña: {user.password}\n" +
                             $"Por favor, anotalo para poder loguearte por primera vez.\n" +
                             $"Posteriormente podras eliminarlo si así lo deseas.",
                     caption: "Usuario administrador creado",
@@ -43,19 +48,15 @@ namespace PrimeSystems
         }
         private void btnLogin_Click(object sender, EventArgs e)
         {
+
             string username = tbUsuario.Text;
             string password = tbContrasena.Text;
-            string dbPassword = Database.GetUserPassword(username);
-            if (string.IsNullOrEmpty(dbPassword) || password != dbPassword)
+            UserModel? user = UserRepository.Get(username);
+            if (user == null || user.password != password)
             {
-                MessageBox.Show(
-                    text: "El usuario o contraseña son inválidos",
-                    caption: "Error de inicio de sesión",
-                    buttons: MessageBoxButtons.OK,
-                    icon: MessageBoxIcon.Error
-                );
+                MessageBox.Show("Usuario o contraseña incorrectos.", "Error de autenticación", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
-            // Mostramos el formPrincipal
             FormPrincipal formPrincipal = new FormPrincipal();
             formPrincipal.Show();
             this.Hide();
