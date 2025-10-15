@@ -11,15 +11,9 @@ using ReaLTaiizor.Forms;
 
 namespace PrimeSystems
 {
-<<<<<<<< HEAD:src/PrimeSystems/Views/FormAddUser.cs
-    public partial class FormAddUser : MaterialForm
-    {
-        public FormAddUser()
-========
     public partial class CustomMessageBox : MaterialForm
     {
         public CustomMessageBox()
->>>>>>>> refactor/update-project-structure:src/Views/CustomMessageBox.cs
         {
             InitializeComponent();
         }
