@@ -6,11 +6,11 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <ApplicationIcon>Views\Assets\Icons\Icon.ico</ApplicationIcon>
+    <ApplicationIcon>Views\Assets\Icons\logo.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Views\Assets\Icons\Icon.ico" />
+    <Content Include="Views\Assets\Icons\logo.ico" />
   </ItemGroup>
 
   <ItemGroup>

@@ -798,7 +798,7 @@ namespace PrimeSystems.Views
             btnUploadProfilePicture.Depth = 0;
             btnUploadProfilePicture.Dock = DockStyle.Top;
             btnUploadProfilePicture.HighEmphasis = true;
-            btnUploadProfilePicture.Icon = Properties.Resources.upload;
+            btnUploadProfilePicture.Icon = null;
             btnUploadProfilePicture.IconType = MaterialButton.MaterialIconType.Rebase;
             btnUploadProfilePicture.Location = new Point(0, 176);
             btnUploadProfilePicture.Margin = new Padding(0, 10, 0, 0);

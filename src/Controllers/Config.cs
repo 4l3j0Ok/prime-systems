@@ -22,11 +22,11 @@ namespace PrimeSystems
     }
     internal class UIConfig
     {
-        public static int primary = 0x396f04; // Color primario
-        public static int lightPrimary = 0x7dbd07; // Tono más claro del color primario
-        public static int darkPrimary = 0x234602; // Tono más oscuro del color primario
-        public static int accent = 0x7a3f00; // Color de acento
-        public static int background = 0xEEEEEE; // Color de fondo
+        public static int primary = 0x003554; // Color primario
+        public static int lightPrimary = 0x006494; // Tono más claro del color primario
+        public static int darkPrimary = 0x051923; // Tono más oscuro del color primario
+        public static int accent = 0x00a6fb; // Color de acento
+        public static int background = 0xe7ecef; // Color de fondo
 
         public static MaterialSkinManager GetSkinManager()
         {

@@ -51,8 +51,8 @@ namespace PrimeSystems
             pictureBox1 = new PictureBox();
             lblWelcome = new ReaLTaiizor.Controls.MaterialLabel();
             tcPrincipal = new ReaLTaiizor.Controls.MaterialTabControl();
-            flowLayoutPanel4 = new FlowLayoutPanel();
             tabCerrarSesion = new TabPage();
+            flowLayoutPanel4 = new FlowLayoutPanel();
             tabUsers.SuspendLayout();
             tabHome.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
@@ -65,9 +65,10 @@ namespace PrimeSystems
             imgList.ColorDepth = ColorDepth.Depth32Bit;
             imgList.ImageStream = (ImageListStreamer)resources.GetObject("imgList.ImageStream");
             imgList.TransparentColor = Color.Transparent;
-            imgList.Images.SetKeyName(0, "home.png");
-            imgList.Images.SetKeyName(1, "user.png");
-            imgList.Images.SetKeyName(12, "cerrar-sesion.png");
+            imgList.Images.SetKeyName(0, "add.png");
+            imgList.Images.SetKeyName(1, "cerrar-sesion.png");
+            imgList.Images.SetKeyName(2, "user.png");
+            imgList.Images.SetKeyName(3, "home.png");
             // 
             // tabUsers
             // 
@@ -88,7 +89,7 @@ namespace PrimeSystems
             // 
             btnAddUser.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnAddUser.Depth = 0;
-            btnAddUser.Icon = Properties.Resources.add;
+            btnAddUser.Icon = null;
             btnAddUser.Location = new Point(877, 431);
             btnAddUser.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             btnAddUser.Name = "btnAddUser";
@@ -152,7 +153,6 @@ namespace PrimeSystems
             // pictureBox1
             // 
             pictureBox1.Dock = DockStyle.Fill;
-            pictureBox1.Image = Properties.Resources.homeImage;
             pictureBox1.InitialImage = null;
             pictureBox1.Location = new Point(20, 20);
             pictureBox1.Margin = new Padding(20);
@@ -194,8 +194,9 @@ namespace PrimeSystems
             tcPrincipal.SelectedIndex = 0;
             tcPrincipal.Size = new Size(944, 533);
             tcPrincipal.TabIndex = 0;
-            //
-            // tabAnimalArea
+            // 
+            // tabCerrarSesion
+            // 
             tabCerrarSesion.ImageKey = "cerrar-sesion.png";
             tabCerrarSesion.Location = new Point(4, 39);
             tabCerrarSesion.Name = "tabCerrarSesion";
@@ -205,6 +206,13 @@ namespace PrimeSystems
             tabCerrarSesion.Text = "Cerrar Sesión";
             tabCerrarSesion.UseVisualStyleBackColor = true;
             tabCerrarSesion.Enter += tabCerrarSesion_Click;
+            // 
+            // flowLayoutPanel4
+            // 
+            flowLayoutPanel4.Location = new Point(0, 0);
+            flowLayoutPanel4.Name = "flowLayoutPanel4";
+            flowLayoutPanel4.Size = new Size(200, 100);
+            flowLayoutPanel4.TabIndex = 0;
             // 
             // FormPrincipal
             // 

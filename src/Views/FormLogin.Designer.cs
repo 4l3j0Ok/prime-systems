@@ -40,26 +40,19 @@ namespace PrimeSystems
             lblContrasenia = new ReaLTaiizor.Controls.MaterialLabel();
             btnLogin = new ReaLTaiizor.Controls.MaterialButton();
             tableLayoutPanel1 = new TableLayoutPanel();
+            pictureBox1 = new PictureBox();
             tableLayoutPanel2 = new TableLayoutPanel();
             panel3 = new Panel();
             tableLayoutPanel3 = new TableLayoutPanel();
             lblAppName = new ReaLTaiizor.Controls.MaterialLabel();
             materialLabel1 = new ReaLTaiizor.Controls.MaterialLabel();
-            tableLayoutPanel4 = new TableLayoutPanel();
-            pictureBox1 = new PictureBox();
-            tableLayoutPanel5 = new TableLayoutPanel();
-            parrotPictureBox1 = new ReaLTaiizor.Controls.ParrotPictureBox();
-            parrotPictureBox5 = new ReaLTaiizor.Controls.ParrotPictureBox();
-            parrotPictureBox4 = new ReaLTaiizor.Controls.ParrotPictureBox();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             tableLayoutPanel2.SuspendLayout();
             panel3.SuspendLayout();
             tableLayoutPanel3.SuspendLayout();
-            tableLayoutPanel4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
-            tableLayoutPanel5.SuspendLayout();
             SuspendLayout();
             // 
             // panel1
@@ -209,8 +202,8 @@ namespace PrimeSystems
             tableLayoutPanel1.ColumnCount = 2;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel1.Controls.Add(pictureBox1, 0, 0);
             tableLayoutPanel1.Controls.Add(tableLayoutPanel2, 1, 0);
-            tableLayoutPanel1.Controls.Add(tableLayoutPanel4, 0, 0);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(20, 84);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -218,6 +211,18 @@ namespace PrimeSystems
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel1.Size = new Size(910, 496);
             tableLayoutPanel1.TabIndex = 9;
+            // 
+            // pictureBox1
+            // 
+            pictureBox1.Dock = DockStyle.Fill;
+            pictureBox1.Image = Properties.Resources.logo;
+            pictureBox1.Location = new Point(20, 40);
+            pictureBox1.Margin = new Padding(20, 40, 20, 40);
+            pictureBox1.Name = "pictureBox1";
+            pictureBox1.Size = new Size(415, 416);
+            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox1.TabIndex = 5;
+            pictureBox1.TabStop = false;
             // 
             // tableLayoutPanel2
             // 
@@ -290,119 +295,8 @@ namespace PrimeSystems
             materialLabel1.Name = "materialLabel1";
             materialLabel1.Size = new Size(437, 75);
             materialLabel1.TabIndex = 11;
-            materialLabel1.Text = "Un proyecto de ISFDyT°93 para la Escual Agraria N°1";
+            materialLabel1.Text = "Gestión del sistema";
             materialLabel1.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // tableLayoutPanel4
-            // 
-            tableLayoutPanel4.ColumnCount = 1;
-            tableLayoutPanel4.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel4.Controls.Add(pictureBox1, 0, 0);
-            tableLayoutPanel4.Controls.Add(tableLayoutPanel5, 0, 1);
-            tableLayoutPanel4.Dock = DockStyle.Fill;
-            tableLayoutPanel4.Location = new Point(3, 3);
-            tableLayoutPanel4.Name = "tableLayoutPanel4";
-            tableLayoutPanel4.RowCount = 2;
-            tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 82.8244247F));
-            tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 17.1755733F));
-            tableLayoutPanel4.Size = new Size(449, 490);
-            tableLayoutPanel4.TabIndex = 0;
-            // 
-            // pictureBox1
-            // 
-            pictureBox1.Dock = DockStyle.Fill;
-            pictureBox1.Image = Properties.Resources.homeImage;
-            pictureBox1.Location = new Point(20, 40);
-            pictureBox1.Margin = new Padding(20, 40, 20, 40);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(409, 325);
-            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox1.TabIndex = 4;
-            pictureBox1.TabStop = false;
-            // 
-            // tableLayoutPanel5
-            // 
-            tableLayoutPanel5.Anchor = AnchorStyles.None;
-            tableLayoutPanel5.ColumnCount = 3;
-            tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
-            tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333359F));
-            tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333359F));
-            tableLayoutPanel5.Controls.Add(parrotPictureBox1, 0, 0);
-            tableLayoutPanel5.Controls.Add(parrotPictureBox5, 1, 0);
-            tableLayoutPanel5.Controls.Add(parrotPictureBox4, 2, 0);
-            tableLayoutPanel5.Location = new Point(47, 408);
-            tableLayoutPanel5.Name = "tableLayoutPanel5";
-            tableLayoutPanel5.RowCount = 1;
-            tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel5.Size = new Size(354, 79);
-            tableLayoutPanel5.TabIndex = 5;
-            // 
-            // parrotPictureBox1
-            // 
-            parrotPictureBox1.Anchor = AnchorStyles.None;
-            parrotPictureBox1.ColorLeft = Color.DodgerBlue;
-            parrotPictureBox1.ColorRight = Color.DodgerBlue;
-            parrotPictureBox1.CompositingQualityType = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-            parrotPictureBox1.FilterAlpha = 200;
-            parrotPictureBox1.FilterEnabled = false;
-            parrotPictureBox1.Image = Properties.Resources.isfdyt93;
-            parrotPictureBox1.InterpolationType = System.Drawing.Drawing2D.InterpolationMode.HighQualityBilinear;
-            parrotPictureBox1.IsElipse = false;
-            parrotPictureBox1.IsParallax = false;
-            parrotPictureBox1.Location = new Point(23, 4);
-            parrotPictureBox1.MaximumSize = new Size(70, 70);
-            parrotPictureBox1.Name = "parrotPictureBox1";
-            parrotPictureBox1.PixelOffsetType = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-            parrotPictureBox1.Size = new Size(70, 70);
-            parrotPictureBox1.SmoothingType = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            parrotPictureBox1.TabIndex = 0;
-            parrotPictureBox1.Text = "parrotPictureBox1";
-            parrotPictureBox1.TextRenderingType = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-            // 
-            // parrotPictureBox5
-            // 
-            parrotPictureBox5.Anchor = AnchorStyles.None;
-            parrotPictureBox5.ColorLeft = Color.DodgerBlue;
-            parrotPictureBox5.ColorRight = Color.DodgerBlue;
-            parrotPictureBox5.CompositingQualityType = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-            parrotPictureBox5.FilterAlpha = 200;
-            parrotPictureBox5.FilterEnabled = false;
-            parrotPictureBox5.Image = Properties.Resources.eesan1;
-            parrotPictureBox5.InterpolationType = System.Drawing.Drawing2D.InterpolationMode.HighQualityBilinear;
-            parrotPictureBox5.IsElipse = false;
-            parrotPictureBox5.IsParallax = false;
-            parrotPictureBox5.Location = new Point(141, 4);
-            parrotPictureBox5.MaximumSize = new Size(70, 70);
-            parrotPictureBox5.Name = "parrotPictureBox5";
-            parrotPictureBox5.PixelOffsetType = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-            parrotPictureBox5.Size = new Size(70, 70);
-            parrotPictureBox5.SmoothingType = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            parrotPictureBox5.TabIndex = 4;
-            parrotPictureBox5.Text = "parrotPictureBox5";
-            parrotPictureBox5.TextRenderingType = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-            // 
-            // parrotPictureBox4
-            // 
-            parrotPictureBox4.Anchor = AnchorStyles.None;
-            parrotPictureBox4.ColorLeft = Color.DodgerBlue;
-            parrotPictureBox4.ColorRight = Color.DodgerBlue;
-            parrotPictureBox4.CompositingQualityType = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-            parrotPictureBox4.FilterAlpha = 200;
-            parrotPictureBox4.FilterEnabled = false;
-            parrotPictureBox4.Image = Properties.Resources.uietp;
-            parrotPictureBox4.InterpolationType = System.Drawing.Drawing2D.InterpolationMode.HighQualityBilinear;
-            parrotPictureBox4.IsElipse = false;
-            parrotPictureBox4.IsParallax = false;
-            parrotPictureBox4.Location = new Point(244, 4);
-            parrotPictureBox4.MaximumSize = new Size(100, 70);
-            parrotPictureBox4.Name = "parrotPictureBox4";
-            parrotPictureBox4.PixelOffsetType = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-            parrotPictureBox4.Size = new Size(100, 70);
-            parrotPictureBox4.SmoothingType = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            parrotPictureBox4.TabIndex = 3;
-            parrotPictureBox4.Text = "parrotPictureBox4";
-            parrotPictureBox4.TextRenderingType = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
             // 
             // FormLogin
             // 
@@ -422,14 +316,12 @@ namespace PrimeSystems
             panel2.ResumeLayout(false);
             panel2.PerformLayout();
             tableLayoutPanel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             tableLayoutPanel2.ResumeLayout(false);
             tableLayoutPanel2.PerformLayout();
             panel3.ResumeLayout(false);
             tableLayoutPanel3.ResumeLayout(false);
             tableLayoutPanel3.PerformLayout();
-            tableLayoutPanel4.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
-            tableLayoutPanel5.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -446,12 +338,7 @@ namespace PrimeSystems
         private Panel panel3;
         private TableLayoutPanel tableLayoutPanel3;
         private ReaLTaiizor.Controls.MaterialLabel lblAppName;
-        private ReaLTaiizor.Controls.MaterialLabel materialLabel1;
-        private TableLayoutPanel tableLayoutPanel4;
         private PictureBox pictureBox1;
-        private TableLayoutPanel tableLayoutPanel5;
-        private ReaLTaiizor.Controls.ParrotPictureBox parrotPictureBox1;
-        private ReaLTaiizor.Controls.ParrotPictureBox parrotPictureBox5;
-        private ReaLTaiizor.Controls.ParrotPictureBox parrotPictureBox4;
+        private ReaLTaiizor.Controls.MaterialLabel materialLabel1;
     }
 }
