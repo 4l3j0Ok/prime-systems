@@ -1,4 +1,5 @@
 ﻿using PrimeSystems.Controllers;
+using PrimeSystems.Core;
 using PrimeSystems.Models;
 using System;
 using System.Collections.Generic;
@@ -15,34 +16,34 @@ namespace PrimeSystems.Views
     public partial class UCUserAdd : UserControl
     {
         private UserController userController;
-        private RoleController roleController;
-        private UserModel currentUser;
+        private UsuarioTipoController usuarioTipoController;
+        private UsuarioModel currentUser;
         private FormPrincipal? formPrincipal = Application.OpenForms.OfType<FormPrincipal>().FirstOrDefault();
 
-        public UCUserAdd(UserModel? user = null)
+        public UCUserAdd(UsuarioModel? user = null)
         {
             userController = new UserController();
-            roleController = new RoleController();
+            usuarioTipoController = new UsuarioTipoController();
             InitializeComponent();
             if (user != null)
             {
                 mepUserAdd.Title = "Modificar Usuario";
                 mepUserAdd.Description = "Edita los datos del usuario seleccionado";
                 currentUser = user;
-                tbUserName.Text = user.Name;
-                tbUserSurname.Text = user.Surname;
-                tbUserUsername.Text = user.Username;
-                tbUserPhone.Text = user.Phone;
-                tbUserEmail.Text = user.Email;
-                tbUserPassword.Text = user.Password;
-                tbUserPasswordConfirm.Text = user.Password;
-                tbUserPersonId.Text = user.PersonId;
-                pbUserProfilePicture.Image = Utils.ByteArrayToImage(user.ProfilePicture);
-                cmbRole.SelectedItem = user.Role?.Name ?? "Sin rol";
+                tbUserName.Text = user.Nombre;
+                tbUserSurname.Text = user.Apellido;
+                tbUserUsername.Text = user.NombreUsuario;
+                tbUserPhone.Text = user.Tel;
+                tbUserEmail.Text = user.Mail;
+                tbUserPassword.Text = user.Contrasena;
+                tbUserPasswordConfirm.Text = user.Contrasena;
+                tbUserPersonId.Text = user.Dni?.ToString() ?? "";
+                pbUserProfilePicture.Image = Utils.ByteArrayToImage(user.Foto);
+                cmbRole.SelectedItem = user.UsuarioTipo?.Descripcion ?? "Sin tipo";
             }
             else
             {
-                currentUser = new UserModel();
+                currentUser = new UsuarioModel();
             }
         }
 
@@ -60,10 +61,10 @@ namespace PrimeSystems.Views
 
         private void UCUserAdd_Load(object sender, EventArgs e)
         {
-            List<RoleModel> roles = roleController.GetAllRoles();
-            foreach (RoleModel role in roles)
+            List<UsuarioTipoModel> usuariosTipo = usuarioTipoController.GetAllUsuariosTipo();
+            foreach (UsuarioTipoModel tipo in usuariosTipo)
             {
-                cmbRole.Items.Add(role.Name);
+                cmbRole.Items.Add(tipo.Descripcion);
             }
         }
 
@@ -97,7 +98,7 @@ namespace PrimeSystems.Views
                 emptyFields.Add("Confirmación de contraseña");
 
             if (cmbRole.SelectedItem == null)
-                emptyFields.Add("Rol");
+                emptyFields.Add("Tipo de usuario");
 
             // Mostrar mensaje de error si hay campos vacíos
             if (emptyFields.Count > 0)
@@ -130,22 +131,28 @@ namespace PrimeSystems.Views
             if (!ValidateFields())
                 return;
 
-            currentUser.Name = tbUserName.Text;
-            currentUser.Surname = tbUserSurname.Text;
-            currentUser.Username = tbUserUsername.Text;
-            currentUser.Phone = tbUserPhone.Text;
-            currentUser.Email = tbUserEmail.Text;
-            currentUser.Password = tbUserPassword.Text;
-            currentUser.PersonId = tbUserPersonId.Text;
-            currentUser.ProfilePicture = Utils.ImageToByteArray(pbUserProfilePicture.Image);
-            RoleModel? selectedRole = roleController.GetRoleByName(cmbRole.SelectedItem?.ToString() ?? "");
-            if (selectedRole != null)
+            currentUser.Nombre = tbUserName.Text;
+            currentUser.Apellido = tbUserSurname.Text;
+            currentUser.NombreUsuario = tbUserUsername.Text;
+            currentUser.Tel = tbUserPhone.Text;
+            currentUser.Mail = tbUserEmail.Text;
+            currentUser.Contrasena = tbUserPassword.Text;
+            currentUser.Dni = int.TryParse(tbUserPersonId.Text, out int dni) ? dni : null;
+            currentUser.Foto = Utils.ImageToByteArray(pbUserProfilePicture.Image);
+
+            // Asignar UsuarioTipoId basado en la descripción seleccionada
+            string? selectedTipoDescripcion = cmbRole.SelectedItem?.ToString();
+            if (!string.IsNullOrEmpty(selectedTipoDescripcion))
             {
-                currentUser.RoleId = selectedRole.Id;
-                currentUser.Role = selectedRole;
+                var usuarioTipo = usuarioTipoController.GetUsuarioTipoByDescripcion(selectedTipoDescripcion);
+                if (usuarioTipo != null)
+                {
+                    currentUser.UsuarioTipoId = usuarioTipo.Id;
+                }
             }
+            
             bool success;
-            if (currentUser.Id == 0)
+            if (currentUser.IdUsuario == 0)
                 success = userController.CreateUser(currentUser);
             else
                 success = userController.UpdateUser(currentUser);

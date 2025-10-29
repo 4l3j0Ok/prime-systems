@@ -6,12 +6,12 @@ using ReaLTaiizor.Forms;
 using ReaLTaiizor.Controls;
 
 
-namespace PrimeSystems
+namespace PrimeSystems.Core
 {
     internal class Config
     {
         public static string application_name = "Prime Systems";
-        public static string sql_connection_string = Environment.GetEnvironmentVariable("SQLITE_CONNECTION_STRING") ?? "Data Source=data.db";
+        public static string sql_connection_string = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") ?? "Server=127.0.0.1;Database=PrimeSystems;Trusted_Connection=True;TrustServerCertificate=True;";
         public static string sql_database_name = "PrimeSystems";
         public static string random_password_characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;':,.<>?/~`";
         public static List<string> defaultRoles = new List<string>

@@ -7,8 +7,9 @@ using ReaLTaiizor.Util;
 using System.Windows.Forms;
 using PrimeSystems.Controllers;
 using PrimeSystems.Models;
-using PrimeSystems.Data;
 using System.Diagnostics;
+using PrimeSystems.Core;
+using System.Runtime.InteropServices;
 
 namespace PrimeSystems
 {
@@ -21,20 +22,31 @@ namespace PrimeSystems
         }
         private void FormLogin_Load(object sender, EventArgs e)
         {
-            UserModel? user = DbInitializer.InitializeUser();
+            DbInitializer.Initialize();
+            UsuarioModel? user = DbInitializer.InitializeUser();
             if (user != null)
             {
                 CustomMessageBox msgBox = new CustomMessageBox();
                 msgBox.Text = "Usuario administrador creado";
                 msgBox.lblMessage.Text = $"Se creó el usuario administrador por defecto con los siguientes datos:\n" +
-                    $"Usuario: {user.Username}\n" +
-                    $"Contraseña: {user.Password}\n" +
+                    $"Usuario: {user.NombreUsuario}\n" +
+                    $"Contraseña: {user.Contrasena}\n" +
                     $"Por favor, anótalo para poder loguearte por primera vez.\n" +
                     $"Posteriormente podrás eliminarlo si así lo deseas.";
                 msgBox.btnLeft.Text = "Copiar";
-                msgBox.btnLeft.Click += (s, ev) => copyPassword(user.Password ?? "");
-                msgBox.btnLeft.Click += (s, ev) => msgBox.btnLeft.Text = "¡Copiado!";
-                msgBox.btnLeft.Click += (s, ev) => msgBox.btnLeft.Type = MaterialButton.MaterialButtonType.Outlined;
+                msgBox.btnLeft.Click += (s, ev) => 
+                {
+                    try
+                    {
+                        msgBox.btnLeft.Type = MaterialButton.MaterialButtonType.Outlined;
+                        msgBox.btnLeft.Text = "¡Copiado!";
+                        Clipboard.SetText(user.Contrasena ?? "");
+                    }
+                    catch (ExternalException)
+                    {
+                        Debug.WriteLine("Fallo al copiar al portapapeles.");
+                    }
+                };
                 msgBox.btnRight.Text = "Aceptar";
                 msgBox.btnRight.Click += (s, ev) => msgBox.Close();
                 msgBox.ShowDialog();
@@ -46,17 +58,11 @@ namespace PrimeSystems
             string password = tbContrasena.Text;
 
             UserController userController = new UserController();
-            UserModel? user = userController.GetUserByUsername(username);
+            UsuarioModel? user = userController.GetUserByUsername(username);
 
-            if (user == null || user.Password != password)
+            if (user == null || user.Contrasena != password)
             {
                 MessageBox.Show("Usuario o contraseña incorrectos.", "Error de autenticación", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            if (!user.IsActive)
-            {
-                MessageBox.Show("El usuario está inactivo.", "Error de autenticación", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -68,11 +74,6 @@ namespace PrimeSystems
         {
             if (tbUsuario.Text.Length > 0 && tbContrasena.Text.Length > 0)
                 btnLogin.Enabled = true;
-        }
-
-        private static void copyPassword(string password)
-        {
-            Clipboard.SetText(password);
         }
 
         private void tbCredentials_KeyPress(object sender, KeyPressEventArgs e)

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace PrimeSystems
+namespace PrimeSystems.Core
 {
     internal class Utils
     {
@@ -31,7 +31,7 @@ namespace PrimeSystems
             obj.Cursor = Cursors.Hand; // Cambiar cursor para indicar que es clickeable
 
             // Agregar evento click a todos los controles hijos recursivamente
-            Utils.CardAddClickEventToControls(obj.Controls, OnUserCardClick);
+            CardAddClickEventToControls(obj.Controls, OnUserCardClick);
         }
 
         public static void CardAddClickEventToControls(Control.ControlCollection controls, EventHandler function)
@@ -44,11 +44,11 @@ namespace PrimeSystems
                 // Si el control tiene controles hijos, agregar el evento recursivamente
                 if (control.HasChildren)
                 {
-                    Utils.CardAddClickEventToControls(control.Controls, function);
+                    CardAddClickEventToControls(control.Controls, function);
                 }
             }
         }
-        public static byte[]? ImageToByteArray(System.Drawing.Image? imageIn)
+        public static byte[]? ImageToByteArray(Image? imageIn)
         {
             if (imageIn == null)
                 return null;
@@ -60,12 +60,12 @@ namespace PrimeSystems
                 return ms.ToArray();
             }
         }
-        public static System.Drawing.Image? ByteArrayToImage(byte[] byteArrayIn)
+        public static Image? ByteArrayToImage(byte[] byteArrayIn)
         {
             if (byteArrayIn == null || byteArrayIn.Length == 0) return null;
             using (var ms = new MemoryStream(byteArrayIn))
             {
-                return System.Drawing.Image.FromStream(ms);
+                return Image.FromStream(ms);
             }
         }
     }

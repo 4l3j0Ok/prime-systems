@@ -2,13 +2,13 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
-    <Compile Update="Views\CustomMessageBox.cs">
+    <Compile Update="Views\Forms\CustomMessageBox.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Views\FormLogin.cs">
+    <Compile Update="Views\Forms\FormLogin.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Views\FormPrincipal.cs">
+    <Compile Update="Views\Forms\FormPrincipal.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Views\UserControls\UCUserAdd.cs">
@@ -19,7 +19,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Update="Views\FormPrincipal.resx">
+    <EmbeddedResource Update="Views\Forms\FormPrincipal.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>

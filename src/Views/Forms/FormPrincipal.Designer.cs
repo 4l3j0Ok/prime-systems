@@ -51,8 +51,12 @@ namespace PrimeSystems
             pictureBox1 = new PictureBox();
             lblWelcome = new ReaLTaiizor.Controls.MaterialLabel();
             tcPrincipal = new ReaLTaiizor.Controls.MaterialTabControl();
-            tabCerrarSesion = new TabPage();
+            tabLogout = new TabPage();
             flowLayoutPanel4 = new FlowLayoutPanel();
+            tabSells = new TabPage();
+            tabPurchases = new TabPage();
+            tabProviders = new TabPage();
+            tabFinancialState = new TabPage();
             tabUsers.SuspendLayout();
             tabHome.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
@@ -65,10 +69,14 @@ namespace PrimeSystems
             imgList.ColorDepth = ColorDepth.Depth32Bit;
             imgList.ImageStream = (ImageListStreamer)resources.GetObject("imgList.ImageStream");
             imgList.TransparentColor = Color.Transparent;
-            imgList.Images.SetKeyName(0, "add.png");
-            imgList.Images.SetKeyName(1, "cerrar-sesion.png");
-            imgList.Images.SetKeyName(2, "user.png");
-            imgList.Images.SetKeyName(3, "home.png");
+            imgList.Images.SetKeyName(0, "clients.png");
+            imgList.Images.SetKeyName(1, "financial-state.png");
+            imgList.Images.SetKeyName(2, "logout.png");
+            imgList.Images.SetKeyName(3, "purchases.png");
+            imgList.Images.SetKeyName(4, "sells.png");
+            imgList.Images.SetKeyName(5, "provider.png");
+            imgList.Images.SetKeyName(6, "home.png");
+            imgList.Images.SetKeyName(7, "user.png");
             // 
             // tabUsers
             // 
@@ -153,6 +161,7 @@ namespace PrimeSystems
             // pictureBox1
             // 
             pictureBox1.Dock = DockStyle.Fill;
+            pictureBox1.Image = Properties.Resources.logo;
             pictureBox1.InitialImage = null;
             pictureBox1.Location = new Point(20, 20);
             pictureBox1.Margin = new Padding(20);
@@ -180,8 +189,12 @@ namespace PrimeSystems
             // tcPrincipal
             // 
             tcPrincipal.Controls.Add(tabHome);
+            tcPrincipal.Controls.Add(tabPurchases);
+            tcPrincipal.Controls.Add(tabSells);
+            tcPrincipal.Controls.Add(tabProviders);
+            tcPrincipal.Controls.Add(tabFinancialState);
             tcPrincipal.Controls.Add(tabUsers);
-            tcPrincipal.Controls.Add(tabCerrarSesion);
+            tcPrincipal.Controls.Add(tabLogout);
             tcPrincipal.Depth = 0;
             tcPrincipal.Dock = DockStyle.Fill;
             tcPrincipal.ImageList = imgList;
@@ -195,17 +208,17 @@ namespace PrimeSystems
             tcPrincipal.Size = new Size(944, 533);
             tcPrincipal.TabIndex = 0;
             // 
-            // tabCerrarSesion
+            // tabLogout
             // 
-            tabCerrarSesion.ImageKey = "cerrar-sesion.png";
-            tabCerrarSesion.Location = new Point(4, 39);
-            tabCerrarSesion.Name = "tabCerrarSesion";
-            tabCerrarSesion.Padding = new Padding(3);
-            tabCerrarSesion.Size = new Size(936, 490);
-            tabCerrarSesion.TabIndex = 8;
-            tabCerrarSesion.Text = "Cerrar Sesión";
-            tabCerrarSesion.UseVisualStyleBackColor = true;
-            tabCerrarSesion.Enter += tabCerrarSesion_Click;
+            tabLogout.ImageKey = "logout.png";
+            tabLogout.Location = new Point(4, 39);
+            tabLogout.Name = "tabLogout";
+            tabLogout.Padding = new Padding(3);
+            tabLogout.Size = new Size(936, 490);
+            tabLogout.TabIndex = 8;
+            tabLogout.Text = "Cerrar Sesión";
+            tabLogout.UseVisualStyleBackColor = true;
+            tabLogout.Enter += tabCerrarSesion_Click;
             // 
             // flowLayoutPanel4
             // 
@@ -213,6 +226,46 @@ namespace PrimeSystems
             flowLayoutPanel4.Name = "flowLayoutPanel4";
             flowLayoutPanel4.Size = new Size(200, 100);
             flowLayoutPanel4.TabIndex = 0;
+            // 
+            // tabSells
+            // 
+            tabSells.ImageKey = "sells.png";
+            tabSells.Location = new Point(4, 39);
+            tabSells.Name = "tabSells";
+            tabSells.Size = new Size(936, 490);
+            tabSells.TabIndex = 9;
+            tabSells.Text = "Ventas";
+            tabSells.UseVisualStyleBackColor = true;
+            // 
+            // tabPurchases
+            // 
+            tabPurchases.ImageKey = "purchases.png";
+            tabPurchases.Location = new Point(4, 39);
+            tabPurchases.Name = "tabPurchases";
+            tabPurchases.Size = new Size(936, 490);
+            tabPurchases.TabIndex = 10;
+            tabPurchases.Text = "Compras";
+            tabPurchases.UseVisualStyleBackColor = true;
+            // 
+            // tabProviders
+            // 
+            tabProviders.ImageKey = "provider.png";
+            tabProviders.Location = new Point(4, 39);
+            tabProviders.Name = "tabProviders";
+            tabProviders.Size = new Size(936, 490);
+            tabProviders.TabIndex = 11;
+            tabProviders.Text = "Proveedores";
+            tabProviders.UseVisualStyleBackColor = true;
+            // 
+            // tabFinancialState
+            // 
+            tabFinancialState.ImageKey = "financial-state.png";
+            tabFinancialState.Location = new Point(4, 39);
+            tabFinancialState.Name = "tabFinancialState";
+            tabFinancialState.Size = new Size(936, 490);
+            tabFinancialState.TabIndex = 12;
+            tabFinancialState.Text = "Estado Contable";
+            tabFinancialState.UseVisualStyleBackColor = true;
             // 
             // FormPrincipal
             // 
@@ -250,12 +303,16 @@ namespace PrimeSystems
         public TabPage tabAnimalArea;
         private DataGridView dataGridView1;
         private ReaLTaiizor.Controls.MaterialFloatingActionButton btnAddUser;
-        private TabPage tabCerrarSesion;
+        private TabPage tabLogout;
         public ReaLTaiizor.Controls.MaterialTabControl tcPrincipal;
         public TabPage tabUsers;
         private FlowLayoutPanel flowLayoutPanel4;
         private ReaLTaiizor.Controls.MaterialLabel lblEmptyUsers;
         public TabPage tabBlackBoard;
         private FlowLayoutPanel flpUsersList;
+        private TabPage tabPurchases;
+        private TabPage tabSells;
+        private TabPage tabProviders;
+        private TabPage tabFinancialState;
     }
 }

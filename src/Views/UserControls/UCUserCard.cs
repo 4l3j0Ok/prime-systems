@@ -10,23 +10,24 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ReaLTaiizor.Forms;
+using PrimeSystems.Core;
 
 namespace PrimeSystems.Views
 {
     public partial class UCUserCard : UserControl
     {
-        private UserModel _user;
+        private UsuarioModel _user;
 
-        public UCUserCard(UserModel user)
+        public UCUserCard(UsuarioModel user)
         {
             InitializeComponent();
             _user = user;
 
-            lblUserName.Text = user.Name;
-            lblUserUsername.Text = user.Username;
-            lblUserArea.Text = user.Role?.Name ?? "Sin rol";
-            lblUserPhone.Text = user.Phone;
-            pbUserProfilePicture.Image = Utils.ByteArrayToImage(user.ProfilePicture);
+            lblUserName.Text = user.Nombre;
+            lblUserUsername.Text = int.TryParse(user.Dni?.ToString(), out int dni) ? $"DNI: {dni}" : "DNI: N/A";
+            lblUserArea.Text = user.UsuarioTipo?.Descripcion ?? "Sin tipo";
+            lblUserPhone.Text = user.Tel;
+            pbUserProfilePicture.Image = Utils.ByteArrayToImage(user.Foto);
             Utils.CardSetupClickEvent(this, OnUserCardClick);
         }
 
@@ -35,7 +36,7 @@ namespace PrimeSystems.Views
             OpenFormAdd(_user);
         }
 
-        public static void OpenFormAdd(UserModel user)
+        public static void OpenFormAdd(UsuarioModel user)
         {
             UCUserAdd userAdd = new UCUserAdd(user);
             FormPrincipal? formPrincipal = Application.OpenForms.OfType<FormPrincipal>().FirstOrDefault();

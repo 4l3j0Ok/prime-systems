@@ -1,5 +1,4 @@
-﻿using PrimeSystems.Data;
-using PrimeSystems.Models;
+﻿using PrimeSystems.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -7,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PrimeSystems.Core;
 
 namespace PrimeSystems.Controllers
 {
@@ -24,44 +24,44 @@ namespace PrimeSystems.Controllers
             _context = context;
         }
 
-        public List<UserModel> GetAllUsers()
+        public List<UsuarioModel> GetAllUsers()
         {
-            return _context.Users
-                .Include(u => u.Role)
-                .Where(u => u.IsActive)
+            return _context.Usuarios
+                .Include(u => u.UsuarioTipo)
                 .ToList();
         }
 
-        public UserModel? GetUserByUsername(string username)
+        public UsuarioModel? GetUserByUsername(string username)
         {
-            return _context.Users
-                .Include(u => u.Role)
-                .FirstOrDefault(u => u.Username == username);
+            return _context.Usuarios
+                .Include(u => u.UsuarioTipo)
+                .FirstOrDefault(u => u.NombreUsuario == username);
         }
 
-        public UserModel? GetUserById(int id)
+        public UsuarioModel? GetUserById(int id)
         {
-            return _context.Users
-                .Include(u => u.Role)
-                .FirstOrDefault(u => u.Id == id);
+            return _context.Usuarios
+                .Include(u => u.UsuarioTipo)
+                .FirstOrDefault(u => u.IdUsuario == id);
         }
 
-        public bool CreateUser(UserModel user)
+        public bool CreateUser(UsuarioModel user)
         {
             try
             {
                 // Validar que el username no exista
-                if (_context.Users.Any(u => u.Username == user.Username))
+                if (_context.Usuarios.Any(u => u.NombreUsuario == user.NombreUsuario))
                     return false;
 
                 // Validar que el email no exista
-                if (!string.IsNullOrEmpty(user.Email) && _context.Users.Any(u => u.Email == user.Email))
+                if (!string.IsNullOrEmpty(user.Mail) && _context.Usuarios.Any(u => u.Mail == user.Mail))
                     return false;
 
-                // Limpiar la propiedad de navegación para evitar que Entity Framework intente insertar el Role
-                user.Role = null;
+                // Validar que el DNI no exista
+                if (user.Dni.HasValue && _context.Usuarios.Any(u => u.Dni == user.Dni))
+                    return false;
                 
-                _context.Users.Add(user);
+                _context.Usuarios.Add(user);
                 _context.SaveChanges();
                 return true;
             }
@@ -72,74 +72,40 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool UpdateUser(UserModel user)
+        public bool UpdateUser(UsuarioModel user)
         {
             try
             {
-                var existingUser = _context.Users.Find(user.Id);
+                var existingUser = _context.Usuarios.Find(user.IdUsuario);
                 if (existingUser == null)
                     return false;
 
                 // Validar que el username no exista (excepto el usuario actual)
-                if (_context.Users.Any(u => u.Username == user.Username && u.Id != user.Id))
+                if (_context.Usuarios.Any(u => u.NombreUsuario == user.NombreUsuario && u.IdUsuario != user.IdUsuario))
                     return false;
 
                 // Validar que el email no exista (excepto el usuario actual)
-                if (!string.IsNullOrEmpty(user.Email) && _context.Users.Any(u => u.Email == user.Email && u.Id != user.Id))
+                if (!string.IsNullOrEmpty(user.Mail) && _context.Usuarios.Any(u => u.Mail == user.Mail && u.IdUsuario != user.IdUsuario))
                     return false;
 
-                // Validar que el PersonId no exista (excepto el usuario actual)
-                if (!string.IsNullOrEmpty(user.PersonId) && _context.Users.Any(u => u.PersonId == user.PersonId && u.Id != user.Id))
+                // Validar que el DNI no exista (excepto el usuario actual)
+                if (user.Dni.HasValue && _context.Usuarios.Any(u => u.Dni == user.Dni && u.IdUsuario != user.IdUsuario))
                     return false;
 
                 // Actualizar propiedades
-                existingUser.Username = user.Username;
-                existingUser.Password = user.Password;
-                existingUser.Name = user.Name;
-                existingUser.Surname = user.Surname;
-                existingUser.Email = user.Email;
-                existingUser.Phone = user.Phone;
-                existingUser.PersonId = user.PersonId;
-                existingUser.ProfilePicture = user.ProfilePicture;
-                existingUser.RoleId = user.RoleId;
-                existingUser.IsActive = user.IsActive;
+                existingUser.NombreUsuario = user.NombreUsuario;
+                existingUser.Contrasena = user.Contrasena;
+                existingUser.Nombre = user.Nombre;
+                existingUser.Apellido = user.Apellido;
+                existingUser.Mail = user.Mail;
+                existingUser.Tel = user.Tel;
+                existingUser.Dni = user.Dni;
+                existingUser.PCompra = user.PCompra;
+                existingUser.PVenta = user.PVenta;
+                existingUser.PRrhh = user.PRrhh;
+                existingUser.PContable = user.PContable;
+                existingUser.UsuarioTipoId = user.UsuarioTipoId;
 
-                _context.SaveChanges();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public bool DeactivateUser(int userId)
-        {
-            try
-            {
-                var user = _context.Users.Find(userId);
-                if (user == null)
-                    return false;
-
-                user.IsActive = false;
-                _context.SaveChanges();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public bool ActivateUser(int userId)
-        {
-            try
-            {
-                var user = _context.Users.Find(userId);
-                if (user == null)
-                    return false;
-
-                user.IsActive = true;
                 _context.SaveChanges();
                 return true;
             }

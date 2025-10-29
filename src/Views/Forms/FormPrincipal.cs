@@ -1,4 +1,5 @@
 ﻿using PrimeSystems.Controllers;
+using PrimeSystems.Core;
 using PrimeSystems.Models;
 using PrimeSystems.Views;
 using ReaLTaiizor.Controls;
@@ -12,10 +13,10 @@ namespace PrimeSystems
 {
     public partial class FormPrincipal : MaterialForm
     {
-        private readonly UserModel currentUser;
+        private readonly UsuarioModel currentUser;
         private readonly Dictionary<System.Windows.Forms.TabPage, List<Control>> originalTabContents = new Dictionary<System.Windows.Forms.TabPage, List<Control>>();
 
-        public FormPrincipal(UserModel currentUser)
+        public FormPrincipal(UsuarioModel currentUser)
         {
             this.currentUser = currentUser;
             UIConfig.GetSkinManager().AddFormToManage(this);
@@ -64,10 +65,10 @@ namespace PrimeSystems
         private void LoadUsersTable()
         {
             UserController userController = new UserController();
-            List<UserModel> users = userController.GetAllUsers();
+            List<UsuarioModel> users = userController.GetAllUsers();
             if (users.Count > 0)
                 lblEmptyUsers.Visible = false;
-            foreach (UserModel user in users)
+            foreach (UsuarioModel user in users)
             {
                 UCUserCard userCard = new UCUserCard(user: user);
                 userCard.Dock = DockStyle.Top;
