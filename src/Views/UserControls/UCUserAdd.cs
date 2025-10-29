@@ -17,10 +17,10 @@ namespace PrimeSystems.Views
     {
         private UserController userController;
         private UsuarioTipoController usuarioTipoController;
-        private UsuarioModel currentUser;
+        private UserModel currentUser;
         private FormPrincipal? formPrincipal = Application.OpenForms.OfType<FormPrincipal>().FirstOrDefault();
 
-        public UCUserAdd(UsuarioModel? user = null)
+        public UCUserAdd(UserModel? user = null)
         {
             userController = new UserController();
             usuarioTipoController = new UsuarioTipoController();
@@ -30,20 +30,20 @@ namespace PrimeSystems.Views
                 mepUserAdd.Title = "Modificar Usuario";
                 mepUserAdd.Description = "Edita los datos del usuario seleccionado";
                 currentUser = user;
-                tbUserName.Text = user.Nombre;
-                tbUserSurname.Text = user.Apellido;
-                tbUserUsername.Text = user.NombreUsuario;
-                tbUserPhone.Text = user.Tel;
-                tbUserEmail.Text = user.Mail;
-                tbUserPassword.Text = user.Contrasena;
-                tbUserPasswordConfirm.Text = user.Contrasena;
-                tbUserPersonId.Text = user.Dni?.ToString() ?? "";
-                pbUserProfilePicture.Image = Utils.ByteArrayToImage(user.Foto);
-                cmbRole.SelectedItem = user.UsuarioTipo?.Descripcion ?? "Sin tipo";
+                tbUserName.Text = user.Name;
+                tbUserSurname.Text = user.LastName;
+                tbUserUsername.Text = user.Username;
+                tbUserPhone.Text = user.Phone;
+                tbUserEmail.Text = user.Email;
+                tbUserPassword.Text = user.PasswordHash;
+                tbUserPasswordConfirm.Text = user.PasswordHash;
+                tbUserPersonId.Text = user.PersonId?.ToString() ?? "";
+                pbUserProfilePicture.Image = Utils.ByteArrayToImage(user.ProfilePicture);
+                cmbRole.SelectedItem = user.UserType?.Description ?? "Sin tipo";
             }
             else
             {
-                currentUser = new UsuarioModel();
+                currentUser = new UserModel();
             }
         }
 
@@ -61,10 +61,10 @@ namespace PrimeSystems.Views
 
         private void UCUserAdd_Load(object sender, EventArgs e)
         {
-            List<UsuarioTipoModel> usuariosTipo = usuarioTipoController.GetAllUsuariosTipo();
-            foreach (UsuarioTipoModel tipo in usuariosTipo)
+            List<UserTypeModel> usuariosTipo = usuarioTipoController.GetAll();
+            foreach (UserTypeModel tipo in usuariosTipo)
             {
-                cmbRole.Items.Add(tipo.Descripcion);
+                cmbRole.Items.Add(tipo.Description);
             }
         }
 
@@ -131,28 +131,28 @@ namespace PrimeSystems.Views
             if (!ValidateFields())
                 return;
 
-            currentUser.Nombre = tbUserName.Text;
-            currentUser.Apellido = tbUserSurname.Text;
-            currentUser.NombreUsuario = tbUserUsername.Text;
-            currentUser.Tel = tbUserPhone.Text;
-            currentUser.Mail = tbUserEmail.Text;
-            currentUser.Contrasena = tbUserPassword.Text;
-            currentUser.Dni = int.TryParse(tbUserPersonId.Text, out int dni) ? dni : null;
-            currentUser.Foto = Utils.ImageToByteArray(pbUserProfilePicture.Image);
+            currentUser.Name = tbUserName.Text;
+            currentUser.LastName = tbUserSurname.Text;
+            currentUser.Username = tbUserUsername.Text;
+            currentUser.Phone = tbUserPhone.Text;
+            currentUser.Email = tbUserEmail.Text;
+            currentUser.PasswordHash = tbUserPassword.Text;
+            currentUser.PersonId = int.TryParse(tbUserPersonId.Text, out int dni) ? dni : null;
+            currentUser.ProfilePicture = Utils.ImageToByteArray(pbUserProfilePicture.Image);
 
             // Asignar UsuarioTipoId basado en la descripción seleccionada
             string? selectedTipoDescripcion = cmbRole.SelectedItem?.ToString();
             if (!string.IsNullOrEmpty(selectedTipoDescripcion))
             {
-                var usuarioTipo = usuarioTipoController.GetUsuarioTipoByDescripcion(selectedTipoDescripcion);
+                var usuarioTipo = usuarioTipoController.GetByDescription(selectedTipoDescripcion);
                 if (usuarioTipo != null)
                 {
-                    currentUser.UsuarioTipoId = usuarioTipo.Id;
+                    currentUser.UserTypeId = usuarioTipo.Id;
                 }
             }
             
             bool success;
-            if (currentUser.IdUsuario == 0)
+            if (currentUser.Id == 0)
                 success = userController.CreateUser(currentUser);
             else
                 success = userController.UpdateUser(currentUser);

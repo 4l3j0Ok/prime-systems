@@ -4,32 +4,32 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace PrimeSystems.Models
 {
     [Table("HCompras")]
-    public class HCompraModel
+    public class PurchaseModel
     {
         [Key]
-        public int IdRemito { get; set; }
+        public int Id { get; set; }
 
         [ForeignKey("Usuario")]
-        public int? CodUsuario { get; set; }
+        public int? UserId { get; set; }
 
         [StringLength(255)]
         public string? FechaHora { get; set; }
 
-        [ForeignKey("Proveedor")]
-        public int? IdProveedor { get; set; }
+        [ForeignKey("Supplier")]
+        public int? SupplierId { get; set; }
 
         [StringLength(255)]
         public string? Subtotal { get; set; }
 
         [StringLength(255)]
-        public string? Descu { get; set; }
+        public string? Discount { get; set; }
 
         [StringLength(255)]
         public string? Total { get; set; }
 
         // Navigation properties
-        public virtual UsuarioModel? Usuario { get; set; }
-        public virtual ProveedorModel? Proveedor { get; set; }
-        public virtual ICollection<HCompraDetalleModel> Detalles { get; set; } = new List<HCompraDetalleModel>();
+        public virtual UserModel? User { get; set; }
+        public virtual SupplierModel? Supplier { get; set; }
+        public virtual ICollection<PurchaseDetailModel> Detail { get; set; } = new List<PurchaseDetailModel>();
     }
 }

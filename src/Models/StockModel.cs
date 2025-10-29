@@ -7,19 +7,19 @@ namespace PrimeSystems.Models
     public class StockModel
     {
         [Key]
-        public int CodStock { get; set; }
+        public int Id { get; set; }
 
-        [ForeignKey("Articulo")]
-        public int? IdArticulo { get; set; }
+        [ForeignKey("Article")]
+        public int? ArticleId { get; set; }
 
-        public int? Cantidad { get; set; }
+        public int? Stock { get; set; }
 
         [StringLength(255)]
-        public string? Costo { get; set; }
+        public string? Cost { get; set; }
 
-        public int? Ganancia { get; set; }
+        public int? Profit { get; set; }
 
         // Navigation property
-        public virtual ArticuloModel? Articulo { get; set; }
+        public virtual ArticleModel? Article { get; set; }
     }
 }

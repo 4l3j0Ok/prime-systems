@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace PrimeSystems.Models
 {
     [Table("HComprasDetalle")]
-    public class HCompraDetalleModel
+    public class PurchaseDetailModel
     {
         [Key]
         public int IdDetRemito { get; set; }
@@ -28,7 +28,7 @@ namespace PrimeSystems.Models
         public string? PXCant { get; set; }
 
         // Navigation properties
-        public virtual HCompraModel? Compra { get; set; }
-        public virtual ArticuloModel? Articulo { get; set; }
+        public virtual PurchaseModel? Compra { get; set; }
+        public virtual ArticleModel? Articulo { get; set; }
     }
 }

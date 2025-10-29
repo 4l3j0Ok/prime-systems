@@ -22,41 +22,41 @@ namespace PrimeSystems.Controllers
             _context = context;
         }
 
-        public List<ArticuloModel> GetAllArticulos()
+        public List<ArticleModel> GetAllArticulos()
         {
             return _context.Articulos
-                .Include(a => a.Categoria)
-                .Include(a => a.Subcategoria)
-                .Include(a => a.Proveedor)
+                .Include(a => a.Category)
+                .Include(a => a.Subcategory)
+                .Include(a => a.Supplier)
                 .ToList();
         }
 
-        public ArticuloModel? GetArticuloById(int id)
+        public ArticleModel? GetArticuloById(int id)
         {
             return _context.Articulos
-                .Include(a => a.Categoria)
-                .Include(a => a.Subcategoria)
-                .Include(a => a.Proveedor)
+                .Include(a => a.Category)
+                .Include(a => a.Subcategory)
+                .Include(a => a.Supplier)
                 .Include(a => a.Stock)
-                .FirstOrDefault(a => a.IdArticulo == id);
+                .FirstOrDefault(a => a.Id == id);
         }
 
-        public ArticuloModel? GetArticuloByCodigo(string codigo)
+        public ArticleModel? GetArticuloByCodigo(string codigo)
         {
             return _context.Articulos
-                .Include(a => a.Categoria)
-                .Include(a => a.Subcategoria)
-                .Include(a => a.Proveedor)
+                .Include(a => a.Category)
+                .Include(a => a.Subcategory)
+                .Include(a => a.Supplier)
                 .Include(a => a.Stock)
-                .FirstOrDefault(a => a.CodArticulo == codigo);
+                .FirstOrDefault(a => a.Code == codigo);
         }
 
-        public bool CreateArticulo(ArticuloModel articulo)
+        public bool CreateArticulo(ArticleModel articulo)
         {
             try
             {
                 // Validar que el código de artículo no exista
-                if (_context.Articulos.Any(a => a.CodArticulo == articulo.CodArticulo))
+                if (_context.Articulos.Any(a => a.Code == articulo.Code))
                     return false;
 
                 _context.Articulos.Add(articulo);
@@ -70,23 +70,23 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool UpdateArticulo(ArticuloModel articulo)
+        public bool UpdateArticulo(ArticleModel articulo)
         {
             try
             {
-                var existingArticulo = _context.Articulos.Find(articulo.IdArticulo);
+                var existingArticulo = _context.Articulos.Find(articulo.Id);
                 if (existingArticulo == null)
                     return false;
 
                 // Validar que el código no exista (excepto el artículo actual)
-                if (_context.Articulos.Any(a => a.CodArticulo == articulo.CodArticulo && a.IdArticulo != articulo.IdArticulo))
+                if (_context.Articulos.Any(a => a.Code == articulo.Code && a.Id != articulo.Id))
                     return false;
 
-                existingArticulo.CodArticulo = articulo.CodArticulo;
-                existingArticulo.ArtDesc = articulo.ArtDesc;
-                existingArticulo.CodCategoria = articulo.CodCategoria;
-                existingArticulo.CodSubcat = articulo.CodSubcat;
-                existingArticulo.IdProveedor = articulo.IdProveedor;
+                existingArticulo.Code = articulo.Code;
+                existingArticulo.Description = articulo.Description;
+                existingArticulo.CategoryId = articulo.CategoryId;
+                existingArticulo.SubcategoryId = articulo.SubcategoryId;
+                existingArticulo.SupplierId = articulo.SupplierId;
 
                 _context.SaveChanges();
                 return true;

@@ -13,10 +13,10 @@ namespace PrimeSystems
 {
     public partial class FormPrincipal : MaterialForm
     {
-        private readonly UsuarioModel currentUser;
+        private readonly UserModel currentUser;
         private readonly Dictionary<System.Windows.Forms.TabPage, List<Control>> originalTabContents = new Dictionary<System.Windows.Forms.TabPage, List<Control>>();
 
-        public FormPrincipal(UsuarioModel currentUser)
+        public FormPrincipal(UserModel currentUser)
         {
             this.currentUser = currentUser;
             UIConfig.GetSkinManager().AddFormToManage(this);
@@ -65,10 +65,10 @@ namespace PrimeSystems
         private void LoadUsersTable()
         {
             UserController userController = new UserController();
-            List<UsuarioModel> users = userController.GetAllUsers();
+            List<UserModel> users = userController.GetAllUsers();
             if (users.Count > 0)
                 lblEmptyUsers.Visible = false;
-            foreach (UsuarioModel user in users)
+            foreach (UserModel user in users)
             {
                 UCUserCard userCard = new UCUserCard(user: user);
                 userCard.Dock = DockStyle.Top;

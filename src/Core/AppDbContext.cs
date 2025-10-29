@@ -7,20 +7,19 @@ namespace PrimeSystems.Core
 {
     public class AppDbContext : DbContext
     {
-        public DbSet<UsuarioModel> Usuarios { get; set; }
-        public DbSet<UsuarioTipoModel> UsuariosTipo { get; set; }
-        public DbSet<ClienteModel> Clientes { get; set; }
-        public DbSet<CategoriaModel> Categorias { get; set; }
-        public DbSet<ProveedorModel> Proveedores { get; set; }
-        public DbSet<SubcategoriaModel> Subcategorias { get; set; }
-        public DbSet<ArticuloModel> Articulos { get; set; }
+        public DbSet<UserModel> Usuarios { get; set; }
+        public DbSet<UserTypeModel> UsuariosTipo { get; set; }
+        public DbSet<ClientModel> Clientes { get; set; }
+        public DbSet<CategoryModel> Categorias { get; set; }
+        public DbSet<SupplierModel> Proveedores { get; set; }
+        public DbSet<SubcategoryModel> Subcategorias { get; set; }
+        public DbSet<ArticleModel> Articulos { get; set; }
         public DbSet<StockModel> Stock { get; set; }
-        public DbSet<HMovimientoModel> HMovimientos { get; set; }
-        public DbSet<InOutVarioModel> InOutVarios { get; set; }
-        public DbSet<HCompraModel> HCompras { get; set; }
-        public DbSet<HCompraDetalleModel> HComprasDetalle { get; set; }
-        public DbSet<HVentaModel> HVentas { get; set; }
-        public DbSet<HVentaDetalleModel> HVentasDetalle { get; set; }
+        public DbSet<TransactionModel> HMovimientos { get; set; }
+        public DbSet<PurchaseModel> HCompras { get; set; }
+        public DbSet<PurchaseDetailModel> HComprasDetalle { get; set; }
+        public DbSet<SellModel> HVentas { get; set; }
+        public DbSet<SellDetailModel> HVentasDetalle { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -30,114 +29,107 @@ namespace PrimeSystems.Core
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Configuración de relación User-UsuarioTipo
-            modelBuilder.Entity<UsuarioModel>()
-                .HasOne(u => u.UsuarioTipo)
+            modelBuilder.Entity<UserModel>()
+                .HasOne(u => u.UserType)
                 .WithMany()
-                .HasForeignKey(u => u.UsuarioTipoId)
+                .HasForeignKey(u => u.UserTypeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Configuración de índices únicos para Users
-            modelBuilder.Entity<UsuarioModel>()
-                .HasIndex(u => u.NombreUsuario)
+            modelBuilder.Entity<UserModel>()
+                .HasIndex(u => u.Username)
                 .IsUnique();
 
             // Configuración de relaciones para Subcategoria
-            modelBuilder.Entity<SubcategoriaModel>()
-                .HasOne(s => s.Categoria)
-                .WithMany(c => c.Subcategorias)
-                .HasForeignKey(s => s.IdCategoria)
+            modelBuilder.Entity<SubcategoryModel>()
+                .HasOne(s => s.Category)
+                .WithMany(c => c.Subcategory)
+                .HasForeignKey(s => s.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Configuración de relaciones para Articulo
-            modelBuilder.Entity<ArticuloModel>()
-                .HasOne(a => a.Categoria)
-                .WithMany(c => c.Articulos)
-                .HasForeignKey(a => a.CodCategoria)
+            modelBuilder.Entity<ArticleModel>()
+                .HasOne(a => a.Category)
+                .WithMany(c => c.Article)
+                .HasForeignKey(a => a.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<ArticuloModel>()
-                .HasOne(a => a.Subcategoria)
-                .WithMany(s => s.Articulos)
-                .HasForeignKey(a => a.CodSubcat)
+            modelBuilder.Entity<ArticleModel>()
+                .HasOne(a => a.Subcategory)
+                .WithMany(s => s.Articles)
+                .HasForeignKey(a => a.SubcategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<ArticuloModel>()
-                .HasOne(a => a.Proveedor)
-                .WithMany(p => p.Articulos)
-                .HasForeignKey(a => a.IdProveedor)
+            modelBuilder.Entity<ArticleModel>()
+                .HasOne(a => a.Supplier)
+                .WithMany(p => p.Articles)
+                .HasForeignKey(a => a.SupplierId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Configuración de relaciones para Stock
             modelBuilder.Entity<StockModel>()
-                .HasOne(s => s.Articulo)
+                .HasOne(s => s.Article)
                 .WithMany(a => a.Stock)
-                .HasForeignKey(s => s.IdArticulo)
+                .HasForeignKey(s => s.ArticleId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Configuración de relaciones para H_Movimientos
-            modelBuilder.Entity<HMovimientoModel>()
-                .HasOne(h => h.Usuario)
+            modelBuilder.Entity<TransactionModel>()
+                .HasOne(h => h.User)
                 .WithMany()
-                .HasForeignKey(h => h.IdUsuario)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // Configuración de relaciones para In_Out_Varios
-            modelBuilder.Entity<InOutVarioModel>()
-                .HasOne(i => i.Usuario)
-                .WithMany()
-                .HasForeignKey(i => i.CodUsuario)
+                .HasForeignKey(h => h.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Configuración de relaciones para H_Compras
-            modelBuilder.Entity<HCompraModel>()
-                .HasOne(h => h.Usuario)
+            modelBuilder.Entity<PurchaseModel>()
+                .HasOne(h => h.User)
                 .WithMany()
-                .HasForeignKey(h => h.CodUsuario)
+                .HasForeignKey(h => h.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<HCompraModel>()
-                .HasOne(h => h.Proveedor)
+            modelBuilder.Entity<PurchaseModel>()
+                .HasOne(h => h.Supplier)
                 .WithMany()
-                .HasForeignKey(h => h.IdProveedor)
+                .HasForeignKey(h => h.SupplierId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Configuración de relaciones para H_Compras_Detalle
-            modelBuilder.Entity<HCompraDetalleModel>()
+            modelBuilder.Entity<PurchaseDetailModel>()
                 .HasOne(d => d.Compra)
-                .WithMany(c => c.Detalles)
+                .WithMany(c => c.Detail)
                 .HasForeignKey(d => d.IdRemito)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<HCompraDetalleModel>()
+            modelBuilder.Entity<PurchaseDetailModel>()
                 .HasOne(d => d.Articulo)
                 .WithMany()
                 .HasForeignKey(d => d.IdArticulo)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Configuración de relaciones para H_Ventas
-            modelBuilder.Entity<HVentaModel>()
-                .HasOne(h => h.Usuario)
+            modelBuilder.Entity<SellModel>()
+                .HasOne(h => h.User)
                 .WithMany()
-                .HasForeignKey(h => h.IdUsuario)
+                .HasForeignKey(h => h.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<HVentaModel>()
-                .HasOne(h => h.Cliente)
+            modelBuilder.Entity<SellModel>()
+                .HasOne(h => h.Client)
                 .WithMany()
-                .HasForeignKey(h => h.IdCliente)
+                .HasForeignKey(h => h.ClientId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Configuración de relaciones para H_Ventas_Detalle
-            modelBuilder.Entity<HVentaDetalleModel>()
-                .HasOne(d => d.Venta)
-                .WithMany(v => v.Detalles)
-                .HasForeignKey(d => d.IdRemito)
+            modelBuilder.Entity<SellDetailModel>()
+                .HasOne(d => d.Sell)
+                .WithMany(v => v.Detail)
+                .HasForeignKey(d => d.SellId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<HVentaDetalleModel>()
-                .HasOne(d => d.Articulo)
+            modelBuilder.Entity<SellDetailModel>()
+                .HasOne(d => d.Article)
                 .WithMany()
-                .HasForeignKey(d => d.IdArticulo)
+                .HasForeignKey(d => d.ArticleId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
@@ -148,45 +140,45 @@ namespace PrimeSystems.Core
             if (!UsuariosTipo.Any())
             {
                 UsuariosTipo.AddRange(
-                    new UsuarioTipoModel { Id = "ADMIN", Descripcion = "Administrador", Escritura = true, Lectura = true },
-                    new UsuarioTipoModel { Id = "VENDOR", Descripcion = "Vendedor", Escritura = false, Lectura = true },
-                    new UsuarioTipoModel { Id = "MANAGER", Descripcion = "Gerente", Escritura = true, Lectura = true }
+                    new UserTypeModel { Id = "ADMIN", Description = "Administrador", Read = true, Write = true },
+                    new UserTypeModel { Id = "VENDOR", Description = "Vendedor", Read = false, Write = true },
+                    new UserTypeModel { Id = "MANAGER", Description = "Gerente", Read = true, Write = true }
                 );
                 SaveChanges();
             }
         }
 
-        public UsuarioModel? GetUserByUsername(string username)
+        public UserModel? GetUserByUsername(string username)
         {
             return Usuarios
-                .Include(u => u.UsuarioTipo)
-                .FirstOrDefault(u => u.NombreUsuario == username);
+                .Include(u => u.UserType)
+                .FirstOrDefault(u => u.Username == username);
         }
 
-        public List<UsuarioModel> GetAllUsersWithRoles()
+        public List<UserModel> GetAllUsersWithRoles()
         {
             return Usuarios
-                .Include(u => u.UsuarioTipo)
+                .Include(u => u.UserType)
                 .ToList();
         }
 
-        public UsuarioModel? CreateAdminUserIfNotExists()
+        public UserModel? CreateAdminUserIfNotExists()
         {
             if (Usuarios.Any()) return null;
 
             var adminTipo = UsuariosTipo.FirstOrDefault(ut => ut.Id == "ADMIN");
 
-            var user = new UsuarioModel
+            var user = new UserModel
             {
-                NombreUsuario = "admin",
-                Contrasena = Utils.GenerateRandomString(12),
-                Nombre = "Administrador",
-                Apellido = "Sistema",
-                Dni = 10000000,
-                Mail = "email@admin.com",
-                Tel = "2224123456",
-                UsuarioTipoId = adminTipo?.Id,
-                Foto = Utils.ImageToByteArray(Config.default_profile_picture)
+                Username = "admin",
+                PasswordHash = Utils.GenerateRandomString(12),
+                Name = "Administrador",
+                LastName = "Sistema",
+                PersonId = 10000000,
+                Email = "email@admin.com",
+                Phone = "2224123456",
+                UserTypeId = adminTipo?.Id,
+                ProfilePicture = Utils.ImageToByteArray(Config.default_profile_picture)
             };
 
             Usuarios.Add(user);

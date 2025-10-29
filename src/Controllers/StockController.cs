@@ -25,22 +25,22 @@ namespace PrimeSystems.Controllers
         public List<StockModel> GetAllStock()
         {
             return _context.Stock
-                .Include(s => s.Articulo)
+                .Include(s => s.Article)
                 .ToList();
         }
 
         public StockModel? GetStockById(int id)
         {
             return _context.Stock
-                .Include(s => s.Articulo)
-                .FirstOrDefault(s => s.CodStock == id);
+                .Include(s => s.Article)
+                .FirstOrDefault(s => s.Id == id);
         }
 
         public StockModel? GetStockByArticuloId(int articuloId)
         {
             return _context.Stock
-                .Include(s => s.Articulo)
-                .FirstOrDefault(s => s.IdArticulo == articuloId);
+                .Include(s => s.Article)
+                .FirstOrDefault(s => s.ArticleId == articuloId);
         }
 
         public bool CreateStock(StockModel stock)
@@ -62,14 +62,14 @@ namespace PrimeSystems.Controllers
         {
             try
             {
-                var existingStock = _context.Stock.Find(stock.CodStock);
+                var existingStock = _context.Stock.Find(stock.Id);
                 if (existingStock == null)
                     return false;
 
-                existingStock.IdArticulo = stock.IdArticulo;
-                existingStock.Cantidad = stock.Cantidad;
-                existingStock.Costo = stock.Costo;
-                existingStock.Ganancia = stock.Ganancia;
+                existingStock.ArticleId = stock.ArticleId;
+                existingStock.Stock = stock.Stock;
+                existingStock.Cost = stock.Cost;
+                existingStock.Profit = stock.Profit;
 
                 _context.SaveChanges();
                 return true;
@@ -106,7 +106,7 @@ namespace PrimeSystems.Controllers
                 if (stock == null)
                     return false;
 
-                stock.Cantidad = (stock.Cantidad ?? 0) + cantidad;
+                stock.Stock = (stock.Stock ?? 0) + cantidad;
                 _context.SaveChanges();
                 return true;
             }

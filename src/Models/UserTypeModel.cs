@@ -4,18 +4,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace PrimeSystems.Models
 {
     [Table("UsuariosTipo")]
-    public class UsuarioTipoModel
+    public class UserTypeModel
     {
         [Key]
         [StringLength(10)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public string Id { get; set; } = string.Empty;
 
         [StringLength(255)]
-        public string? Descripcion { get; set; }
+        public string? Description { get; set; }
 
-        public bool? Escritura { get; set; }
+        public bool? Read { get; set; }
 
-        public bool? Lectura { get; set; }
+        public bool? Write { get; set; }
     }
 }

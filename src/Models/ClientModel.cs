@@ -4,23 +4,23 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace PrimeSystems.Models
 {
     [Table("Clientes")]
-    public class ClienteModel
+    public class ClientModel
     {
         [Key]
-        public int IdCliente { get; set; }
+        public int Id { get; set; }
 
         public int? Cuit { get; set; }
 
         [StringLength(255)]
-        public string? Nombre { get; set; }
+        public string? Name { get; set; }
 
         [StringLength(255)]
-        public string? Entidad { get; set; }
+        public string? Entity { get; set; }
 
         [StringLength(255)]
-        public string? Tel { get; set; }
+        public string? Phone { get; set; }
 
         [StringLength(255)]
-        public string? Mail { get; set; }
+        public string? Email { get; set; }
     }
 }

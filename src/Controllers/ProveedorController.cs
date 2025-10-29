@@ -22,17 +22,17 @@ namespace PrimeSystems.Controllers
             _context = context;
         }
 
-        public List<ProveedorModel> GetAllProveedores()
+        public List<SupplierModel> GetAllProveedores()
         {
             return _context.Proveedores.ToList();
         }
 
-        public ProveedorModel? GetProveedorById(int id)
+        public SupplierModel? GetProveedorById(int id)
         {
-            return _context.Proveedores.FirstOrDefault(p => p.IdProveedor == id);
+            return _context.Proveedores.FirstOrDefault(p => p.Id == id);
         }
 
-        public bool CreateProveedor(ProveedorModel proveedor)
+        public bool CreateProveedor(SupplierModel proveedor)
         {
             try
             {
@@ -47,18 +47,18 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool UpdateProveedor(ProveedorModel proveedor)
+        public bool UpdateProveedor(SupplierModel proveedor)
         {
             try
             {
-                var existingProveedor = _context.Proveedores.Find(proveedor.IdProveedor);
+                var existingProveedor = _context.Proveedores.Find(proveedor.Id);
                 if (existingProveedor == null)
                     return false;
 
                 existingProveedor.Cuit = proveedor.Cuit;
-                existingProveedor.Proveedor = proveedor.Proveedor;
-                existingProveedor.Nombre = proveedor.Nombre;
-                existingProveedor.Tel = proveedor.Tel;
+                existingProveedor.Name = proveedor.Name;
+                existingProveedor.ContactName = proveedor.ContactName;
+                existingProveedor.Phone = proveedor.Phone;
                 existingProveedor.Email = proveedor.Email;
 
                 _context.SaveChanges();

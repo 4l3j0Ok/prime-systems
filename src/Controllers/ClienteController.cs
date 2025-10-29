@@ -22,17 +22,17 @@ namespace PrimeSystems.Controllers
             _context = context;
         }
 
-        public List<ClienteModel> GetAllClientes()
+        public List<ClientModel> GetAllClientes()
         {
             return _context.Clientes.ToList();
         }
 
-        public ClienteModel? GetClienteById(int id)
+        public ClientModel? GetClienteById(int id)
         {
-            return _context.Clientes.FirstOrDefault(c => c.IdCliente == id);
+            return _context.Clientes.FirstOrDefault(c => c.Id == id);
         }
 
-        public bool CreateCliente(ClienteModel cliente)
+        public bool CreateCliente(ClientModel cliente)
         {
             try
             {
@@ -47,19 +47,19 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool UpdateCliente(ClienteModel cliente)
+        public bool UpdateCliente(ClientModel cliente)
         {
             try
             {
-                var existingCliente = _context.Clientes.Find(cliente.IdCliente);
+                var existingCliente = _context.Clientes.Find(cliente.Id);
                 if (existingCliente == null)
                     return false;
 
                 existingCliente.Cuit = cliente.Cuit;
-                existingCliente.Nombre = cliente.Nombre;
-                existingCliente.Entidad = cliente.Entidad;
-                existingCliente.Tel = cliente.Tel;
-                existingCliente.Mail = cliente.Mail;
+                existingCliente.Name = cliente.Name;
+                existingCliente.Entity = cliente.Entity;
+                existingCliente.Phone = cliente.Phone;
+                existingCliente.Email = cliente.Email;
 
                 _context.SaveChanges();
                 return true;

@@ -21,22 +21,22 @@ namespace PrimeSystems.Controllers
             _context = context;
         }
 
-        public List<UsuarioTipoModel> GetAllUsuariosTipo()
+        public List<UserTypeModel> GetAll()
         {
             return _context.UsuariosTipo.ToList();
         }
 
-        public UsuarioTipoModel? GetUsuarioTipoById(string id)
+        public UserTypeModel? GetById(string id)
         {
             return _context.UsuariosTipo.FirstOrDefault(ut => ut.Id == id);
         }
 
-        public UsuarioTipoModel? GetUsuarioTipoByDescripcion(string descripcion)
+        public UserTypeModel? GetByDescription(string descripcion)
         {
-            return _context.UsuariosTipo.FirstOrDefault(ut => ut.Descripcion == descripcion);
+            return _context.UsuariosTipo.FirstOrDefault(ut => ut.Description == descripcion);
         }
 
-        public bool CreateUsuarioTipo(UsuarioTipoModel usuarioTipo)
+        public bool Create(UserTypeModel usuarioTipo)
         {
             try
             {
@@ -55,7 +55,7 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool UpdateUsuarioTipo(UsuarioTipoModel usuarioTipo)
+        public bool UpdateUsuarioTipo(UserTypeModel usuarioTipo)
         {
             try
             {
@@ -63,9 +63,9 @@ namespace PrimeSystems.Controllers
                 if (existingUsuarioTipo == null)
                     return false;
 
-                existingUsuarioTipo.Descripcion = usuarioTipo.Descripcion;
-                existingUsuarioTipo.Escritura = usuarioTipo.Escritura;
-                existingUsuarioTipo.Lectura = usuarioTipo.Lectura;
+                existingUsuarioTipo.Description = usuarioTipo.Description;
+                existingUsuarioTipo.Read = usuarioTipo.Read;
+                existingUsuarioTipo.Write = usuarioTipo.Write;
 
                 _context.SaveChanges();
                 return true;

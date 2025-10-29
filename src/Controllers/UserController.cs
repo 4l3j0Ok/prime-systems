@@ -24,41 +24,41 @@ namespace PrimeSystems.Controllers
             _context = context;
         }
 
-        public List<UsuarioModel> GetAllUsers()
+        public List<UserModel> GetAllUsers()
         {
             return _context.Usuarios
-                .Include(u => u.UsuarioTipo)
+                .Include(u => u.UserType)
                 .ToList();
         }
 
-        public UsuarioModel? GetUserByUsername(string username)
+        public UserModel? GetUserByUsername(string username)
         {
             return _context.Usuarios
-                .Include(u => u.UsuarioTipo)
-                .FirstOrDefault(u => u.NombreUsuario == username);
+                .Include(u => u.UserType)
+                .FirstOrDefault(u => u.Username == username);
         }
 
-        public UsuarioModel? GetUserById(int id)
+        public UserModel? GetUserById(int id)
         {
             return _context.Usuarios
-                .Include(u => u.UsuarioTipo)
-                .FirstOrDefault(u => u.IdUsuario == id);
+                .Include(u => u.UserType)
+                .FirstOrDefault(u => u.Id == id);
         }
 
-        public bool CreateUser(UsuarioModel user)
+        public bool CreateUser(UserModel user)
         {
             try
             {
                 // Validar que el username no exista
-                if (_context.Usuarios.Any(u => u.NombreUsuario == user.NombreUsuario))
+                if (_context.Usuarios.Any(u => u.Username == user.Username))
                     return false;
 
                 // Validar que el email no exista
-                if (!string.IsNullOrEmpty(user.Mail) && _context.Usuarios.Any(u => u.Mail == user.Mail))
+                if (!string.IsNullOrEmpty(user.Email) && _context.Usuarios.Any(u => u.Email == user.Email))
                     return false;
 
                 // Validar que el DNI no exista
-                if (user.Dni.HasValue && _context.Usuarios.Any(u => u.Dni == user.Dni))
+                if (user.PersonId.HasValue && _context.Usuarios.Any(u => u.PersonId == user.PersonId))
                     return false;
                 
                 _context.Usuarios.Add(user);
@@ -72,39 +72,35 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool UpdateUser(UsuarioModel user)
+        public bool UpdateUser(UserModel user)
         {
             try
             {
-                var existingUser = _context.Usuarios.Find(user.IdUsuario);
+                var existingUser = _context.Usuarios.Find(user.Id);
                 if (existingUser == null)
                     return false;
 
                 // Validar que el username no exista (excepto el usuario actual)
-                if (_context.Usuarios.Any(u => u.NombreUsuario == user.NombreUsuario && u.IdUsuario != user.IdUsuario))
+                if (_context.Usuarios.Any(u => u.Username == user.Username && u.Id != user.Id))
                     return false;
 
                 // Validar que el email no exista (excepto el usuario actual)
-                if (!string.IsNullOrEmpty(user.Mail) && _context.Usuarios.Any(u => u.Mail == user.Mail && u.IdUsuario != user.IdUsuario))
+                if (!string.IsNullOrEmpty(user.Email) && _context.Usuarios.Any(u => u.Email == user.Email && u.Id != user.Id))
                     return false;
 
                 // Validar que el DNI no exista (excepto el usuario actual)
-                if (user.Dni.HasValue && _context.Usuarios.Any(u => u.Dni == user.Dni && u.IdUsuario != user.IdUsuario))
+                if (user.PersonId.HasValue && _context.Usuarios.Any(u => u.PersonId == user.PersonId && u.Id != user.Id))
                     return false;
 
                 // Actualizar propiedades
-                existingUser.NombreUsuario = user.NombreUsuario;
-                existingUser.Contrasena = user.Contrasena;
-                existingUser.Nombre = user.Nombre;
-                existingUser.Apellido = user.Apellido;
-                existingUser.Mail = user.Mail;
-                existingUser.Tel = user.Tel;
-                existingUser.Dni = user.Dni;
-                existingUser.PCompra = user.PCompra;
-                existingUser.PVenta = user.PVenta;
-                existingUser.PRrhh = user.PRrhh;
-                existingUser.PContable = user.PContable;
-                existingUser.UsuarioTipoId = user.UsuarioTipoId;
+                existingUser.Username = user.Username;
+                existingUser.PasswordHash = user.PasswordHash;
+                existingUser.Name = user.Name;
+                existingUser.LastName = user.LastName;
+                existingUser.Email = user.Email;
+                existingUser.Phone = user.Phone;
+                existingUser.PersonId = user.PersonId;
+                existingUser.UserTypeId = user.UserTypeId;
 
                 _context.SaveChanges();
                 return true;

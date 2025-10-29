@@ -23,14 +23,14 @@ namespace PrimeSystems
         private void FormLogin_Load(object sender, EventArgs e)
         {
             DbInitializer.Initialize();
-            UsuarioModel? user = DbInitializer.InitializeUser();
+            UserModel? user = DbInitializer.InitializeUser();
             if (user != null)
             {
                 CustomMessageBox msgBox = new CustomMessageBox();
                 msgBox.Text = "Usuario administrador creado";
                 msgBox.lblMessage.Text = $"Se creó el usuario administrador por defecto con los siguientes datos:\n" +
-                    $"Usuario: {user.NombreUsuario}\n" +
-                    $"Contraseña: {user.Contrasena}\n" +
+                    $"Usuario: {user.Username}\n" +
+                    $"Contraseña: {user.PasswordHash}\n" +
                     $"Por favor, anótalo para poder loguearte por primera vez.\n" +
                     $"Posteriormente podrás eliminarlo si así lo deseas.";
                 msgBox.btnLeft.Text = "Copiar";
@@ -40,7 +40,7 @@ namespace PrimeSystems
                     {
                         msgBox.btnLeft.Type = MaterialButton.MaterialButtonType.Outlined;
                         msgBox.btnLeft.Text = "¡Copiado!";
-                        Clipboard.SetText(user.Contrasena ?? "");
+                        Clipboard.SetText(user.PasswordHash ?? "");
                     }
                     catch (ExternalException)
                     {
@@ -58,9 +58,9 @@ namespace PrimeSystems
             string password = tbContrasena.Text;
 
             UserController userController = new UserController();
-            UsuarioModel? user = userController.GetUserByUsername(username);
+            UserModel? user = userController.GetUserByUsername(username);
 
-            if (user == null || user.Contrasena != password)
+            if (user == null || user.PasswordHash != password)
             {
                 MessageBox.Show("Usuario o contraseña incorrectos.", "Error de autenticación", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;

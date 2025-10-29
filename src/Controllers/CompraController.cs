@@ -22,26 +22,26 @@ namespace PrimeSystems.Controllers
             _context = context;
         }
 
-        public List<HCompraModel> GetAllCompras()
+        public List<PurchaseModel> GetAllCompras()
         {
             return _context.HCompras
-                .Include(c => c.Usuario)
-                .Include(c => c.Proveedor)
-                .Include(c => c.Detalles)
+                .Include(c => c.User)
+                .Include(c => c.Supplier)
+                .Include(c => c.Detail)
                 .ToList();
         }
 
-        public HCompraModel? GetCompraById(int id)
+        public PurchaseModel? GetCompraById(int id)
         {
             return _context.HCompras
-                .Include(c => c.Usuario)
-                .Include(c => c.Proveedor)
-                .Include(c => c.Detalles)
+                .Include(c => c.User)
+                .Include(c => c.Supplier)
+                .Include(c => c.Detail)
                     .ThenInclude(d => d.Articulo)
-                .FirstOrDefault(c => c.IdRemito == id);
+                .FirstOrDefault(c => c.Id == id);
         }
 
-        public bool CreateCompra(HCompraModel compra)
+        public bool CreateCompra(PurchaseModel compra)
         {
             try
             {
@@ -56,7 +56,7 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool CreateCompraConDetalles(HCompraModel compra, List<HCompraDetalleModel> detalles)
+        public bool CreateCompraConDetalles(PurchaseModel compra, List<PurchaseDetailModel> detalles)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace PrimeSystems.Controllers
 
                 foreach (var detalle in detalles)
                 {
-                    detalle.IdRemito = compra.IdRemito;
+                    detalle.IdRemito = compra.Id;
                     _context.HComprasDetalle.Add(detalle);
                 }
                 _context.SaveChanges();
@@ -79,21 +79,21 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public List<HCompraModel> GetComprasByProveedor(int proveedorId)
+        public List<PurchaseModel> GetComprasByProveedor(int proveedorId)
         {
             return _context.HCompras
-                .Include(c => c.Usuario)
-                .Include(c => c.Proveedor)
-                .Where(c => c.IdProveedor == proveedorId)
+                .Include(c => c.User)
+                .Include(c => c.Supplier)
+                .Where(c => c.SupplierId == proveedorId)
                 .ToList();
         }
 
-        public List<HCompraModel> GetComprasByUsuario(int usuarioId)
+        public List<PurchaseModel> GetComprasByUsuario(int usuarioId)
         {
             return _context.HCompras
-                .Include(c => c.Usuario)
-                .Include(c => c.Proveedor)
-                .Where(c => c.CodUsuario == usuarioId)
+                .Include(c => c.User)
+                .Include(c => c.Supplier)
+                .Where(c => c.UserId == usuarioId)
                 .ToList();
         }
     }

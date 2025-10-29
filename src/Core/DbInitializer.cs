@@ -21,13 +21,13 @@ namespace PrimeSystems.Core
             }
             context.Database.EnsureCreated();
         }
-        public static UsuarioModel? InitializeUser()
+        public static UserModel? InitializeUser()
         {
             using var context = new AppDbContext();
             // Sembramos los tipos de usuario por defecto porque
             // sin ellos no se puede crear el usuario admin
             context.SeedDefaultUsuariosTipo();
-            UsuarioModel? user = context.CreateAdminUserIfNotExists();
+            UserModel? user = context.CreateAdminUserIfNotExists();
             return user;
         }
     }

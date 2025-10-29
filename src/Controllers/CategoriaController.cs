@@ -22,19 +22,19 @@ namespace PrimeSystems.Controllers
             _context = context;
         }
 
-        public List<CategoriaModel> GetAllCategorias()
+        public List<CategoryModel> GetAllCategorias()
         {
             return _context.Categorias.ToList();
         }
 
-        public CategoriaModel? GetCategoriaById(int id)
+        public CategoryModel? GetCategoriaById(int id)
         {
             return _context.Categorias
-                .Include(c => c.Subcategorias)
-                .FirstOrDefault(c => c.IdCategoria == id);
+                .Include(c => c.Subcategory)
+                .FirstOrDefault(c => c.Id == id);
         }
 
-        public bool CreateCategoria(CategoriaModel categoria)
+        public bool CreateCategoria(CategoryModel categoria)
         {
             try
             {
@@ -49,15 +49,15 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool UpdateCategoria(CategoriaModel categoria)
+        public bool UpdateCategoria(CategoryModel categoria)
         {
             try
             {
-                var existingCategoria = _context.Categorias.Find(categoria.IdCategoria);
+                var existingCategoria = _context.Categorias.Find(categoria.Id);
                 if (existingCategoria == null)
                     return false;
 
-                existingCategoria.Categoria = categoria.Categoria;
+                existingCategoria.Name = categoria.Name;
 
                 _context.SaveChanges();
                 return true;

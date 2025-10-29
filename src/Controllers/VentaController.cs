@@ -22,26 +22,26 @@ namespace PrimeSystems.Controllers
             _context = context;
         }
 
-        public List<HVentaModel> GetAllVentas()
+        public List<SellModel> GetAllVentas()
         {
             return _context.HVentas
-                .Include(v => v.Usuario)
-                .Include(v => v.Cliente)
-                .Include(v => v.Detalles)
+                .Include(v => v.User)
+                .Include(v => v.Client)
+                .Include(v => v.Detail)
                 .ToList();
         }
 
-        public HVentaModel? GetVentaById(int id)
+        public SellModel? GetVentaById(int id)
         {
             return _context.HVentas
-                .Include(v => v.Usuario)
-                .Include(v => v.Cliente)
-                .Include(v => v.Detalles)
-                    .ThenInclude(d => d.Articulo)
-                .FirstOrDefault(v => v.IdRemito == id);
+                .Include(v => v.User)
+                .Include(v => v.Client)
+                .Include(v => v.Detail)
+                    .ThenInclude(d => d.Article)
+                .FirstOrDefault(v => v.Id == id);
         }
 
-        public bool CreateVenta(HVentaModel venta)
+        public bool CreateVenta(SellModel venta)
         {
             try
             {
@@ -56,7 +56,7 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool CreateVentaConDetalles(HVentaModel venta, List<HVentaDetalleModel> detalles)
+        public bool CreateVentaConDetalles(SellModel venta, List<SellDetailModel> detalles)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace PrimeSystems.Controllers
 
                 foreach (var detalle in detalles)
                 {
-                    detalle.IdRemito = venta.IdRemito;
+                    detalle.SellId = venta.Id;
                     _context.HVentasDetalle.Add(detalle);
                 }
                 _context.SaveChanges();
@@ -79,21 +79,21 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public List<HVentaModel> GetVentasByCliente(int clienteId)
+        public List<SellModel> GetVentasByCliente(int clienteId)
         {
             return _context.HVentas
-                .Include(v => v.Usuario)
-                .Include(v => v.Cliente)
-                .Where(v => v.IdCliente == clienteId)
+                .Include(v => v.User)
+                .Include(v => v.Client)
+                .Where(v => v.ClientId == clienteId)
                 .ToList();
         }
 
-        public List<HVentaModel> GetVentasByUsuario(int usuarioId)
+        public List<SellModel> GetVentasByUsuario(int usuarioId)
         {
             return _context.HVentas
-                .Include(v => v.Usuario)
-                .Include(v => v.Cliente)
-                .Where(v => v.IdUsuario == usuarioId)
+                .Include(v => v.User)
+                .Include(v => v.Client)
+                .Where(v => v.UserId == usuarioId)
                 .ToList();
         }
     }

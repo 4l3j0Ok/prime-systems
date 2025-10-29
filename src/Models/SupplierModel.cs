@@ -4,26 +4,26 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace PrimeSystems.Models
 {
     [Table("Proveedores")]
-    public class ProveedorModel
+    public class SupplierModel
     {
         [Key]
-        public int IdProveedor { get; set; }
+        public int Id { get; set; }
 
         public int? Cuit { get; set; }
 
         [StringLength(255)]
-        public string? Proveedor { get; set; }
+        public string? Name { get; set; }
 
         [StringLength(255)]
-        public string? Nombre { get; set; }
+        public string? ContactName { get; set; }
 
         [StringLength(255)]
-        public string? Tel { get; set; }
+        public string? Phone { get; set; }
 
         [StringLength(255)]
         public string? Email { get; set; }
 
         // Navigation property
-        public virtual ICollection<ArticuloModel> Articulos { get; set; } = new List<ArticuloModel>();
+        public virtual ICollection<ArticleModel> Articles { get; set; } = new List<ArticleModel>();
     }
 }
