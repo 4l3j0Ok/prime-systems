@@ -13,14 +13,14 @@ using System.Windows.Forms;
 
 namespace PrimeSystems.Views
 {
-    public partial class UCUserAdd : UserControl
+    public partial class UserAdd : UserControl
     {
         private UserController userController;
         private UsuarioTipoController usuarioTipoController;
         private UserModel currentUser;
         private FormPrincipal? formPrincipal = Application.OpenForms.OfType<FormPrincipal>().FirstOrDefault();
 
-        public UCUserAdd(UserModel? user = null)
+        public UserAdd(UserModel? user = null)
         {
             userController = new UserController();
             usuarioTipoController = new UsuarioTipoController();
@@ -153,9 +153,9 @@ namespace PrimeSystems.Views
             
             bool success;
             if (currentUser.Id == 0)
-                success = userController.CreateUser(currentUser);
+                success = userController.Create(currentUser);
             else
-                success = userController.UpdateUser(currentUser);
+                success = userController.Update(currentUser);
             if (success)
             {
                 MessageBox.Show("Usuario guardado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -164,12 +164,20 @@ namespace PrimeSystems.Views
             {
                 MessageBox.Show("Error al guardar el usuario. El nombre de usuario, email o identificación ya existe.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            formPrincipal.RestaurarFormularioTab(formPrincipal.tabUsers);
+            formPrincipal.LoadCardsOnTabPage(
+                formPrincipal.tabUsers,
+                () => new UserController(),
+                (user) => new UserCard(user)
+            );
         }
 
         private void mepUserAdd_CancelClick(object sender, EventArgs e)
         {
-            formPrincipal?.RestaurarFormularioTab(formPrincipal.tabUsers);
+            formPrincipal.LoadCardsOnTabPage(
+                formPrincipal.tabUsers,
+                () => new UserController(),
+                (user) => new UserCard(user)
+            );
         }
     }
 }

@@ -8,7 +8,7 @@ using PrimeSystems.Core;
 
 namespace PrimeSystems.Controllers
 {
-    public class CompraController
+    public class CompraController : IGenericController<PurchaseModel>
     {
         private readonly AppDbContext _context;
 
@@ -22,13 +22,20 @@ namespace PrimeSystems.Controllers
             _context = context;
         }
 
-        public List<PurchaseModel> GetAllCompras()
+        public List<PurchaseModel> GetAll()
         {
             return _context.HCompras
                 .Include(c => c.User)
                 .Include(c => c.Supplier)
                 .Include(c => c.Detail)
                 .ToList();
+        }
+
+        public PurchaseModel? GetById(object id)
+        {
+            if (id is int intId) return GetCompraById(intId);
+            if (int.TryParse(id?.ToString(), out int parsed)) return GetCompraById(parsed);
+            return null;
         }
 
         public PurchaseModel? GetCompraById(int id)
@@ -41,7 +48,7 @@ namespace PrimeSystems.Controllers
                 .FirstOrDefault(c => c.Id == id);
         }
 
-        public bool CreateCompra(PurchaseModel compra)
+        public bool Create(PurchaseModel compra)
         {
             try
             {
@@ -52,6 +59,39 @@ namespace PrimeSystems.Controllers
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
+                return false;
+            }
+        }
+
+        public bool Update(PurchaseModel compra)
+        {
+            try
+            {
+                var existing = _context.HCompras.Find(compra.Id);
+                if (existing == null) return false;
+                // TODO: map fields as needed
+                _context.SaveChanges();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public bool Delete(object id)
+        {
+            try
+            {
+                if (!int.TryParse(id?.ToString(), out int intId)) return false;
+                var entity = _context.HCompras.Find(intId);
+                if (entity == null) return false;
+                _context.HCompras.Remove(entity);
+                _context.SaveChanges();
+                return true;
+            }
+            catch
+            {
                 return false;
             }
         }

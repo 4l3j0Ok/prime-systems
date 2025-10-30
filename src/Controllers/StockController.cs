@@ -8,7 +8,7 @@ using PrimeSystems.Core;
 
 namespace PrimeSystems.Controllers
 {
-    public class StockController
+    public class StockController : IGenericController<StockModel>
     {
         private readonly AppDbContext _context;
 
@@ -22,11 +22,18 @@ namespace PrimeSystems.Controllers
             _context = context;
         }
 
-        public List<StockModel> GetAllStock()
+        public List<StockModel> GetAll()
         {
             return _context.Stock
                 .Include(s => s.Article)
                 .ToList();
+        }
+
+        public StockModel? GetById(object id)
+        {
+            if (id is int intId) return GetStockById(intId);
+            if (int.TryParse(id?.ToString(), out int parsed)) return GetStockById(parsed);
+            return null;
         }
 
         public StockModel? GetStockById(int id)
@@ -43,7 +50,7 @@ namespace PrimeSystems.Controllers
                 .FirstOrDefault(s => s.ArticleId == articuloId);
         }
 
-        public bool CreateStock(StockModel stock)
+        public bool Create(StockModel stock)
         {
             try
             {
@@ -58,7 +65,7 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool UpdateStock(StockModel stock)
+        public bool Update(StockModel stock)
         {
             try
             {
@@ -80,14 +87,13 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool DeleteStock(int id)
+        public bool Delete(object id)
         {
             try
             {
-                var stock = _context.Stock.Find(id);
-                if (stock == null)
-                    return false;
-
+                if (!int.TryParse(id?.ToString(), out int intId)) return false;
+                var stock = _context.Stock.Find(intId);
+                if (stock == null) return false;
                 _context.Stock.Remove(stock);
                 _context.SaveChanges();
                 return true;

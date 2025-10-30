@@ -81,7 +81,7 @@ namespace PrimeSystems
             tbUsuario.LeadingIcon = null;
             tbUsuario.Location = new Point(20, 19);
             tbUsuario.Margin = new Padding(3, 3, 26, 3);
-            tbUsuario.MaxLength = 32767;
+            tbUsuario.MaxLength = 20;
             tbUsuario.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbUsuario.Name = "tbUsuario";
             tbUsuario.Padding = new Padding(9, 8, 9, 8);
@@ -99,8 +99,8 @@ namespace PrimeSystems
             tbUsuario.TextAlign = HorizontalAlignment.Left;
             tbUsuario.TrailingIcon = null;
             tbUsuario.UseSystemPasswordChar = false;
-            tbUsuario.KeyPress += tbCredentials_KeyPress;
-            tbUsuario.TextChanged += tb_TextChanged;
+            tbUsuario.KeyPress += tbHandleEnter;
+            tbUsuario.TextChanged += tbCredentials_TextChanged;
             // 
             // lblUsuario
             // 
@@ -140,10 +140,10 @@ namespace PrimeSystems
             tbContrasena.HideSelection = true;
             tbContrasena.LeadingIcon = null;
             tbContrasena.Location = new Point(20, 19);
-            tbContrasena.MaxLength = 32767;
+            tbContrasena.MaxLength = 40;
             tbContrasena.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbContrasena.Name = "tbContrasena";
-            tbContrasena.PasswordChar = '*';
+            tbContrasena.PasswordChar = '•';
             tbContrasena.PrefixSuffixText = null;
             tbContrasena.ReadOnly = false;
             tbContrasena.RightToLeft = RightToLeft.No;
@@ -157,8 +157,8 @@ namespace PrimeSystems
             tbContrasena.TextAlign = HorizontalAlignment.Left;
             tbContrasena.TrailingIcon = null;
             tbContrasena.UseSystemPasswordChar = false;
-            tbContrasena.KeyPress += tbCredentials_KeyPress;
-            tbContrasena.TextChanged += tb_TextChanged;
+            tbContrasena.KeyPress += tbHandleEnter;
+            tbContrasena.TextChanged += tbCredentials_TextChanged;
             // 
             // lblContrasenia
             // 

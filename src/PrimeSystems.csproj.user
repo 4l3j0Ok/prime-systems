@@ -2,6 +2,9 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
+    <Compile Update="Views\Controls\MaterialExpansionPanelNonCollapsible.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Update="Views\Forms\CustomMessageBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -11,10 +14,10 @@
     <Compile Update="Views\Forms\FormPrincipal.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Views\UserControls\UCUserAdd.cs">
+    <Compile Update="Views\Controls\UserAdd.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Update="Views\UserControls\UCUserCard.cs">
+    <Compile Update="Views\Controls\UserCard.cs">
       <SubType>UserControl</SubType>
     </Compile>
   </ItemGroup>

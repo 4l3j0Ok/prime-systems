@@ -4,16 +4,17 @@ using PrimeSystems.Views;
 using ReaLTaiizor.Colors;
 using ReaLTaiizor.Forms;
 using ReaLTaiizor.Controls;
-
 using ReaLTaiizor.Manager;
 using ReaLTaiizor.Util;
 using System.Data;
 using System.Windows.Forms;
 using System.Drawing;
+using PrimeSystems.Views.Controls;
+
 namespace PrimeSystems.Views
 
 {
-    partial class UCUserAdd
+    partial class UserAdd
     {
         /// <summary> 
         /// Variable del diseñador necesaria.
@@ -33,7 +34,7 @@ namespace PrimeSystems.Views
         /// </summary>
         private void InitializeComponent()
         {
-            mepUserAdd = new MaterialExpansionPanel();
+            mepUserAdd = new MaterialExpansionPanelNonCollapsible();
             tableLayoutPanel2 = new TableLayoutPanel();
             panel2 = new System.Windows.Forms.Panel();
             groupBox3 = new System.Windows.Forms.GroupBox();
@@ -813,14 +814,14 @@ namespace PrimeSystems.Views
             btnUploadProfilePicture.UseVisualStyleBackColor = true;
             btnUploadProfilePicture.Click += btnUploadProfilePicture_Click;
             // 
-            // UCUserAdd
+            // UserAdd
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoScroll = true;
             Controls.Add(mepUserAdd);
             Margin = new Padding(0);
-            Name = "UCUserAdd";
+            Name = "UserAdd";
             Size = new Size(1152, 655);
             Load += UCUserAdd_Load;
             mepUserAdd.ResumeLayout(false);
@@ -860,7 +861,7 @@ namespace PrimeSystems.Views
 
         #endregion
 
-        private MaterialExpansionPanel mepUserAdd;
+        private MaterialExpansionPanelNonCollapsible mepUserAdd;
         private TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.GroupBox groupBox3;

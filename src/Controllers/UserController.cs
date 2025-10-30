@@ -10,7 +10,7 @@ using PrimeSystems.Core;
 
 namespace PrimeSystems.Controllers
 {
-    public class UserController
+    public class UserController : IGenericController<UserModel>
     {
         private readonly AppDbContext _context;
 
@@ -24,28 +24,38 @@ namespace PrimeSystems.Controllers
             _context = context;
         }
 
-        public List<UserModel> GetAllUsers()
+        public List<UserModel> GetAll()
         {
             return _context.Usuarios
                 .Include(u => u.UserType)
                 .ToList();
         }
 
-        public UserModel? GetUserByUsername(string username)
+        public UserModel? GetByUsername(string username)
         {
             return _context.Usuarios
                 .Include(u => u.UserType)
                 .FirstOrDefault(u => u.Username == username);
         }
 
-        public UserModel? GetUserById(int id)
+        public UserModel? GetById(int id)
         {
             return _context.Usuarios
                 .Include(u => u.UserType)
                 .FirstOrDefault(u => u.Id == id);
         }
 
-        public bool CreateUser(UserModel user)
+        // Interface implementation that accepts object id
+        public UserModel? GetById(object id)
+        {
+            if (id is int intId)
+                return GetById(intId);
+            if (int.TryParse(id?.ToString(), out int parsed))
+                return GetById(parsed);
+            return null;
+        }
+
+        public bool Create(UserModel user)
         {
             try
             {
@@ -60,7 +70,7 @@ namespace PrimeSystems.Controllers
                 // Validar que el DNI no exista
                 if (user.PersonId.HasValue && _context.Usuarios.Any(u => u.PersonId == user.PersonId))
                     return false;
-                
+
                 _context.Usuarios.Add(user);
                 _context.SaveChanges();
                 return true;
@@ -72,7 +82,7 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool UpdateUser(UserModel user)
+        public bool Update(UserModel user)
         {
             try
             {
@@ -102,6 +112,23 @@ namespace PrimeSystems.Controllers
                 existingUser.PersonId = user.PersonId;
                 existingUser.UserTypeId = user.UserTypeId;
 
+                _context.SaveChanges();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public bool Delete(object id)
+        {
+            try
+            {
+                if (!int.TryParse(id?.ToString(), out int intId)) return false;
+                var user = _context.Usuarios.Find(intId);
+                if (user == null) return false;
+                _context.Usuarios.Remove(user);
                 _context.SaveChanges();
                 return true;
             }

@@ -52,13 +52,27 @@ namespace PrimeSystems
                 msgBox.ShowDialog();
             }
         }
+
+
+        private void tbHandleEnter(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Enter)
+                btnLogin.PerformClick();
+        }
+
+        private void tbCredentials_TextChanged(object sender, EventArgs e)
+        {
+            if (tbUsuario.Text.Length > 0 && tbContrasena.Text.Length > 0)
+                btnLogin.Enabled = true;
+        }
+
         private void btnLogin_Click(object sender, EventArgs e)
         {
             string username = tbUsuario.Text;
             string password = tbContrasena.Text;
 
             UserController userController = new UserController();
-            UserModel? user = userController.GetUserByUsername(username);
+            UserModel? user = userController.GetByUsername(username);
 
             if (user == null || user.PasswordHash != password)
             {
@@ -69,17 +83,6 @@ namespace PrimeSystems
             FormPrincipal formPrincipal = new FormPrincipal(currentUser: user);
             formPrincipal.Show();
             this.Hide();
-        }
-        private void tb_TextChanged(object sender, EventArgs e)
-        {
-            if (tbUsuario.Text.Length > 0 && tbContrasena.Text.Length > 0)
-                btnLogin.Enabled = true;
-        }
-
-        private void tbCredentials_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (e.KeyChar == (char)Keys.Enter)
-                btnLogin.PerformClick();
         }
     }
 }

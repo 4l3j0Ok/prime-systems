@@ -8,7 +8,7 @@ using PrimeSystems.Core;
 
 namespace PrimeSystems.Controllers
 {
-    public class ClienteController
+    public class ClienteController : IGenericController<ClientModel>
     {
         private readonly AppDbContext _context;
 
@@ -22,9 +22,16 @@ namespace PrimeSystems.Controllers
             _context = context;
         }
 
-        public List<ClientModel> GetAllClientes()
+        public List<ClientModel> GetAll()
         {
             return _context.Clientes.ToList();
+        }
+
+        public ClientModel? GetById(object id)
+        {
+            if (id is int intId) return GetClienteById(intId);
+            if (int.TryParse(id?.ToString(), out int parsed)) return GetClienteById(parsed);
+            return null;
         }
 
         public ClientModel? GetClienteById(int id)
@@ -32,7 +39,7 @@ namespace PrimeSystems.Controllers
             return _context.Clientes.FirstOrDefault(c => c.Id == id);
         }
 
-        public bool CreateCliente(ClientModel cliente)
+        public bool Create(ClientModel cliente)
         {
             try
             {
@@ -47,7 +54,7 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool UpdateCliente(ClientModel cliente)
+        public bool Update(ClientModel cliente)
         {
             try
             {
@@ -70,14 +77,13 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool DeleteCliente(int id)
+        public bool Delete(object id)
         {
             try
             {
-                var cliente = _context.Clientes.Find(id);
-                if (cliente == null)
-                    return false;
-
+                if (!int.TryParse(id?.ToString(), out int intId)) return false;
+                var cliente = _context.Clientes.Find(intId);
+                if (cliente == null) return false;
                 _context.Clientes.Remove(cliente);
                 _context.SaveChanges();
                 return true;

@@ -1,4 +1,5 @@
-﻿using PrimeSystems.Controllers;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using PrimeSystems.Controllers;
 using PrimeSystems.Core;
 using PrimeSystems.Models;
 using PrimeSystems.Views;
@@ -8,6 +9,8 @@ using System.Diagnostics;
 using System.Drawing.Printing;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PrimeSystems
 {
@@ -25,8 +28,11 @@ namespace PrimeSystems
 
         private void FormPrincipal_Load(object sender, EventArgs e)
         {
-            LoadCards();
-            // Guardar el estado inicial de todos los tabs
+            LoadCardsOnTabPage<UserModel>(
+                tabUsers,
+                () => new UserController(), // Pasamos un lambda que crea el controlador
+                (user) => new UserCard(user) // Pasamos un lambda que crea la tarjeta de usuario
+            );
             SaveOriginalTabContents();
         }
 
@@ -43,114 +49,48 @@ namespace PrimeSystems
             }
         }
 
-        public void LoadCards(Type? clearObjectsOfType = null)
+        public void LoadCardsOnTabPage<T>(
+            System.Windows.Forms.TabPage tabPage,
+            Func<IGenericController<T>> controllerFactory,
+            Func<T, Control> createCard
+        )
         {
-            if (clearObjectsOfType != null)
+            var controller = controllerFactory();
+            List<T> items = controller.GetAll() ?? new List<T>();
+            foreach (Control control in tabPage.Controls)
             {
-                foreach (System.Windows.Forms.TabPage tabPage in tcPrincipal.TabPages)
+                if (control is FlowLayoutPanel flp)
                 {
-                    // Elimina todos los controles del tipo especificado
-                    var controlsToRemove = tabPage.Controls.Cast<Control>()
-                        .Where(c => c.GetType() == clearObjectsOfType)
-                        .ToList();
-                    foreach (var control in controlsToRemove)
+                    flp.SuspendLayout();
+                    flp.Controls.Clear();
+
+                    foreach (T item in items)
                     {
-                        tabPage.Controls.Remove(control);
-                        control.Dispose();
+                        Control uc = createCard(item);
+                        uc.Dock = DockStyle.Top;
+                        uc.Margin = new Padding(10);
+                        flp.Controls.Add(uc);
                     }
+                    flp.ResumeLayout();
+                    break;
                 }
             }
-            LoadUsersTable();
         }
-        private void LoadUsersTable()
-        {
-            UserController userController = new UserController();
-            List<UserModel> users = userController.GetAllUsers();
-            if (users.Count > 0)
-                lblEmptyUsers.Visible = false;
-            foreach (UserModel user in users)
-            {
-                UCUserCard userCard = new UCUserCard(user: user);
-                userCard.Dock = DockStyle.Top;
-                userCard.Margin = new Padding(10);
-                flpUsersList.Controls.Add(userCard);
-            }
-        }
+
         private void btnAddUser_Click(object sender, EventArgs e)
         {
-            UCUserAdd userAddControl = new UCUserAdd();
-            VerFormularioTab(userAddControl, tabUsers);
+            ShowControlInTabPage(
+                tabUsers,
+                new UserAdd()
+            );
         }
-        public void VerFormularioTab(UserControl uc, System.Windows.Forms.TabPage tabPage)
+        public void ShowControlInTabPage(System.Windows.Forms.TabPage tabPage, Control controlToShow)
         {
-            // Guardar el estado actual del tab si no está guardado o si ha cambiado
-            if (!originalTabContents.ContainsKey(tabPage))
-            {
-                var controls = new List<Control>();
-                foreach (Control control in tabPage.Controls)
-                {
-                    controls.Add(control);
-                }
-                originalTabContents[tabPage] = controls;
-            }
-            uc.Dock = DockStyle.Fill;
             tabPage.Controls.Clear();
-            tabPage.Controls.Add(uc);
+            controlToShow.Dock = DockStyle.Fill;
+            tabPage.Controls.Add(controlToShow);
         }
 
-        public void RestaurarFormularioTab(System.Windows.Forms.TabPage tabPage)
-        {
-            // Paso 1: Limpiar la pestaña completamente (esto elimina el formulario Add)
-            tabPage.Controls.Clear();
-
-            // Paso 2: Restaurar los controles originales del Designer
-            if (originalTabContents.ContainsKey(tabPage))
-            {
-                foreach (Control control in originalTabContents[tabPage])
-                {
-                    tabPage.Controls.Add(control);
-                }
-            }
-
-            // Paso 3: Limpiar solo las tarjetas dinámicas de los contenedores
-            RemoveDynamicControls(tabPage);
-
-            // Paso 4: Recargar el contenido específico del tab
-            ReloadTabContent(tabPage);
-        }
-
-        private void RemoveDynamicControls(System.Windows.Forms.TabPage tabPage)
-        {
-            // Identificar y limpiar solo los contenedores de datos dinámicos
-            if (tabPage == tabUsers)
-            {
-                // Limpiar solo las tarjetas del FlowLayoutPanel, no el FlowLayoutPanel mismo
-                flpUsersList.Controls.Clear();
-                lblEmptyUsers.Visible = true;
-            }
-        }
-
-        private void ReloadTabContent(System.Windows.Forms.TabPage tabPage)
-        {
-            // Identificar qué tab es y recargar su contenido apropiado
-            if (tabPage == tabUsers)
-            {
-                LoadUsersTable();
-            }
-        }
-
-        // También actualizar el método ReloadTabContent() sin parámetros para manejar todos los tabs
-        private void ReloadTabContent()
-        {
-            // Limpiar todos los contenedores antes de cargar
-            flpUsersList.Controls.Clear();
-
-            // Resetear todos los labels de vacío
-            lblEmptyUsers.Visible = true;
-
-            // Cargar todo el contenido
-            LoadUsersTable();
-        }
         private void tabCerrarSesion_Click(object sender, EventArgs e)
         {
             // Reiniciar el programa

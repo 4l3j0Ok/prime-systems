@@ -8,7 +8,7 @@ using PrimeSystems.Core;
 
 namespace PrimeSystems.Controllers
 {
-    public class CategoriaController
+    public class CategoriaController : IGenericController<CategoryModel>
     {
         private readonly AppDbContext _context;
 
@@ -22,9 +22,16 @@ namespace PrimeSystems.Controllers
             _context = context;
         }
 
-        public List<CategoryModel> GetAllCategorias()
+        public List<CategoryModel> GetAll()
         {
             return _context.Categorias.ToList();
+        }
+
+        public CategoryModel? GetById(object id)
+        {
+            if (id is int intId) return GetCategoriaById(intId);
+            if (int.TryParse(id?.ToString(), out int parsed)) return GetCategoriaById(parsed);
+            return null;
         }
 
         public CategoryModel? GetCategoriaById(int id)
@@ -34,7 +41,7 @@ namespace PrimeSystems.Controllers
                 .FirstOrDefault(c => c.Id == id);
         }
 
-        public bool CreateCategoria(CategoryModel categoria)
+        public bool Create(CategoryModel categoria)
         {
             try
             {
@@ -49,7 +56,7 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool UpdateCategoria(CategoryModel categoria)
+        public bool Update(CategoryModel categoria)
         {
             try
             {
@@ -68,14 +75,13 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool DeleteCategoria(int id)
+        public bool Delete(object id)
         {
             try
             {
-                var categoria = _context.Categorias.Find(id);
-                if (categoria == null)
-                    return false;
-
+                if (!int.TryParse(id?.ToString(), out int intId)) return false;
+                var categoria = _context.Categorias.Find(intId);
+                if (categoria == null) return false;
                 _context.Categorias.Remove(categoria);
                 _context.SaveChanges();
                 return true;

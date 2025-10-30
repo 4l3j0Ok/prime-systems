@@ -14,11 +14,11 @@ using PrimeSystems.Core;
 
 namespace PrimeSystems.Views
 {
-    public partial class UCUserCard : UserControl
+    public partial class UserCard : UserControl
     {
         private UserModel _user;
 
-        public UCUserCard(UserModel user)
+        public UserCard(UserModel user)
         {
             InitializeComponent();
             _user = user;
@@ -38,9 +38,11 @@ namespace PrimeSystems.Views
 
         public static void OpenFormAdd(UserModel user)
         {
-            UCUserAdd userAdd = new UCUserAdd(user);
             FormPrincipal? formPrincipal = Application.OpenForms.OfType<FormPrincipal>().FirstOrDefault();
-            formPrincipal?.VerFormularioTab(userAdd, formPrincipal.tabUsers);
+            formPrincipal?.ShowControlInTabPage(
+                formPrincipal.tabUsers,
+                new UserAdd()
+            );
         }
     }
 }

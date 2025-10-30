@@ -11,7 +11,7 @@ using System.Drawing;
 
 namespace PrimeSystems.Views
 {
-    partial class UCUserCard
+    partial class UserCard
     {
         /// <summary> 
         /// Variable del diseñador necesaria.
@@ -178,7 +178,7 @@ namespace PrimeSystems.Views
             lblUserName.TabIndex = 0;
             lblUserName.Text = "Nombre Apellido";
             // 
-            // UCUserCard
+            // UserCard
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -187,7 +187,7 @@ namespace PrimeSystems.Views
             Cursor = Cursors.Hand;
             MaximumSize = new Size(600, 70);
             MinimumSize = new Size(400, 70);
-            Name = "UCUserCard";
+            Name = "UserCard";
             Size = new Size(400, 70);
             tableLayoutPanel1.ResumeLayout(false);
             panel1.ResumeLayout(false);
