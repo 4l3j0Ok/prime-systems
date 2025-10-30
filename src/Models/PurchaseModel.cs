@@ -9,7 +9,7 @@ namespace PrimeSystems.Models
         [Key]
         public int Id { get; set; }
 
-        [ForeignKey("Usuario")]
+        [ForeignKey("User")]
         public int? UserId { get; set; }
 
         [StringLength(255)]

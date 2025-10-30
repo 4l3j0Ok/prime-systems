@@ -20,7 +20,7 @@ namespace PrimeSystems.Models
         [StringLength(255)]
         public string? Description { get; set; }
 
-        [ForeignKey("Categoria")]
+        [ForeignKey("Category")]
         public int? CategoryId { get; set; }
 
         [ForeignKey("Subcategory")]

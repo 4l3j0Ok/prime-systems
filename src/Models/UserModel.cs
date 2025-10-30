@@ -34,9 +34,10 @@ namespace PrimeSystems.Models
         public byte[]? ProfilePicture { get; set; }
 
         [StringLength(10)]
-        [ForeignKey("UsuarioTipo")]
+        [ForeignKey("UserType")]
         public string? UserTypeId { get; set; }
 
+        // Navigation properties
         public virtual UserTypeModel? UserType { get; set; }
 
     }

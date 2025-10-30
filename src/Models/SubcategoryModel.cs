@@ -12,10 +12,10 @@ namespace PrimeSystems.Models
         [StringLength(255)]
         public string? Name { get; set; }
 
-        [ForeignKey("Categoria")]
+        [ForeignKey("Category")]
         public int CategoryId { get; set; }
 
-        // Navigation property
+        // Navigation properties
         public virtual CategoryModel? Category { get; set; }
         public virtual ICollection<ArticleModel> Articles { get; set; } = new List<ArticleModel>();
     }

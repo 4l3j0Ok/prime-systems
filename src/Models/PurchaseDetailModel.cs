@@ -7,28 +7,28 @@ namespace PrimeSystems.Models
     public class PurchaseDetailModel
     {
         [Key]
-        public int IdDetRemito { get; set; }
+        public int Id { get; set; }
 
-        [ForeignKey("Compra")]
-        public int? IdRemito { get; set; }
+        [ForeignKey("Purchase")]
+        public int? PurchaseId { get; set; }
 
-        [ForeignKey("Articulo")]
-        public int? IdArticulo { get; set; }
-
-        [StringLength(255)]
-        public string? Descr { get; set; }
+        [ForeignKey("Article")]
+        public int? ArticleId { get; set; }
 
         [StringLength(255)]
-        public string? PUnit { get; set; }
+        public string? Description { get; set; }
 
         [StringLength(255)]
-        public string? Cant { get; set; }
+        public string? UnitPrice { get; set; }
 
         [StringLength(255)]
-        public string? PXCant { get; set; }
+        public string? Quantity { get; set; }
+
+        [StringLength(255)]
+        public string? Total { get; set; }
 
         // Navigation properties
-        public virtual PurchaseModel? Compra { get; set; }
-        public virtual ArticleModel? Articulo { get; set; }
+        public virtual PurchaseModel? Purchase { get; set; }
+        public virtual ArticleModel? Article { get; set; }
     }
 }

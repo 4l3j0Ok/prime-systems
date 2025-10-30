@@ -23,7 +23,7 @@ namespace PrimeSystems.Models
         [StringLength(255)]
         public string? Email { get; set; }
 
-        // Navigation property
+        // Navigation properties
         public virtual ICollection<ArticleModel> Articles { get; set; } = new List<ArticleModel>();
     }
 }

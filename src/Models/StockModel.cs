@@ -19,7 +19,7 @@ namespace PrimeSystems.Models
 
         public int? Profit { get; set; }
 
-        // Navigation property
+        // Navigation properties
         public virtual ArticleModel? Article { get; set; }
     }
 }

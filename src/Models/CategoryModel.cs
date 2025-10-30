@@ -13,7 +13,7 @@ namespace PrimeSystems.Models
         [StringLength(255)]
         public string? Name { get; set; }
 
-        // Navigation property
+        // Navigation properties
         public virtual ICollection<SubcategoryModel> Subcategory { get; set; } = new List<SubcategoryModel>();
         public virtual ICollection<ArticleModel> Article { get; set; } = new List<ArticleModel>();
     }

@@ -37,7 +37,7 @@ namespace PrimeSystems.Controllers
                 .Include(c => c.User)
                 .Include(c => c.Supplier)
                 .Include(c => c.Detail)
-                    .ThenInclude(d => d.Articulo)
+                    .ThenInclude(d => d.Article)
                 .FirstOrDefault(c => c.Id == id);
         }
 
@@ -65,7 +65,7 @@ namespace PrimeSystems.Controllers
 
                 foreach (var detalle in detalles)
                 {
-                    detalle.IdRemito = compra.Id;
+                    detalle.PurchaseId = compra.Id;
                     _context.HComprasDetalle.Add(detalle);
                 }
                 _context.SaveChanges();

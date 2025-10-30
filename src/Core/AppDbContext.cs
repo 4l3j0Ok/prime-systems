@@ -95,15 +95,15 @@ namespace PrimeSystems.Core
 
             // Configuración de relaciones para H_Compras_Detalle
             modelBuilder.Entity<PurchaseDetailModel>()
-                .HasOne(d => d.Compra)
+                .HasOne(d => d.Purchase)
                 .WithMany(c => c.Detail)
-                .HasForeignKey(d => d.IdRemito)
+                .HasForeignKey(d => d.PurchaseId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<PurchaseDetailModel>()
-                .HasOne(d => d.Articulo)
+                .HasOne(d => d.Article)
                 .WithMany()
-                .HasForeignKey(d => d.IdArticulo)
+                .HasForeignKey(d => d.ArticleId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Configuración de relaciones para H_Ventas
