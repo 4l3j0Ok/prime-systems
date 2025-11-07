@@ -110,6 +110,7 @@ namespace PrimeSystems.Controllers
                 existingUser.Email = user.Email;
                 existingUser.Phone = user.Phone;
                 existingUser.PersonId = user.PersonId;
+                existingUser.ProfilePicture = user.ProfilePicture;
                 existingUser.UserTypeId = user.UserTypeId;
 
                 _context.SaveChanges();

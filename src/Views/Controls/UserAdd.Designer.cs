@@ -11,7 +11,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using PrimeSystems.Views.Controls;
 
-namespace PrimeSystems.Views
+namespace PrimeSystems
 
 {
     partial class UserAdd

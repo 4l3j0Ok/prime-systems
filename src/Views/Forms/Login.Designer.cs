@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace PrimeSystems
 {
-    partial class FormLogin
+    partial class Login
     {
         /// <summary>
         ///  Required designer variable.
@@ -31,7 +31,7 @@ namespace PrimeSystems
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormLogin));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Login));
             panel1 = new Panel();
             tbUsuario = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
             lblUsuario = new ReaLTaiizor.Controls.MaterialLabel();
@@ -298,7 +298,7 @@ namespace PrimeSystems
             materialLabel1.Text = "Gestión del sistema";
             materialLabel1.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // FormLogin
+            // Login
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -306,11 +306,11 @@ namespace PrimeSystems
             Controls.Add(tableLayoutPanel1);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MinimumSize = new Size(800, 600);
-            Name = "FormLogin";
+            Name = "Login";
             Padding = new Padding(20, 84, 20, 20);
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Prime Systems";
-            Load += FormLogin_Load;
+            Load += Login_Load;
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             panel2.ResumeLayout(false);

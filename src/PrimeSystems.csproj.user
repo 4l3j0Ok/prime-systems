@@ -8,21 +8,21 @@
     <Compile Update="Views\Forms\CustomMessageBox.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Views\Forms\FormLogin.cs">
+    <Compile Update="Views\Forms\Login.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Views\Forms\FormPrincipal.cs">
+    <Compile Update="Views\Forms\Main.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Views\Controls\UserAdd.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Update="Views\Controls\UserCard.cs">
+    <Compile Update="Views\Controls\Card.cs">
       <SubType>UserControl</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Update="Views\Forms\FormPrincipal.resx">
+    <EmbeddedResource Update="Views\Forms\Main.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>

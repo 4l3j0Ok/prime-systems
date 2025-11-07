@@ -13,14 +13,14 @@ using System.Runtime.InteropServices;
 
 namespace PrimeSystems
 {
-    public partial class FormLogin : MaterialForm
+    public partial class Login : MaterialForm
     {
-        public FormLogin()
+        public Login()
         {
             InitializeComponent();
             UIConfig.GetSkinManager().AddFormToManage(this);
         }
-        private void FormLogin_Load(object sender, EventArgs e)
+        private void Login_Load(object sender, EventArgs e)
         {
             DbInitializer.Initialize();
             UserModel? user = DbInitializer.InitializeUser();
@@ -80,8 +80,8 @@ namespace PrimeSystems
                 return;
             }
 
-            FormPrincipal formPrincipal = new FormPrincipal(currentUser: user);
-            formPrincipal.Show();
+            Main Main = new Main(currentUser: user);
+            Main.Show();
             this.Hide();
         }
     }

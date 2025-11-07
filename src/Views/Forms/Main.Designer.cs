@@ -11,7 +11,7 @@ using ReaLTaiizor.Forms;
 
 namespace PrimeSystems
 {
-    partial class FormPrincipal
+    partial class Main
     {
         /// <summary>
         /// Required designer variable.
@@ -40,7 +40,7 @@ namespace PrimeSystems
         private void InitializeComponent()
         {
             components = new Container();
-            ComponentResourceManager resources = new ComponentResourceManager(typeof(FormPrincipal));
+            ComponentResourceManager resources = new ComponentResourceManager(typeof(Main));
             imgList = new ImageList(components);
             tabUsers = new TabPage();
             btnAddUser = new ReaLTaiizor.Controls.MaterialFloatingActionButton();
@@ -51,12 +51,12 @@ namespace PrimeSystems
             pictureBox1 = new PictureBox();
             lblWelcome = new ReaLTaiizor.Controls.MaterialLabel();
             tcPrincipal = new ReaLTaiizor.Controls.MaterialTabControl();
-            tabLogout = new TabPage();
-            flowLayoutPanel4 = new FlowLayoutPanel();
-            tabSells = new TabPage();
             tabPurchases = new TabPage();
+            tabSells = new TabPage();
             tabProviders = new TabPage();
             tabFinancialState = new TabPage();
+            tabLogout = new TabPage();
+            flowLayoutPanel4 = new FlowLayoutPanel();
             tabUsers.SuspendLayout();
             tabHome.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
@@ -208,24 +208,15 @@ namespace PrimeSystems
             tcPrincipal.Size = new Size(944, 533);
             tcPrincipal.TabIndex = 0;
             // 
-            // tabLogout
+            // tabPurchases
             // 
-            tabLogout.ImageKey = "logout.png";
-            tabLogout.Location = new Point(4, 39);
-            tabLogout.Name = "tabLogout";
-            tabLogout.Padding = new Padding(3);
-            tabLogout.Size = new Size(936, 490);
-            tabLogout.TabIndex = 8;
-            tabLogout.Text = "Cerrar Sesión";
-            tabLogout.UseVisualStyleBackColor = true;
-            tabLogout.Enter += tabCerrarSesion_Click;
-            // 
-            // flowLayoutPanel4
-            // 
-            flowLayoutPanel4.Location = new Point(0, 0);
-            flowLayoutPanel4.Name = "flowLayoutPanel4";
-            flowLayoutPanel4.Size = new Size(200, 100);
-            flowLayoutPanel4.TabIndex = 0;
+            tabPurchases.ImageKey = "purchases.png";
+            tabPurchases.Location = new Point(4, 39);
+            tabPurchases.Name = "tabPurchases";
+            tabPurchases.Size = new Size(936, 490);
+            tabPurchases.TabIndex = 10;
+            tabPurchases.Text = "Compras";
+            tabPurchases.UseVisualStyleBackColor = true;
             // 
             // tabSells
             // 
@@ -236,16 +227,6 @@ namespace PrimeSystems
             tabSells.TabIndex = 9;
             tabSells.Text = "Ventas";
             tabSells.UseVisualStyleBackColor = true;
-            // 
-            // tabPurchases
-            // 
-            tabPurchases.ImageKey = "purchases.png";
-            tabPurchases.Location = new Point(4, 39);
-            tabPurchases.Name = "tabPurchases";
-            tabPurchases.Size = new Size(936, 490);
-            tabPurchases.TabIndex = 10;
-            tabPurchases.Text = "Compras";
-            tabPurchases.UseVisualStyleBackColor = true;
             // 
             // tabProviders
             // 
@@ -267,7 +248,26 @@ namespace PrimeSystems
             tabFinancialState.Text = "Estado Contable";
             tabFinancialState.UseVisualStyleBackColor = true;
             // 
-            // FormPrincipal
+            // tabLogout
+            // 
+            tabLogout.ImageKey = "logout.png";
+            tabLogout.Location = new Point(4, 39);
+            tabLogout.Name = "tabLogout";
+            tabLogout.Padding = new Padding(3);
+            tabLogout.Size = new Size(936, 490);
+            tabLogout.TabIndex = 8;
+            tabLogout.Text = "Cerrar Sesión";
+            tabLogout.UseVisualStyleBackColor = true;
+            tabLogout.Enter += tabCerrarSesion_Click;
+            // 
+            // flowLayoutPanel4
+            // 
+            flowLayoutPanel4.Location = new Point(0, 0);
+            flowLayoutPanel4.Name = "flowLayoutPanel4";
+            flowLayoutPanel4.Size = new Size(200, 100);
+            flowLayoutPanel4.TabIndex = 0;
+            // 
+            // Main
             // 
             AutoScaleDimensions = new SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
@@ -280,10 +280,10 @@ namespace PrimeSystems
             DrawerTabControl = tcPrincipal;
             Icon = (Icon)resources.GetObject("$this.Icon");
             MinimumSize = new Size(800, 600);
-            Name = "FormPrincipal";
+            Name = "Main";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Prime Systems";
-            Load += FormPrincipal_Load;
+            Load += Main_Load;
             tabUsers.ResumeLayout(false);
             tabHome.ResumeLayout(false);
             tableLayoutPanel1.ResumeLayout(false);

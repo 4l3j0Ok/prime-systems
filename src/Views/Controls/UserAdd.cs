@@ -11,14 +11,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace PrimeSystems.Views
+namespace PrimeSystems
 {
     public partial class UserAdd : UserControl
     {
         private UserController userController;
         private UsuarioTipoController usuarioTipoController;
         private UserModel currentUser;
-        private FormPrincipal? formPrincipal = Application.OpenForms.OfType<FormPrincipal>().FirstOrDefault();
+        private Main? formMain = Application.OpenForms.OfType<Main>().FirstOrDefault();
 
         public UserAdd(UserModel? user = null)
         {
@@ -159,25 +159,85 @@ namespace PrimeSystems.Views
             if (success)
             {
                 MessageBox.Show("Usuario guardado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                // Regresar a la vista de usuarios con las tarjetas actualizadas
+                ReturnToUsersView();
             }
             else
             {
                 MessageBox.Show("Error al guardar el usuario. El nombre de usuario, email o identificación ya existe.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            formPrincipal.LoadCardsOnTabPage(
-                formPrincipal.tabUsers,
-                () => new UserController(),
-                (user) => new UserCard(user)
-            );
         }
 
         private void mepUserAdd_CancelClick(object sender, EventArgs e)
         {
-            formPrincipal.LoadCardsOnTabPage(
-                formPrincipal.tabUsers,
-                () => new UserController(),
-                (user) => new UserCard(user)
+            ReturnToUsersView();
+        }
+
+        private void ReturnToUsersView()
+        {
+            if (formMain != null)
+            {
+                formMain.LoadCardsOnTabPage<UserModel>(
+                    formMain.tabUsers,
+                    () => new UserController(),
+                    (user) => new Card(
+                        title: user.Username,
+                        description: $"{user.Name} {user.LastName}",
+                        picture: GetUserProfilePicture(user),
+                        editCallback: () => formMain.ShowControlInTabPage(formMain.tabUsers, new UserAdd(user)),
+                        removeCallback: () => ShowRemoveUserConfirmation(user)
+                    )
+                );
+            }
+        }
+
+        private Bitmap? GetUserProfilePicture(UserModel user)
+        {
+             if (user.ProfilePicture != null && user.ProfilePicture.Length > 0)
+           {
+         var image = Utils.ByteArrayToImage(user.ProfilePicture);
+          if (image is Bitmap bitmap)
+         {
+        return bitmap;
+          }
+          else if (image != null)
+       {
+        return new Bitmap(image);
+          }
+    }
+     return new Bitmap(Config.default_profile_picture);
+        }
+
+        private void ShowRemoveUserConfirmation(UserModel user)
+        {
+            var result = MessageBox.Show(
+                $"¿Está seguro que desea eliminar al usuario '{user.Username}'?",
+                "Confirmar eliminación",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question
             );
+
+            if (result == DialogResult.Yes && formMain != null)
+            {
+                try
+                {
+                    bool success = userController.Delete(user.Id);
+        
+                    if (success)
+                    {
+                        MessageBox.Show("Usuario eliminado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        ReturnToUsersView();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error al eliminar el usuario.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error al eliminar el usuario: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
     }
 }
