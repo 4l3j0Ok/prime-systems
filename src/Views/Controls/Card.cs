@@ -12,7 +12,7 @@ using System.Windows.Forms;
 using ReaLTaiizor.Forms;
 using PrimeSystems.Core;
 
-namespace PrimeSystems
+namespace PrimeSystems.Views.Controls
 {
     public partial class Card : UserControl
     {

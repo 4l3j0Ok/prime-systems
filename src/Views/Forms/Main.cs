@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PrimeSystems.Controllers;
+using PrimeSystems.Views.Controls;
 using PrimeSystems.Core;
 using PrimeSystems.Models;
 using PrimeSystems.Views;
@@ -11,6 +12,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using System.Collections.Generic;
 using System.Linq;
+using Panel = System.Windows.Forms.Panel;
 
 namespace PrimeSystems
 {
@@ -30,15 +32,15 @@ namespace PrimeSystems
         {
             LoadCardsOnTabPage<UserModel>(
                 tabUsers,
-                () => new UserController(),
-                (user) => new Card(
-                    title: user.Username,
-                    description: $"{user.Name} {user.LastName}",
-                    picture: GetUserProfilePicture(user),
-                    editCallback: () => ShowUserEditForm(user),
-                    removeCallback: () => RemoveUser(user)
+                    () => new UserController(),
+                    (user) => new Card(
+                title: user.Username,
+                description: $"{user.Name} {user.LastName}",
+                picture: GetUserProfilePicture(user),
+                editCallback: () => ShowUserEditForm(user),
+                removeCallback: () => RemoveUser(user)
                 )
-            );
+                    );
             SaveOriginalTabContents();
         }
 
@@ -61,10 +63,7 @@ namespace PrimeSystems
 
         private void ShowUserEditForm(UserModel user)
         {
-            ShowControlInTabPage(
-                tabUsers,
-                new UserAdd(user)
-            );
+            ShowControlInTabPage(tabUsers, new UserAdd(user));
         }
 
         private void RemoveUser(UserModel user)
@@ -86,7 +85,7 @@ namespace PrimeSystems
                     if (success)
                     {
                         MessageBox.Show("Usuario eliminado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        // Recargar las tarjetas de usuarios
+                        // Recargar las tarjetas de usuarios usando la función genérica
                         LoadCardsOnTabPage<UserModel>(
                             tabUsers,
                             () => new UserController(),
@@ -130,56 +129,103 @@ namespace PrimeSystems
             Func<T, Card> cardFactory
         )
         {
-            var controller = controllerFactory();
-            List<T> items = controller.GetAll() ?? new List<T>();
-
-            foreach (Control control in tabPage.Controls)
+            try
             {
-                if (control is FlowLayoutPanel flp)
+                var controller = controllerFactory();
+                List<T> items = controller.GetAll() ?? new List<T>();
+
+                Debug.WriteLine($"LoadCardsOnTabPage: Found {items.Count} items for tab {tabPage.Name}");
+                Panel? mainPanel = GetMainPanel(tabPage);
+                mainPanel.SuspendLayout();
+                foreach (Control existingControl in mainPanel.Controls)
                 {
-                    flp.SuspendLayout();
-
-                    // Dispose of existing images to prevent memory leaks
-                    foreach (Control existingControl in flp.Controls)
+                    if (existingControl is Card card && card.pbPicture.Image != null)
                     {
-                        if (existingControl is Card card)
-                        {
-                            if (card.pbPicture.Image != null)
-                            {
-                                card.pbPicture.Image.Dispose();
-                            }
-                        }
+                        card.pbPicture.Image.Dispose(); // Para liberar recursos
                     }
-
-                    flp.Controls.Clear();
-
-                    foreach (T item in items)
-                    {
-                        Card card = cardFactory(item);
-                        card.Dock = DockStyle.Top;
-                        card.Margin = new Padding(10);
-                        flp.Controls.Add(card);
-                    }
-
-                    flp.ResumeLayout();
-                    break;
                 }
+                mainPanel.Controls.Clear();
+                // Manejar el estado vacío
+                if (items.Count == 0)
+                {
+                    tabPage.Controls.Add(new MaterialLabel
+                    {
+                        Name = "lblEmpty",
+                        Text = "No hay elementos para mostrar.",
+                        Dock = DockStyle.Fill,
+                        TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
+                    });
+                    return;
+                }
+                CardHeader header = new CardHeader();
+                header.Dock = DockStyle.Top;
+                foreach (T item in items)
+                {
+                    Card card = cardFactory(item);
+                    card.Dock = DockStyle.Top;
+                    card.Margin = new Padding(10);
+                    mainPanel.Controls.Add(card);
+                }
+                mainPanel.Controls.Add(header);
+                mainPanel.ResumeLayout();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"LoadCardsOnTabPage: Error - {ex.Message}");
+                MessageBox.Show($"Error al cargar elementos: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void btnAddUser_Click(object sender, EventArgs e)
         {
-            ShowControlInTabPage(
-                tabUsers,
-                new UserAdd()
-            );
+            ShowControlInTabPage(tabUsers, new UserAdd());
         }
 
         public void ShowControlInTabPage(System.Windows.Forms.TabPage tabPage, Control controlToShow)
         {
+            if (!originalTabContents.ContainsKey(tabPage))
+            {
+                var controls = new List<Control>();
+                foreach (Control control in tabPage.Controls)
+                {
+                    controls.Add(control);
+                }
+                originalTabContents[tabPage] = controls;
+            }
             tabPage.Controls.Clear();
             controlToShow.Dock = DockStyle.Fill;
             tabPage.Controls.Add(controlToShow);
+        }
+
+        public void RestoreTabPage(System.Windows.Forms.TabPage tabPage)
+        {
+            if (originalTabContents.ContainsKey(tabPage))
+            {
+                // Primero restaurar los controles originales
+                tabPage.Controls.Clear();
+                foreach (Control control in originalTabContents[tabPage])
+                {
+                    tabPage.Controls.Add(control);
+                }
+                
+                // Luego cargar las tarjetas en el panel restaurado
+                LoadCardsOnTabPage<UserModel>(
+                    tabUsers,
+                    () => new UserController(),
+                    (user) => new Card(
+                        title: user.Username,
+                        description: $"{user.Name} {user.LastName}",
+                        picture: GetUserProfilePicture(user),
+                        editCallback: () => ShowUserEditForm(user),
+                        removeCallback: () => RemoveUser(user)
+                    )
+                );
+            }
+        }
+
+        private Panel GetMainPanel(System.Windows.Forms.TabPage tabPage)
+        {
+            return tabPage.Controls.OfType<Panel>().FirstOrDefault();
         }
 
         private void tabCerrarSesion_Click(object sender, EventArgs e)

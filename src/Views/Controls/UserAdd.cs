@@ -177,17 +177,7 @@ namespace PrimeSystems
         {
             if (formMain != null)
             {
-                formMain.LoadCardsOnTabPage<UserModel>(
-                    formMain.tabUsers,
-                    () => new UserController(),
-                    (user) => new Card(
-                        title: user.Username,
-                        description: $"{user.Name} {user.LastName}",
-                        picture: GetUserProfilePicture(user),
-                        editCallback: () => formMain.ShowControlInTabPage(formMain.tabUsers, new UserAdd(user)),
-                        removeCallback: () => ShowRemoveUserConfirmation(user)
-                    )
-                );
+                formMain.RestoreTabPage(formMain.tabUsers);
             }
         }
 

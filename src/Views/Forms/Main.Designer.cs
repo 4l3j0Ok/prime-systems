@@ -44,8 +44,7 @@ namespace PrimeSystems
             imgList = new ImageList(components);
             tabUsers = new TabPage();
             btnAddUser = new ReaLTaiizor.Controls.MaterialFloatingActionButton();
-            lblEmptyUsers = new ReaLTaiizor.Controls.MaterialLabel();
-            flpUsersList = new FlowLayoutPanel();
+            panel1 = new Panel();
             tabHome = new TabPage();
             tableLayoutPanel1 = new TableLayoutPanel();
             pictureBox1 = new PictureBox();
@@ -82,8 +81,7 @@ namespace PrimeSystems
             // 
             tabUsers.AutoScroll = true;
             tabUsers.Controls.Add(btnAddUser);
-            tabUsers.Controls.Add(lblEmptyUsers);
-            tabUsers.Controls.Add(flpUsersList);
+            tabUsers.Controls.Add(panel1);
             tabUsers.ImageKey = "user.png";
             tabUsers.Location = new Point(4, 39);
             tabUsers.Name = "tabUsers";
@@ -97,7 +95,7 @@ namespace PrimeSystems
             // 
             btnAddUser.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnAddUser.Depth = 0;
-            btnAddUser.Icon = null;
+            btnAddUser.Icon = Properties.Resources.add_user;
             btnAddUser.Location = new Point(877, 431);
             btnAddUser.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             btnAddUser.Name = "btnAddUser";
@@ -107,28 +105,13 @@ namespace PrimeSystems
             btnAddUser.UseVisualStyleBackColor = true;
             btnAddUser.Click += btnAddUser_Click;
             // 
-            // lblEmptyUsers
+            // panel1
             // 
-            lblEmptyUsers.Depth = 0;
-            lblEmptyUsers.Dock = DockStyle.Fill;
-            lblEmptyUsers.FlatStyle = FlatStyle.Flat;
-            lblEmptyUsers.Font = new Font("Roboto", 24F, FontStyle.Bold, GraphicsUnit.Pixel);
-            lblEmptyUsers.FontType = ReaLTaiizor.Manager.MaterialSkinManager.FontType.H5;
-            lblEmptyUsers.Location = new Point(20, 20);
-            lblEmptyUsers.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
-            lblEmptyUsers.Name = "lblEmptyUsers";
-            lblEmptyUsers.Size = new Size(896, 450);
-            lblEmptyUsers.TabIndex = 5;
-            lblEmptyUsers.Text = "Aún no tienes usuarios agregados... Comienza por agregar uno.";
-            lblEmptyUsers.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // flpUsersList
-            // 
-            flpUsersList.Dock = DockStyle.Fill;
-            flpUsersList.Location = new Point(20, 20);
-            flpUsersList.Name = "flpUsersList";
-            flpUsersList.Size = new Size(896, 450);
-            flpUsersList.TabIndex = 1;
+            panel1.Dock = DockStyle.Fill;
+            panel1.Location = new Point(20, 20);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(896, 450);
+            panel1.TabIndex = 6;
             // 
             // tabHome
             // 
@@ -307,12 +290,11 @@ namespace PrimeSystems
         public ReaLTaiizor.Controls.MaterialTabControl tcPrincipal;
         public TabPage tabUsers;
         private FlowLayoutPanel flowLayoutPanel4;
-        private ReaLTaiizor.Controls.MaterialLabel lblEmptyUsers;
         public TabPage tabBlackBoard;
-        private FlowLayoutPanel flpUsersList;
         private TabPage tabPurchases;
         private TabPage tabSells;
         private TabPage tabProviders;
         private TabPage tabFinancialState;
+        private Panel panel1;
     }
 }

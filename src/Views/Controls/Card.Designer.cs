@@ -9,7 +9,7 @@ using System.Data;
 using System.Windows.Forms;
 using System.Drawing;
 
-namespace PrimeSystems
+namespace PrimeSystems.Views.Controls
 {
     partial class Card
     {
@@ -59,7 +59,6 @@ namespace PrimeSystems
             tableLayoutPanel1.ColumnCount = 2;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
             tableLayoutPanel1.Controls.Add(pbPicture, 0, 0);
             tableLayoutPanel1.Controls.Add(tableLayoutPanel2, 1, 0);
             tableLayoutPanel1.Dock = DockStyle.Fill;
@@ -67,7 +66,7 @@ namespace PrimeSystems
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 1;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel1.Size = new Size(598, 70);
+            tableLayoutPanel1.Size = new Size(410, 58);
             tableLayoutPanel1.TabIndex = 4;
             // 
             // pbPicture
@@ -86,7 +85,7 @@ namespace PrimeSystems
             pbPicture.Margin = new Padding(9, 8, 9, 8);
             pbPicture.Name = "pbPicture";
             pbPicture.PixelOffsetType = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-            pbPicture.Size = new Size(50, 54);
+            pbPicture.Size = new Size(42, 42);
             pbPicture.SmoothingType = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             pbPicture.TabIndex = 1;
             pbPicture.Text = "parrotPictureBox1";
@@ -95,16 +94,16 @@ namespace PrimeSystems
             // tableLayoutPanel2
             // 
             tableLayoutPanel2.ColumnCount = 2;
-            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel2.Controls.Add(panel1, 0, 0);
             tableLayoutPanel2.Controls.Add(tableLayoutPanel3, 1, 0);
             tableLayoutPanel2.Dock = DockStyle.Fill;
-            tableLayoutPanel2.Location = new Point(71, 3);
+            tableLayoutPanel2.Location = new Point(63, 3);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 1;
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel2.Size = new Size(524, 64);
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel2.Size = new Size(344, 52);
             tableLayoutPanel2.TabIndex = 2;
             // 
             // panel1
@@ -112,11 +111,11 @@ namespace PrimeSystems
             panel1.Controls.Add(lblDescription);
             panel1.Controls.Add(lblTitle);
             panel1.Dock = DockStyle.Fill;
-            panel1.Location = new Point(0, 0);
-            panel1.Margin = new Padding(0);
+            panel1.Location = new Point(0, 4);
+            panel1.Margin = new Padding(0, 4, 0, 5);
             panel1.Name = "panel1";
             panel1.Padding = new Padding(4);
-            panel1.Size = new Size(262, 64);
+            panel1.Size = new Size(78, 43);
             panel1.TabIndex = 3;
             // 
             // lblDescription
@@ -132,7 +131,6 @@ namespace PrimeSystems
             lblDescription.Size = new Size(64, 14);
             lblDescription.TabIndex = 7;
             lblDescription.Text = "Descripcion";
-            lblDescription.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // lblTitle
             // 
@@ -156,13 +154,14 @@ namespace PrimeSystems
             tableLayoutPanel3.Controls.Add(btnRemove, 1, 0);
             tableLayoutPanel3.Controls.Add(btnEdit, 0, 0);
             tableLayoutPanel3.Dock = DockStyle.Fill;
-            tableLayoutPanel3.Location = new Point(262, 0);
+            tableLayoutPanel3.Location = new Point(78, 0);
             tableLayoutPanel3.Margin = new Padding(0);
+            tableLayoutPanel3.MaximumSize = new Size(266, 0);
             tableLayoutPanel3.Name = "tableLayoutPanel3";
-            tableLayoutPanel3.Padding = new Padding(0, 5, 0, 5);
+            tableLayoutPanel3.Padding = new Padding(0, 3, 0, 3);
             tableLayoutPanel3.RowCount = 1;
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel3.Size = new Size(262, 64);
+            tableLayoutPanel3.Size = new Size(266, 52);
             tableLayoutPanel3.TabIndex = 4;
             // 
             // btnRemove
@@ -174,12 +173,12 @@ namespace PrimeSystems
             btnRemove.HighEmphasis = true;
             btnRemove.Icon = Properties.Resources.trash;
             btnRemove.IconType = ReaLTaiizor.Controls.MaterialButton.MaterialIconType.Rebase;
-            btnRemove.Location = new Point(135, 11);
+            btnRemove.Location = new Point(137, 9);
             btnRemove.Margin = new Padding(4, 6, 4, 6);
             btnRemove.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             btnRemove.Name = "btnRemove";
             btnRemove.NoAccentTextColor = Color.Empty;
-            btnRemove.Size = new Size(123, 42);
+            btnRemove.Size = new Size(125, 34);
             btnRemove.TabIndex = 6;
             btnRemove.Text = "Remover";
             btnRemove.Type = ReaLTaiizor.Controls.MaterialButton.MaterialButtonType.Contained;
@@ -195,12 +194,12 @@ namespace PrimeSystems
             btnEdit.HighEmphasis = true;
             btnEdit.Icon = Properties.Resources.edit;
             btnEdit.IconType = ReaLTaiizor.Controls.MaterialButton.MaterialIconType.Rebase;
-            btnEdit.Location = new Point(4, 11);
+            btnEdit.Location = new Point(4, 9);
             btnEdit.Margin = new Padding(4, 6, 4, 6);
             btnEdit.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             btnEdit.Name = "btnEdit";
             btnEdit.NoAccentTextColor = Color.Empty;
-            btnEdit.Size = new Size(123, 42);
+            btnEdit.Size = new Size(125, 34);
             btnEdit.TabIndex = 5;
             btnEdit.Text = "Editar";
             btnEdit.Type = ReaLTaiizor.Controls.MaterialButton.MaterialButtonType.Contained;
@@ -214,9 +213,9 @@ namespace PrimeSystems
             BackColor = Color.White;
             Controls.Add(tableLayoutPanel1);
             Cursor = Cursors.Hand;
-            MinimumSize = new Size(400, 70);
+            MinimumSize = new Size(410, 58);
             Name = "Card";
-            Size = new Size(598, 70);
+            Size = new Size(410, 58);
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel2.ResumeLayout(false);
             panel1.ResumeLayout(false);
