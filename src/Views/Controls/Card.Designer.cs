@@ -48,6 +48,7 @@ namespace PrimeSystems.Views.Controls
             tableLayoutPanel3 = new TableLayoutPanel();
             btnRemove = new ReaLTaiizor.Controls.MaterialButton();
             btnEdit = new ReaLTaiizor.Controls.MaterialButton();
+            materialCheckBox1 = new ReaLTaiizor.Controls.MaterialCheckBox();
             tableLayoutPanel1.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             panel1.SuspendLayout();
@@ -56,17 +57,19 @@ namespace PrimeSystems.Views.Controls
             // 
             // tableLayoutPanel1
             // 
-            tableLayoutPanel1.ColumnCount = 2;
+            tableLayoutPanel1.ColumnCount = 3;
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel1.Controls.Add(pbPicture, 0, 0);
-            tableLayoutPanel1.Controls.Add(tableLayoutPanel2, 1, 0);
+            tableLayoutPanel1.Controls.Add(pbPicture, 1, 0);
+            tableLayoutPanel1.Controls.Add(tableLayoutPanel2, 2, 0);
+            tableLayoutPanel1.Controls.Add(materialCheckBox1, 0, 0);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 1;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel1.Size = new Size(410, 58);
+            tableLayoutPanel1.Size = new Size(991, 58);
             tableLayoutPanel1.TabIndex = 4;
             // 
             // pbPicture
@@ -81,13 +84,13 @@ namespace PrimeSystems.Views.Controls
             pbPicture.InterpolationType = System.Drawing.Drawing2D.InterpolationMode.Low;
             pbPicture.IsElipse = true;
             pbPicture.IsParallax = false;
-            pbPicture.Location = new Point(9, 8);
+            pbPicture.Location = new Point(44, 8);
             pbPicture.Margin = new Padding(9, 8, 9, 8);
             pbPicture.Name = "pbPicture";
             pbPicture.PixelOffsetType = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
             pbPicture.Size = new Size(42, 42);
             pbPicture.SmoothingType = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            pbPicture.TabIndex = 1;
+            pbPicture.TabIndex = 3;
             pbPicture.Text = "parrotPictureBox1";
             pbPicture.TextRenderingType = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
             // 
@@ -99,12 +102,12 @@ namespace PrimeSystems.Views.Controls
             tableLayoutPanel2.Controls.Add(panel1, 0, 0);
             tableLayoutPanel2.Controls.Add(tableLayoutPanel3, 1, 0);
             tableLayoutPanel2.Dock = DockStyle.Fill;
-            tableLayoutPanel2.Location = new Point(63, 3);
+            tableLayoutPanel2.Location = new Point(98, 3);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 1;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel2.Size = new Size(344, 52);
-            tableLayoutPanel2.TabIndex = 2;
+            tableLayoutPanel2.Size = new Size(890, 52);
+            tableLayoutPanel2.TabIndex = 4;
             // 
             // panel1
             // 
@@ -115,7 +118,7 @@ namespace PrimeSystems.Views.Controls
             panel1.Margin = new Padding(0, 4, 0, 5);
             panel1.Name = "panel1";
             panel1.Padding = new Padding(4);
-            panel1.Size = new Size(78, 43);
+            panel1.Size = new Size(624, 43);
             panel1.TabIndex = 3;
             // 
             // lblDescription
@@ -154,7 +157,7 @@ namespace PrimeSystems.Views.Controls
             tableLayoutPanel3.Controls.Add(btnRemove, 1, 0);
             tableLayoutPanel3.Controls.Add(btnEdit, 0, 0);
             tableLayoutPanel3.Dock = DockStyle.Fill;
-            tableLayoutPanel3.Location = new Point(78, 0);
+            tableLayoutPanel3.Location = new Point(624, 0);
             tableLayoutPanel3.Margin = new Padding(0);
             tableLayoutPanel3.MaximumSize = new Size(266, 0);
             tableLayoutPanel3.Name = "tableLayoutPanel3";
@@ -167,6 +170,7 @@ namespace PrimeSystems.Views.Controls
             // btnRemove
             // 
             btnRemove.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            btnRemove.Cursor = Cursors.Hand;
             btnRemove.Density = ReaLTaiizor.Controls.MaterialButton.MaterialButtonDensity.Default;
             btnRemove.Depth = 0;
             btnRemove.Dock = DockStyle.Fill;
@@ -188,6 +192,7 @@ namespace PrimeSystems.Views.Controls
             // btnEdit
             // 
             btnEdit.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            btnEdit.Cursor = Cursors.Hand;
             btnEdit.Density = ReaLTaiizor.Controls.MaterialButton.MaterialButtonDensity.Default;
             btnEdit.Depth = 0;
             btnEdit.Dock = DockStyle.Fill;
@@ -206,17 +211,35 @@ namespace PrimeSystems.Views.Controls
             btnEdit.UseAccentColor = false;
             btnEdit.UseVisualStyleBackColor = true;
             // 
+            // materialCheckBox1
+            // 
+            materialCheckBox1.AutoSize = true;
+            materialCheckBox1.Depth = 0;
+            materialCheckBox1.Dock = DockStyle.Fill;
+            materialCheckBox1.Location = new Point(0, 0);
+            materialCheckBox1.Margin = new Padding(0);
+            materialCheckBox1.MouseLocation = new Point(-1, -1);
+            materialCheckBox1.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
+            materialCheckBox1.Name = "materialCheckBox1";
+            materialCheckBox1.ReadOnly = false;
+            materialCheckBox1.Ripple = true;
+            materialCheckBox1.Size = new Size(35, 58);
+            materialCheckBox1.TabIndex = 0;
+            materialCheckBox1.UseAccentColor = false;
+            materialCheckBox1.UseVisualStyleBackColor = true;
+            materialCheckBox1.Visible = false;
+            // 
             // Card
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
             Controls.Add(tableLayoutPanel1);
-            Cursor = Cursors.Hand;
             MinimumSize = new Size(410, 58);
             Name = "Card";
-            Size = new Size(410, 58);
+            Size = new Size(991, 58);
             tableLayoutPanel1.ResumeLayout(false);
+            tableLayoutPanel1.PerformLayout();
             tableLayoutPanel2.ResumeLayout(false);
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
@@ -236,5 +259,6 @@ namespace PrimeSystems.Views.Controls
         private TableLayoutPanel tableLayoutPanel3;
         private ReaLTaiizor.Controls.MaterialButton btnRemove;
         private ReaLTaiizor.Controls.MaterialButton btnEdit;
+        private ReaLTaiizor.Controls.MaterialCheckBox materialCheckBox1;
     }
 }

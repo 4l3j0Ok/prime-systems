@@ -177,7 +177,7 @@ namespace PrimeSystems
         {
             if (formMain != null)
             {
-                formMain.RestoreTabPage(formMain.tabUsers);
+                formMain.RestoreTabPage(formMain.tpUsers);
             }
         }
 

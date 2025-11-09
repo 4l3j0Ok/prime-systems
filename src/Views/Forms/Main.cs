@@ -31,7 +31,7 @@ namespace PrimeSystems
         private void Main_Load(object sender, EventArgs e)
         {
             LoadCardsOnTabPage<UserModel>(
-                tabUsers,
+                tpUsers,
                     () => new UserController(),
                     (user) => new Card(
                 title: user.Username,
@@ -63,7 +63,7 @@ namespace PrimeSystems
 
         private void ShowUserEditForm(UserModel user)
         {
-            ShowControlInTabPage(tabUsers, new UserAdd(user));
+            ShowControlInTabPage(tpUsers, new UserAdd(user));
         }
 
         private void RemoveUser(UserModel user)
@@ -87,7 +87,7 @@ namespace PrimeSystems
                         MessageBox.Show("Usuario eliminado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         // Recargar las tarjetas de usuarios usando la función genérica
                         LoadCardsOnTabPage<UserModel>(
-                            tabUsers,
+                            tpUsers,
                             () => new UserController(),
                             (u) => new Card(
                                 title: u.Username,
@@ -157,15 +157,26 @@ namespace PrimeSystems
                     });
                     return;
                 }
-                CardHeader header = new CardHeader();
-                header.Dock = DockStyle.Top;
+                
                 foreach (T item in items)
                 {
                     Card card = cardFactory(item);
                     card.Dock = DockStyle.Top;
-                    card.Margin = new Padding(10);
                     mainPanel.Controls.Add(card);
+                    // Espaciador porque el DockStyle.Top no respeta la propiedad de margen
+                    Panel spacer = new Panel();
+                    spacer.Height = 5;
+                    spacer.Dock = DockStyle.Top;
+                    mainPanel.Controls.Add(spacer);
                 }
+                // Mismo espaciador para el header pero un poco más grande
+                Panel headerSpacer = new Panel();
+                headerSpacer.Height = 8;
+                headerSpacer.Dock = DockStyle.Top;
+                mainPanel.Controls.Add(headerSpacer);
+                // Header de las tarjetas
+                CardHeader header = new CardHeader();
+                header.Dock = DockStyle.Top;
                 mainPanel.Controls.Add(header);
                 mainPanel.ResumeLayout();
             }
@@ -178,7 +189,7 @@ namespace PrimeSystems
 
         private void btnAddUser_Click(object sender, EventArgs e)
         {
-            ShowControlInTabPage(tabUsers, new UserAdd());
+            ShowControlInTabPage(tpUsers, new UserAdd());
         }
 
         public void ShowControlInTabPage(System.Windows.Forms.TabPage tabPage, Control controlToShow)
@@ -210,7 +221,7 @@ namespace PrimeSystems
                 
                 // Luego cargar las tarjetas en el panel restaurado
                 LoadCardsOnTabPage<UserModel>(
-                    tabUsers,
+                    tpUsers,
                     () => new UserController(),
                     (user) => new Card(
                         title: user.Username,
