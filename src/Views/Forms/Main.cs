@@ -1,29 +1,21 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using PrimeSystems.Controllers;
+﻿using PrimeSystems.Controllers;
 using PrimeSystems.Views.Controls;
 using PrimeSystems.Core;
 using PrimeSystems.Models;
-using PrimeSystems.Views;
+using PrimeSystems.Views.Forms.Add;
 using ReaLTaiizor.Controls;
 using ReaLTaiizor.Forms;
 using System.Diagnostics;
-using System.Drawing.Printing;
-using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
-using System.Collections.Generic;
-using System.Linq;
 using Panel = System.Windows.Forms.Panel;
 
 namespace PrimeSystems
 {
     public partial class Main : MaterialForm
     {
-        private readonly UserModel currentUser;
         private readonly Dictionary<System.Windows.Forms.TabPage, List<Control>> originalTabContents = new Dictionary<System.Windows.Forms.TabPage, List<Control>>();
 
-        public Main(UserModel currentUser)
+        public Main()
         {
-            this.currentUser = currentUser;
             UIConfig.GetSkinManager().AddFormToManage(this);
             InitializeComponent();
         }
@@ -37,12 +29,25 @@ namespace PrimeSystems
                 title: user.Username,
                 description: $"{user.Name} {user.LastName}",
                 picture: GetUserProfilePicture(user),
-                editCallback: () => ShowUserEditForm(user),
+                editCallback: () => ShowControlInTabPage(tpUsers, new User(user)),
                 removeCallback: () => RemoveUser(user)
                 )
                     );
             SaveOriginalTabContents();
+            PositionFloatingButtonsInTabControl(tcMain);
+            EnableDoubleBuffer(this);
         }
+
+        void EnableDoubleBuffer(Control c)
+        {
+            typeof(Control).GetProperty("DoubleBuffered",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                ?.SetValue(c, true, null);
+
+            foreach (Control child in c.Controls)
+                EnableDoubleBuffer(child);
+        }
+
 
         private Bitmap? GetUserProfilePicture(UserModel user)
         {
@@ -59,11 +64,6 @@ namespace PrimeSystems
                 }
             }
             return new Bitmap(Config.default_profile_picture);
-        }
-
-        private void ShowUserEditForm(UserModel user)
-        {
-            ShowControlInTabPage(tpUsers, new UserAdd(user));
         }
 
         private void RemoveUser(UserModel user)
@@ -93,7 +93,7 @@ namespace PrimeSystems
                                 title: u.Username,
                                 description: $"{u.Name} {u.LastName}",
                                 picture: GetUserProfilePicture(u),
-                                editCallback: () => ShowUserEditForm(u),
+                                editCallback: () => ShowControlInTabPage(tpUsers, new User(u)),
                                 removeCallback: () => RemoveUser(u)
                             )
                         );
@@ -112,7 +112,7 @@ namespace PrimeSystems
 
         private void SaveOriginalTabContents()
         {
-            foreach (System.Windows.Forms.TabPage tabPage in tcPrincipal.TabPages)
+            foreach (System.Windows.Forms.TabPage tabPage in tcMain.TabPages)
             {
                 var controls = new List<Control>();
                 foreach (Control control in tabPage.Controls)
@@ -157,7 +157,7 @@ namespace PrimeSystems
                     });
                     return;
                 }
-                
+
                 foreach (T item in items)
                 {
                     Card card = cardFactory(item);
@@ -189,7 +189,7 @@ namespace PrimeSystems
 
         private void btnAddUser_Click(object sender, EventArgs e)
         {
-            ShowControlInTabPage(tpUsers, new UserAdd());
+            ShowControlInTabPage(tpUsers, new User());
         }
 
         public void ShowControlInTabPage(System.Windows.Forms.TabPage tabPage, Control controlToShow)
@@ -218,7 +218,7 @@ namespace PrimeSystems
                 {
                     tabPage.Controls.Add(control);
                 }
-                
+
                 // Luego cargar las tarjetas en el panel restaurado
                 LoadCardsOnTabPage<UserModel>(
                     tpUsers,
@@ -227,12 +227,70 @@ namespace PrimeSystems
                         title: user.Username,
                         description: $"{user.Name} {user.LastName}",
                         picture: GetUserProfilePicture(user),
-                        editCallback: () => ShowUserEditForm(user),
+                        editCallback: () => ShowControlInTabPage(tpUsers, new User(user)),
                         removeCallback: () => RemoveUser(user)
                     )
                 );
             }
         }
+
+        private void PositionFloatingButtonsInTabControl(ReaLTaiizor.Controls.MaterialTabControl tabControl)
+        {
+            const int MARGIN = 30;
+
+            foreach (System.Windows.Forms.TabPage tabPage in tabControl.TabPages)
+            {
+                foreach (Control control in tabPage.Controls)
+                {
+                    if (control is ReaLTaiizor.Controls.MaterialTabControl nestedTabControl)
+                    {
+                        PositionFloatingButtonsInTabControl(nestedTabControl);
+                    }
+                }
+                PositionFloatingButtonsInContainer(tabPage, MARGIN);
+            }
+        }
+
+        private void PositionFloatingButtonsInContainer(Control container, int margin)
+        {
+            const int BUTTON_SPACING = 10; // Spacing between buttons
+
+            var floatingButtons = new List<ReaLTaiizor.Controls.MaterialFloatingActionButton>();
+
+            // Collect all floating buttons
+            foreach (Control control in container.Controls)
+            {
+                if (control is ReaLTaiizor.Controls.MaterialFloatingActionButton btnFloat)
+                {
+                    floatingButtons.Add(btnFloat);
+                }
+            }
+
+            if (floatingButtons.Count == 0)
+                return;
+
+            // Calculate starting Y position (bottom of container minus margin)
+            int currentY = container.ClientSize.Height - margin;
+
+            // Position buttons from bottom to top
+            for (int i = floatingButtons.Count - 1; i >= 0; i--)
+            {
+                var btnFloat = floatingButtons[i];
+                btnFloat.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+
+                // Position button
+                btnFloat.Location = new Point(
+                    container.ClientSize.Width - btnFloat.Width - margin,
+                    currentY - btnFloat.Height
+                );
+
+                btnFloat.BringToFront();
+
+                // Move up for next button
+                currentY -= (btnFloat.Height + BUTTON_SPACING);
+            }
+        }
+
 
         private Panel GetMainPanel(System.Windows.Forms.TabPage tabPage)
         {
@@ -243,6 +301,21 @@ namespace PrimeSystems
         {
             // Reiniciar el programa
             Application.Restart();
+        }
+
+        private void btnAddSell_Click(object sender, EventArgs e)
+        {
+            ShowControlInTabPage(tpSells, new Sell());
+        }
+
+        private void Main_ResizeBegin(object sender, EventArgs e)
+        {
+            this.SuspendLayout();
+        }
+
+        private void Main_ResizeEnd(object sender, EventArgs e)
+        {
+            this.ResumeLayout();
         }
     }
 }

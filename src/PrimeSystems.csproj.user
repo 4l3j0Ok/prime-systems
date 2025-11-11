@@ -8,6 +8,9 @@
     <Compile Update="Views\Controls\MaterialExpansionPanelNonCollapsible.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Update="Views\Forms\Add\Sell.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="Views\Forms\CustomMessageBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -17,7 +20,7 @@
     <Compile Update="Views\Forms\Main.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Views\Controls\UserAdd.cs">
+    <Compile Update="Views\Forms\Add\User.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Update="Views\Controls\Card.cs">

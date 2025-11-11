@@ -11,16 +11,16 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace PrimeSystems
+namespace PrimeSystems.Views.Forms.Add
 {
-    public partial class UserAdd : UserControl
+    public partial class User : UserControl
     {
         private UserController userController;
         private UsuarioTipoController usuarioTipoController;
         private UserModel currentUser;
         private Main? formMain = Application.OpenForms.OfType<Main>().FirstOrDefault();
 
-        public UserAdd(UserModel? user = null)
+        public User(UserModel? user = null)
         {
             userController = new UserController();
             usuarioTipoController = new UsuarioTipoController();

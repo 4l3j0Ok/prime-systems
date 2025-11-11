@@ -49,7 +49,7 @@ namespace PrimeSystems
             tableLayoutPanel1 = new TableLayoutPanel();
             pictureBox1 = new PictureBox();
             lblWelcome = new ReaLTaiizor.Controls.MaterialLabel();
-            tcPrincipal = new ReaLTaiizor.Controls.MaterialTabControl();
+            tcMain = new ReaLTaiizor.Controls.MaterialTabControl();
             tpPurchases = new TabPage();
             materialTabControl1 = new ReaLTaiizor.Controls.MaterialTabControl();
             tpPurchasesHistory = new TabPage();
@@ -73,7 +73,7 @@ namespace PrimeSystems
             tpHome.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             ((ISupportInitialize)pictureBox1).BeginInit();
-            tcPrincipal.SuspendLayout();
+            tcMain.SuspendLayout();
             tpPurchases.SuspendLayout();
             materialTabControl1.SuspendLayout();
             tpSells.SuspendLayout();
@@ -190,26 +190,26 @@ namespace PrimeSystems
             lblWelcome.Text = "Bienvenido a Prime Systems";
             lblWelcome.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // tcPrincipal
+            // tcMain
             // 
-            tcPrincipal.Controls.Add(tpHome);
-            tcPrincipal.Controls.Add(tpPurchases);
-            tcPrincipal.Controls.Add(tpSells);
-            tcPrincipal.Controls.Add(tpFinancialState);
-            tcPrincipal.Controls.Add(tpUsers);
-            tcPrincipal.Controls.Add(tpLogout);
-            tcPrincipal.Depth = 0;
-            tcPrincipal.Dock = DockStyle.Fill;
-            tcPrincipal.ImageList = imgList;
-            tcPrincipal.ItemSize = new Size(120, 35);
-            tcPrincipal.Location = new Point(0, 64);
-            tcPrincipal.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
-            tcPrincipal.Multiline = true;
-            tcPrincipal.Name = "tcPrincipal";
-            tcPrincipal.Padding = new Point(10, 3);
-            tcPrincipal.SelectedIndex = 0;
-            tcPrincipal.Size = new Size(950, 514);
-            tcPrincipal.TabIndex = 0;
+            tcMain.Controls.Add(tpHome);
+            tcMain.Controls.Add(tpPurchases);
+            tcMain.Controls.Add(tpSells);
+            tcMain.Controls.Add(tpFinancialState);
+            tcMain.Controls.Add(tpUsers);
+            tcMain.Controls.Add(tpLogout);
+            tcMain.Depth = 0;
+            tcMain.Dock = DockStyle.Fill;
+            tcMain.ImageList = imgList;
+            tcMain.ItemSize = new Size(120, 35);
+            tcMain.Location = new Point(0, 64);
+            tcMain.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
+            tcMain.Multiline = true;
+            tcMain.Name = "tcMain";
+            tcMain.Padding = new Point(10, 3);
+            tcMain.SelectedIndex = 0;
+            tcMain.Size = new Size(950, 514);
+            tcMain.TabIndex = 0;
             // 
             // tpPurchases
             // 
@@ -319,6 +319,7 @@ namespace PrimeSystems
             btnAddSell.Size = new Size(56, 56);
             btnAddSell.TabIndex = 0;
             btnAddSell.UseVisualStyleBackColor = true;
+            btnAddSell.Click += btnAddSell_Click;
             // 
             // tpSellsClients
             // 
@@ -428,10 +429,10 @@ namespace PrimeSystems
             AutoScroll = true;
             BackColor = Color.FromArgb(224, 224, 224);
             ClientSize = new Size(950, 600);
-            Controls.Add(tcPrincipal);
+            Controls.Add(tcMain);
             Controls.Add(statusStrip1);
             DrawerShowIconsWhenHidden = true;
-            DrawerTabControl = tcPrincipal;
+            DrawerTabControl = tcMain;
             DrawerUseColors = true;
             Icon = (Icon)resources.GetObject("$this.Icon");
             MinimumSize = new Size(800, 600);
@@ -440,12 +441,14 @@ namespace PrimeSystems
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Prime Systems";
             Load += Main_Load;
+            ResizeBegin += Main_ResizeBegin;
+            ResizeEnd += Main_ResizeEnd;
             tpUsers.ResumeLayout(false);
             tpHome.ResumeLayout(false);
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
             ((ISupportInitialize)pictureBox1).EndInit();
-            tcPrincipal.ResumeLayout(false);
+            tcMain.ResumeLayout(false);
             tpPurchases.ResumeLayout(false);
             materialTabControl1.ResumeLayout(false);
             tpSells.ResumeLayout(false);
@@ -470,7 +473,7 @@ namespace PrimeSystems
         private DataGridView dataGridView1;
         private ReaLTaiizor.Controls.MaterialFloatingActionButton btnAddUser;
         private TabPage tpLogout;
-        public ReaLTaiizor.Controls.MaterialTabControl tcPrincipal;
+        public ReaLTaiizor.Controls.MaterialTabControl tcMain;
         public TabPage tpUsers;
         private FlowLayoutPanel flowLayoutPanel4;
         public TabPage tabBlackBoard;

@@ -79,8 +79,8 @@ namespace PrimeSystems
                 MessageBox.Show("Usuario o contraseña incorrectos.", "Error de autenticación", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
-            Main Main = new Main(currentUser: user);
+            Session.CurrentUser = user;
+            Main Main = new Main();
             Main.Show();
             this.Hide();
         }
