@@ -16,5 +16,13 @@ namespace PrimeSystems.Views.Forms.Add
         {
             InitializeComponent();
         }
+
+        private void btnAddArticle_Click(object sender, EventArgs e)
+        {
+            // Crear una nueva instancia de ArticleItem
+            var newArticleItem = new Controls.ArticleItem();
+            newArticleItem.Dock = DockStyle.Top;
+            gbArticlesData.Controls.Add(newArticleItem);
+        }
     }
 }
