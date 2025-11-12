@@ -135,7 +135,7 @@ namespace PrimeSystems.Core
             base.OnModelCreating(modelBuilder);
         }
 
-        public void SeedDefaultUserTypes()
+        public void SeedDefaultRoles()
         {
             if (!UserType.Any())
             {
@@ -144,9 +144,9 @@ namespace PrimeSystems.Core
                     {
                         Id = "admin",
                         Name = "Administrador",
-                        PurchasesPermission = AccessLevel.Read,
+                        PurchasesPermission = AccessLevel.Write,
                         SellsPermission = AccessLevel.Write,
-                        FinancialStatePermission = AccessLevel.Read,
+                        FinancialStatePermission = AccessLevel.Write,
                         UserPermission = AccessLevel.Write
                     },
                     new RoleModel

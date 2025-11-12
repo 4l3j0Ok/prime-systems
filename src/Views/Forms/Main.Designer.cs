@@ -47,6 +47,7 @@ namespace PrimeSystems
             tpUsersList = new TabPage();
             btnAddUser = new ReaLTaiizor.Controls.MaterialFloatingActionButton();
             tpUsersRoles = new TabPage();
+            btnAddRole = new ReaLTaiizor.Controls.MaterialFloatingActionButton();
             materialTabSelector3 = new ReaLTaiizor.Controls.MaterialTabSelector();
             tpHome = new TabPage();
             tableLayoutPanel1 = new TableLayoutPanel();
@@ -75,6 +76,7 @@ namespace PrimeSystems
             tpUsers.SuspendLayout();
             tcUsersPages.SuspendLayout();
             tpUsersList.SuspendLayout();
+            tpUsersRoles.SuspendLayout();
             tpHome.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             ((ISupportInitialize)pictureBox1).BeginInit();
@@ -156,6 +158,7 @@ namespace PrimeSystems
             // 
             // tpUsersRoles
             // 
+            tpUsersRoles.Controls.Add(btnAddRole);
             tpUsersRoles.Location = new Point(4, 24);
             tpUsersRoles.Name = "tpUsersRoles";
             tpUsersRoles.Padding = new Padding(20);
@@ -163,6 +166,18 @@ namespace PrimeSystems
             tpUsersRoles.TabIndex = 1;
             tpUsersRoles.Text = "Roles";
             tpUsersRoles.UseVisualStyleBackColor = true;
+            // 
+            // btnAddRole
+            // 
+            btnAddRole.Depth = 0;
+            btnAddRole.Icon = Properties.Resources.add;
+            btnAddRole.Location = new Point(875, 336);
+            btnAddRole.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
+            btnAddRole.Name = "btnAddRole";
+            btnAddRole.Size = new Size(56, 56);
+            btnAddRole.TabIndex = 0;
+            btnAddRole.UseVisualStyleBackColor = true;
+            btnAddRole.Click += btnAddRole_Click;
             // 
             // materialTabSelector3
             // 
@@ -490,6 +505,7 @@ namespace PrimeSystems
             tpUsers.ResumeLayout(false);
             tcUsersPages.ResumeLayout(false);
             tpUsersList.ResumeLayout(false);
+            tpUsersRoles.ResumeLayout(false);
             tpHome.ResumeLayout(false);
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
@@ -539,10 +555,11 @@ namespace PrimeSystems
         public TabPage tpSells;
         public TabPage tpFinancialState;
         public TabPage tpUsers;
-        private ReaLTaiizor.Controls.MaterialTabControl tcUsersPages;
         private TabPage tpUsersList;
         private ReaLTaiizor.Controls.MaterialFloatingActionButton btnAddUser;
-        private TabPage tpUsersRoles;
         private ReaLTaiizor.Controls.MaterialTabSelector materialTabSelector3;
+        private ReaLTaiizor.Controls.MaterialFloatingActionButton btnAddRole;
+        public ReaLTaiizor.Controls.MaterialTabControl tcUsersPages;
+        public TabPage tpUsersRoles;
     }
 }

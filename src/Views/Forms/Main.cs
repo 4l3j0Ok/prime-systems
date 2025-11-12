@@ -7,12 +7,13 @@ using ReaLTaiizor.Controls;
 using ReaLTaiizor.Forms;
 using System.Diagnostics;
 using Panel = System.Windows.Forms.Panel;
+using TabPage = System.Windows.Forms.TabPage;
 
 namespace PrimeSystems
 {
     public partial class Main : MaterialForm
     {
-        private readonly Dictionary<System.Windows.Forms.TabPage, List<Control>> originalTabContents = new Dictionary<System.Windows.Forms.TabPage, List<Control>>();
+        private readonly Dictionary<TabPage, List<Control>> originalTabContents = new();
 
         public Main()
         {
@@ -22,38 +23,44 @@ namespace PrimeSystems
 
         private void Main_Load(object sender, EventArgs e)
         {
-            ReloadTabPage<UserModel, User>(
-                tpUsersList,
-                () => new UserController(),
-                (user) => user.Username,
-                (user) => $"{user.Name} {user.LastName}",
-                (user) => GetUserProfilePicture(user),
-                (user) => new User(user)
-            );
+            ReloadAllTabPages();
             SaveOriginalTabContents();
             PositionFloatingButtonsInTabControl(tcMain);
         }
 
+        private void ReloadAllTabPages()
+        {
+            ReloadTabPage<UserModel, User>(
+                tpUsersList,
+                () => new UserController(),
+                u => u.Username,
+                u => $"{u.Name} {u.LastName}",
+                u => GetUserProfilePicture(u),
+                u => new User(u)
+            );
+
+            ReloadTabPage<RoleModel, Role>(
+                tpUsersRoles,
+                () => new UserTypeController(),
+                r => r.Name ?? "",
+                r => r.Id,
+                null,
+                r => new Role(r)
+            );
+        }
 
         private Bitmap? GetUserProfilePicture(UserModel user)
         {
-            if (user.ProfilePicture != null && user.ProfilePicture.Length > 0)
+            if (user.ProfilePicture?.Length > 0)
             {
                 var image = Utils.ByteArrayToImage(user.ProfilePicture);
-                if (image is Bitmap bitmap)
-                {
-                    return bitmap;
-                }
-                else if (image != null)
-                {
-                    return new Bitmap(image);
-                }
+                return image is Bitmap bitmap ? bitmap : new Bitmap(image);
             }
             return new Bitmap(Config.default_profile_picture);
         }
 
         private void ReloadTabPage<T, TForm>(
-            System.Windows.Forms.TabPage tabPage,
+            TabPage tabPage,
             Func<IGenericController<T>> controllerFactory,
             Func<T, string> titleSelector,
             Func<T, string> descriptionSelector,
@@ -61,91 +68,83 @@ namespace PrimeSystems
             Func<T, TForm> formFactory
         ) where TForm : Control
         {
-            LoadCardsOnTabPage<T>(
+            LoadCardsOnTabPage(
                 tabPage,
                 controllerFactory,
-                (entity) => new Card(
+                entity => new Card(
                     title: titleSelector(entity),
                     description: descriptionSelector(entity),
                     picture: pictureSelector?.Invoke(entity),
                     editCallback: () => ShowControlInTabPage(tabPage, formFactory(entity)),
-                    removeCallback: () => RemoveEntity<T>(
-                        entity,
-                        GetEntityId(entity),
-                        titleSelector(entity),
-                        controllerFactory,
-                        tabPage,
-                        () => ReloadTabPage<T, TForm>(tabPage, controllerFactory, titleSelector, descriptionSelector, pictureSelector, formFactory)
-                    )
+                    removeCallback: () =>
+                        RemoveEntity(
+                            entity,
+                            GetEntityId(entity),
+                            titleSelector(entity),
+                            controllerFactory,
+                            tabPage,
+                            ReloadAllTabPages // usa método central
+                        )
                 )
             );
+
+            PositionFloatingButtonsInTabControl(tcMain);
         }
 
         private object GetEntityId<T>(T entity)
         {
-            var idProperty = typeof(T).GetProperty("Id");
-            if (idProperty != null)
-            {
-                return idProperty.GetValue(entity) ?? throw new InvalidOperationException("Entity ID cannot be null");
-            }
-            throw new InvalidOperationException($"Entity type {typeof(T).Name} does not have an Id property");
+            var idProp = typeof(T).GetProperty("Id")
+                ?? throw new InvalidOperationException($"Entity type {typeof(T).Name} does not have an Id property");
+            return idProp.GetValue(entity) ?? throw new InvalidOperationException("Entity ID cannot be null");
         }
 
         private void RemoveEntity<T>(
             T entity,
-            object entityId,
-            string entityDisplayName,
+            object id,
+            string displayName,
             Func<IGenericController<T>> controllerFactory,
-            System.Windows.Forms.TabPage tabPage,
-            Action reloadCallback
+            TabPage tabPage,
+            Action reloadAll
         )
         {
-            var result = MessageBox.Show(
-                $"¿Está seguro que desea eliminar '{entityDisplayName}'?",
+            if (MessageBox.Show(
+                $"¿Está seguro que desea eliminar '{displayName}'?",
                 "Confirmar eliminación",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question
-            );
+            ) != DialogResult.Yes)
+                return;
 
-            if (result == DialogResult.Yes)
+            try
             {
-                try
+                var controller = controllerFactory();
+                if (controller.Delete(id))
                 {
-                    var controller = controllerFactory();
-                    bool success = controller.Delete(entityId);
-
-                    if (success)
-                    {
-                        MessageBox.Show($"'{entityDisplayName}' eliminado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        reloadCallback();
-                    }
-                    else
-                    {
-                        MessageBox.Show($"Error al eliminar '{entityDisplayName}'.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+                    MessageBox.Show($"'{displayName}' eliminado correctamente.",
+                        "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    reloadAll();
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show($"Error al eliminar '{entityDisplayName}': {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"Error al eliminar '{displayName}'.",
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al eliminar '{displayName}': {ex.Message}",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void SaveOriginalTabContents()
         {
-            foreach (System.Windows.Forms.TabPage tabPage in tcMain.TabPages)
-            {
-                var controls = new List<Control>();
-                foreach (Control control in tabPage.Controls)
-                {
-                    controls.Add(control);
-                }
-                originalTabContents[tabPage] = controls;
-            }
+            foreach (TabPage tab in tcMain.TabPages)
+                originalTabContents[tab] = tab.Controls.Cast<Control>().ToList();
         }
 
         public void LoadCardsOnTabPage<T>(
-            System.Windows.Forms.TabPage tabPage,
+            TabPage tabPage,
             Func<IGenericController<T>> controllerFactory,
             Func<T, Card> cardFactory
         )
@@ -153,39 +152,19 @@ namespace PrimeSystems
             try
             {
                 var controller = controllerFactory();
-                List<T> items = controller.GetAll() ?? new List<T>();
+                var items = controller.GetAll() ?? new List<T>();
 
                 Debug.WriteLine($"LoadCardsOnTabPage: Found {items.Count} items for tab {tabPage.Name}");
                 tabPage.SuspendLayout();
 
-                // Preservar MaterialFloatingActionButton antes de limpiar
-                var floatingButtons = new List<ReaLTaiizor.Controls.MaterialFloatingActionButton>();
-                foreach (Control control in tabPage.Controls)
-                {
-                    if (control is ReaLTaiizor.Controls.MaterialFloatingActionButton btnFloat)
-                    {
-                        floatingButtons.Add(btnFloat);
-                    }
-                }
+                var floats = tabPage.Controls.OfType<MaterialFloatingActionButton>().ToList();
 
-                foreach (Control existingControl in tabPage.Controls)
-                {
-                    if (existingControl is Card card && card.pbPicture.Image != null)
-                    {
-                        card.pbPicture.Image.Dispose(); // Para liberar recursos
-                    }
-                }
+                foreach (var card in tabPage.Controls.OfType<Card>())
+                    card.pbPicture.Image?.Dispose();
 
-                // Limpiar todos los controles
                 tabPage.Controls.Clear();
+                floats.ForEach(f => tabPage.Controls.Add(f));
 
-                // Restaurar los MaterialFloatingActionButton
-                foreach (var btnFloat in floatingButtons)
-                {
-                    tabPage.Controls.Add(btnFloat);
-                }
-
-                // Manejar el estado vacío
                 if (items.Count == 0)
                 {
                     tabPage.Controls.Add(new MaterialLabel
@@ -193,167 +172,99 @@ namespace PrimeSystems
                         Name = "lblEmpty",
                         Text = "No hay elementos para mostrar.",
                         Dock = DockStyle.Fill,
-                        TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
+                        TextAlign = System.Drawing.ContentAlignment.MiddleCenter
                     });
                     return;
                 }
 
-                foreach (T item in items)
+                foreach (var item in items)
                 {
-                    Card card = cardFactory(item);
+                    var card = cardFactory(item);
                     card.Dock = DockStyle.Top;
                     tabPage.Controls.Add(card);
-                    // Espaciador porque el DockStyle.Top no respeta la propiedad de margen
-                    Panel spacer = new Panel();
-                    spacer.Height = 5;
-                    spacer.Dock = DockStyle.Top;
+
+                    var spacer = new Panel { Height = 5, Dock = DockStyle.Top };
                     tabPage.Controls.Add(spacer);
                 }
-                // Mismo espaciador para el header pero un poco más grande
-                Panel headerSpacer = new Panel();
-                headerSpacer.Height = 8;
-                headerSpacer.Dock = DockStyle.Top;
-                tabPage.Controls.Add(headerSpacer);
-                // Header de las tarjetas
-                CardHeader header = new CardHeader();
-                header.Dock = DockStyle.Top;
+
+                var headerSpacer = new Panel { Height = 8, Dock = DockStyle.Top };
+                var header = new CardHeader { Dock = DockStyle.Top };
                 tabPage.Controls.Add(header);
+                tabPage.Controls.Add(headerSpacer);
 
-                // Asegurar que los botones flotantes estén al frente después de agregar las cards
-                foreach (var btnFloat in floatingButtons)
-                {
-                    btnFloat.BringToFront();
-                }
-
+                floats.ForEach(f => f.BringToFront());
                 tabPage.ResumeLayout();
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"LoadCardsOnTabPage: Error - {ex.Message}");
-                MessageBox.Show($"Error al cargar elementos: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error al cargar elementos: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private void btnAddUser_Click(object sender, EventArgs e)
-        {
+        private void btnAddUser_Click(object sender, EventArgs e) =>
             ShowControlInTabPage(tpUsersList, new User());
-        }
 
-        public void ShowControlInTabPage(System.Windows.Forms.TabPage tabPage, Control controlToShow)
+        private void btnAddRole_Click(object sender, EventArgs e) =>
+            ShowControlInTabPage(tpUsersRoles, new Role());
+
+        public void ShowControlInTabPage(TabPage tabPage, Control control)
         {
             if (!originalTabContents.ContainsKey(tabPage))
-            {
-                var controls = new List<Control>();
-                foreach (Control control in tabPage.Controls)
-                {
-                    controls.Add(control);
-                }
-                originalTabContents[tabPage] = controls;
-            }
+                originalTabContents[tabPage] = tabPage.Controls.Cast<Control>().ToList();
+
             tabPage.Controls.Clear();
-            controlToShow.Dock = DockStyle.Fill;
-            tabPage.Controls.Add(controlToShow);
+            control.Dock = DockStyle.Fill;
+            tabPage.Controls.Add(control);
         }
 
-        public void RestoreTabPage(System.Windows.Forms.TabPage tabPage)
+        public void RestoreTabPage(TabPage tabPage)
         {
-            if (originalTabContents.ContainsKey(tabPage))
-            {
-                // Primero restaurar los controles originales
-                tabPage.Controls.Clear();
-                foreach (Control control in originalTabContents[tabPage])
-                {
-                    tabPage.Controls.Add(control);
-                }
+            if (!originalTabContents.ContainsKey(tabPage)) return;
 
-                // Recargar las pestañas usando el método genérico
-                ReloadTabPage<UserModel, User>(
-                    tpUsersList,
-                    () => new UserController(),
-                    (user) => user.Username,
-                    (user) => $"{user.Name} {user.LastName}",
-                    (user) => GetUserProfilePicture(user),
-                    (user) => new User(user)
-                );
+            tabPage.Controls.Clear();
+            foreach (var control in originalTabContents[tabPage])
+                tabPage.Controls.Add(control);
 
-                ReloadTabPage<RoleModel, Role>(
-                    tpUsersRoles,
-                    () => new UserTypeController(),
-                    (userType) => userType.Name ?? "",
-                    (userType) => userType.Id,
-                    null,
-                    (userType) => new Role(userType)
-                );
-            }
+            ReloadAllTabPages(); // centralizado
         }
 
-        private void PositionFloatingButtonsInTabControl(ReaLTaiizor.Controls.MaterialTabControl tabControl)
+        private void PositionFloatingButtonsInTabControl(MaterialTabControl tabControl)
         {
             const int MARGIN = 30;
 
-            foreach (System.Windows.Forms.TabPage tabPage in tabControl.TabPages)
+            foreach (TabPage tabPage in tabControl.TabPages)
             {
                 foreach (Control control in tabPage.Controls)
-                {
-                    if (control is ReaLTaiizor.Controls.MaterialTabControl nestedTabControl)
-                    {
-                        PositionFloatingButtonsInTabControl(nestedTabControl);
-                    }
-                }
+                    if (control is MaterialTabControl nested)
+                        PositionFloatingButtonsInTabControl(nested);
+
                 PositionFloatingButtonsInContainer(tabPage, MARGIN);
             }
         }
 
         private void PositionFloatingButtonsInContainer(Control container, int margin)
         {
-            const int BUTTON_SPACING = 10;
+            const int SPACING = 10;
+            var floats = container.Controls.OfType<MaterialFloatingActionButton>().ToList();
+            if (floats.Count == 0) return;
 
-            var floatingButtons = new List<ReaLTaiizor.Controls.MaterialFloatingActionButton>();
-
-            foreach (Control control in container.Controls)
+            int y = container.ClientSize.Height - margin;
+            for (int i = floats.Count - 1; i >= 0; i--)
             {
-                if (control is ReaLTaiizor.Controls.MaterialFloatingActionButton btnFloat)
-                {
-                    floatingButtons.Add(btnFloat);
-                }
-            }
-
-            if (floatingButtons.Count == 0)
-                return;
-
-            int currentY = container.ClientSize.Height - margin;
-            for (int i = floatingButtons.Count - 1; i >= 0; i--)
-            {
-                var btnFloat = floatingButtons[i];
-                btnFloat.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-                btnFloat.Location = new Point(
-                    container.ClientSize.Width - btnFloat.Width - margin,
-                    currentY - btnFloat.Height
+                var btn = floats[i];
+                btn.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+                btn.Location = new Point(
+                    container.ClientSize.Width - btn.Width - margin,
+                    y - btn.Height
                 );
-                btnFloat.BringToFront();
-                currentY -= (btnFloat.Height + BUTTON_SPACING);
+                btn.BringToFront();
+                y -= btn.Height + SPACING;
             }
         }
 
-        private void tabCerrarSesion_Click(object sender, EventArgs e)
-        {
-            // Reiniciar el programa
-            Application.Restart();
-        }
-
-        private void btnAddSell_Click(object sender, EventArgs e)
-        {
-            ShowControlInTabPage(tpSells, new Sell());
-        }
-
-        private void Main_ResizeBegin(object sender, EventArgs e)
-        {
-            this.SuspendLayout();
-        }
-
-        private void Main_ResizeEnd(object sender, EventArgs e)
-        {
-            this.ResumeLayout();
-        }
+        private void tabCerrarSesion_Click(object sender, EventArgs e) => Application.Restart();
+        private void btnAddSell_Click(object sender, EventArgs e) => ShowControlInTabPage(tpSells, new Sell());
     }
 }

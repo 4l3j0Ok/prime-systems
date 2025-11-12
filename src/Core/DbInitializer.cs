@@ -26,7 +26,7 @@ namespace PrimeSystems.Core
             using var context = new AppDbContext();
             // Sembramos los tipos de usuario por defecto porque
             // sin ellos no se puede crear el usuario admin
-            context.SeedDefaultUserTypes();
+            context.SeedDefaultRoles();
             UserModel? user = context.CreateAdminUserIfNotExists();
             return user;
         }

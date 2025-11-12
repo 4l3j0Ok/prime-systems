@@ -33,10 +33,10 @@
             gbRoleData = new GroupBox();
             tableLayoutPanel2 = new TableLayoutPanel();
             panel1 = new Panel();
-            tbName = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
+            tbRoleName = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
             materialLabel1 = new ReaLTaiizor.Controls.MaterialLabel();
             panel5 = new Panel();
-            materialTextBoxEdit1 = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
+            tbRoleId = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
             materialLabel4 = new ReaLTaiizor.Controls.MaterialLabel();
             gbRegisterData = new GroupBox();
             tableLayoutPanel4 = new TableLayoutPanel();
@@ -46,7 +46,15 @@
             panel7 = new Panel();
             tbCurrentUser = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
             materialLabel6 = new ReaLTaiizor.Controls.MaterialLabel();
+            gbRolesTable = new GroupBox();
             tableLayoutPanel1 = new TableLayoutPanel();
+            chbUserWrite = new ReaLTaiizor.Controls.MaterialCheckBox();
+            chbUserRead = new ReaLTaiizor.Controls.MaterialCheckBox();
+            chbFinancialStateWrite = new ReaLTaiizor.Controls.MaterialCheckBox();
+            chbFinancialStateRead = new ReaLTaiizor.Controls.MaterialCheckBox();
+            chbPurchaseWrite = new ReaLTaiizor.Controls.MaterialCheckBox();
+            chbPurchaseRead = new ReaLTaiizor.Controls.MaterialCheckBox();
+            chbSellWrite = new ReaLTaiizor.Controls.MaterialCheckBox();
             materialLabel10 = new ReaLTaiizor.Controls.MaterialLabel();
             materialLabel9 = new ReaLTaiizor.Controls.MaterialLabel();
             materialLabel2 = new ReaLTaiizor.Controls.MaterialLabel();
@@ -54,8 +62,7 @@
             materialLabel7 = new ReaLTaiizor.Controls.MaterialLabel();
             materialLabel3 = new ReaLTaiizor.Controls.MaterialLabel();
             materialLabel12 = new ReaLTaiizor.Controls.MaterialLabel();
-            panel2 = new Panel();
-            materialCheckBox8 = new ReaLTaiizor.Controls.MaterialCheckBox();
+            chbSellRead = new ReaLTaiizor.Controls.MaterialCheckBox();
             mepSellAdd.SuspendLayout();
             tableLayoutPanel3.SuspendLayout();
             gbRoleData.SuspendLayout();
@@ -66,8 +73,8 @@
             tableLayoutPanel4.SuspendLayout();
             panel6.SuspendLayout();
             panel7.SuspendLayout();
+            gbRolesTable.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
-            panel2.SuspendLayout();
             SuspendLayout();
             // 
             // mepSellAdd
@@ -79,7 +86,7 @@
             mepSellAdd.Depth = 0;
             mepSellAdd.Description = "";
             mepSellAdd.Dock = DockStyle.Fill;
-            mepSellAdd.ExpandHeight = 646;
+            mepSellAdd.ExpandHeight = 455;
             mepSellAdd.Font = new Font("Microsoft Sans Serif", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
             mepSellAdd.ForeColor = Color.FromArgb(222, 0, 0, 0);
             mepSellAdd.Location = new Point(0, 0);
@@ -88,11 +95,13 @@
             mepSellAdd.Name = "mepSellAdd";
             mepSellAdd.Padding = new Padding(24, 64, 24, 70);
             mepSellAdd.ShowCollapseExpand = false;
-            mepSellAdd.Size = new Size(1121, 646);
+            mepSellAdd.Size = new Size(711, 455);
             mepSellAdd.TabIndex = 2;
-            mepSellAdd.Title = "Registrar Venta";
+            mepSellAdd.Title = "Nuevo Rol";
             mepSellAdd.ValidationButtonEnable = true;
             mepSellAdd.ValidationButtonText = "Guardar";
+            mepSellAdd.SaveClick += mepSellAdd_SaveClick;
+            mepSellAdd.CancelClick += mepSellAdd_CancelClick;
             // 
             // tableLayoutPanel3
             // 
@@ -101,16 +110,15 @@
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tableLayoutPanel3.Controls.Add(gbRoleData, 0, 1);
             tableLayoutPanel3.Controls.Add(gbRegisterData, 0, 0);
-            tableLayoutPanel3.Controls.Add(tableLayoutPanel1, 0, 3);
+            tableLayoutPanel3.Controls.Add(gbRolesTable, 0, 2);
             tableLayoutPanel3.Dock = DockStyle.Fill;
             tableLayoutPanel3.Location = new Point(24, 64);
             tableLayoutPanel3.Name = "tableLayoutPanel3";
-            tableLayoutPanel3.RowCount = 4;
+            tableLayoutPanel3.RowCount = 3;
             tableLayoutPanel3.RowStyles.Add(new RowStyle());
             tableLayoutPanel3.RowStyles.Add(new RowStyle());
             tableLayoutPanel3.RowStyles.Add(new RowStyle());
-            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel3.Size = new Size(1073, 512);
+            tableLayoutPanel3.Size = new Size(663, 321);
             tableLayoutPanel3.TabIndex = 3;
             // 
             // gbRoleData
@@ -122,7 +130,7 @@
             gbRoleData.MinimumSize = new Size(0, 140);
             gbRoleData.Name = "gbRoleData";
             gbRoleData.Padding = new Padding(10);
-            gbRoleData.Size = new Size(1067, 140);
+            gbRoleData.Size = new Size(640, 140);
             gbRoleData.TabIndex = 8;
             gbRoleData.TabStop = false;
             gbRoleData.Text = "Datos de facturación";
@@ -143,54 +151,54 @@
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel2.Size = new Size(1047, 104);
+            tableLayoutPanel2.Size = new Size(620, 104);
             tableLayoutPanel2.TabIndex = 0;
             // 
             // panel1
             // 
             panel1.AutoSize = true;
-            panel1.Controls.Add(tbName);
+            panel1.Controls.Add(tbRoleName);
             panel1.Controls.Add(materialLabel1);
             panel1.Dock = DockStyle.Fill;
-            panel1.Location = new Point(523, 0);
+            panel1.Location = new Point(310, 0);
             panel1.Margin = new Padding(0);
             panel1.MinimumSize = new Size(0, 100);
             panel1.Name = "panel1";
             panel1.Padding = new Padding(15);
-            panel1.Size = new Size(524, 104);
+            panel1.Size = new Size(310, 104);
             panel1.TabIndex = 7;
             // 
-            // tbName
+            // tbRoleName
             // 
-            tbName.AnimateReadOnly = false;
-            tbName.AutoCompleteMode = AutoCompleteMode.None;
-            tbName.AutoCompleteSource = AutoCompleteSource.None;
-            tbName.BackgroundImageLayout = ImageLayout.None;
-            tbName.CharacterCasing = CharacterCasing.Normal;
-            tbName.Depth = 0;
-            tbName.Dock = DockStyle.Fill;
-            tbName.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
-            tbName.HideSelection = true;
-            tbName.Hint = "ej.: Administrador";
-            tbName.LeadingIcon = null;
-            tbName.Location = new Point(15, 34);
-            tbName.MaxLength = 32767;
-            tbName.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
-            tbName.Name = "tbName";
-            tbName.PasswordChar = '\0';
-            tbName.PrefixSuffixText = null;
-            tbName.ReadOnly = false;
-            tbName.RightToLeft = RightToLeft.No;
-            tbName.SelectedText = "";
-            tbName.SelectionLength = 0;
-            tbName.SelectionStart = 0;
-            tbName.ShortcutsEnabled = true;
-            tbName.Size = new Size(494, 48);
-            tbName.TabIndex = 2;
-            tbName.TabStop = false;
-            tbName.TextAlign = HorizontalAlignment.Left;
-            tbName.TrailingIcon = null;
-            tbName.UseSystemPasswordChar = false;
+            tbRoleName.AnimateReadOnly = false;
+            tbRoleName.AutoCompleteMode = AutoCompleteMode.None;
+            tbRoleName.AutoCompleteSource = AutoCompleteSource.None;
+            tbRoleName.BackgroundImageLayout = ImageLayout.None;
+            tbRoleName.CharacterCasing = CharacterCasing.Normal;
+            tbRoleName.Depth = 0;
+            tbRoleName.Dock = DockStyle.Fill;
+            tbRoleName.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
+            tbRoleName.HideSelection = true;
+            tbRoleName.Hint = "ej.: Administrador";
+            tbRoleName.LeadingIcon = null;
+            tbRoleName.Location = new Point(15, 34);
+            tbRoleName.MaxLength = 32767;
+            tbRoleName.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
+            tbRoleName.Name = "tbRoleName";
+            tbRoleName.PasswordChar = '\0';
+            tbRoleName.PrefixSuffixText = null;
+            tbRoleName.ReadOnly = false;
+            tbRoleName.RightToLeft = RightToLeft.No;
+            tbRoleName.SelectedText = "";
+            tbRoleName.SelectionLength = 0;
+            tbRoleName.SelectionStart = 0;
+            tbRoleName.ShortcutsEnabled = true;
+            tbRoleName.Size = new Size(280, 48);
+            tbRoleName.TabIndex = 2;
+            tbRoleName.TabStop = false;
+            tbRoleName.TextAlign = HorizontalAlignment.Left;
+            tbRoleName.TrailingIcon = null;
+            tbRoleName.UseSystemPasswordChar = false;
             // 
             // materialLabel1
             // 
@@ -208,7 +216,7 @@
             // panel5
             // 
             panel5.AutoSize = true;
-            panel5.Controls.Add(materialTextBoxEdit1);
+            panel5.Controls.Add(tbRoleId);
             panel5.Controls.Add(materialLabel4);
             panel5.Dock = DockStyle.Fill;
             panel5.Location = new Point(0, 0);
@@ -216,40 +224,40 @@
             panel5.MinimumSize = new Size(0, 100);
             panel5.Name = "panel5";
             panel5.Padding = new Padding(15);
-            panel5.Size = new Size(523, 104);
+            panel5.Size = new Size(310, 104);
             panel5.TabIndex = 6;
             // 
-            // materialTextBoxEdit1
+            // tbRoleId
             // 
-            materialTextBoxEdit1.AnimateReadOnly = false;
-            materialTextBoxEdit1.AutoCompleteMode = AutoCompleteMode.None;
-            materialTextBoxEdit1.AutoCompleteSource = AutoCompleteSource.None;
-            materialTextBoxEdit1.BackgroundImageLayout = ImageLayout.None;
-            materialTextBoxEdit1.CharacterCasing = CharacterCasing.Normal;
-            materialTextBoxEdit1.Depth = 0;
-            materialTextBoxEdit1.Dock = DockStyle.Fill;
-            materialTextBoxEdit1.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
-            materialTextBoxEdit1.HideSelection = true;
-            materialTextBoxEdit1.Hint = "ej: admin";
-            materialTextBoxEdit1.LeadingIcon = null;
-            materialTextBoxEdit1.Location = new Point(15, 34);
-            materialTextBoxEdit1.MaxLength = 32767;
-            materialTextBoxEdit1.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
-            materialTextBoxEdit1.Name = "materialTextBoxEdit1";
-            materialTextBoxEdit1.PasswordChar = '\0';
-            materialTextBoxEdit1.PrefixSuffixText = null;
-            materialTextBoxEdit1.ReadOnly = false;
-            materialTextBoxEdit1.RightToLeft = RightToLeft.No;
-            materialTextBoxEdit1.SelectedText = "";
-            materialTextBoxEdit1.SelectionLength = 0;
-            materialTextBoxEdit1.SelectionStart = 0;
-            materialTextBoxEdit1.ShortcutsEnabled = true;
-            materialTextBoxEdit1.Size = new Size(493, 48);
-            materialTextBoxEdit1.TabIndex = 2;
-            materialTextBoxEdit1.TabStop = false;
-            materialTextBoxEdit1.TextAlign = HorizontalAlignment.Left;
-            materialTextBoxEdit1.TrailingIcon = null;
-            materialTextBoxEdit1.UseSystemPasswordChar = false;
+            tbRoleId.AnimateReadOnly = false;
+            tbRoleId.AutoCompleteMode = AutoCompleteMode.None;
+            tbRoleId.AutoCompleteSource = AutoCompleteSource.None;
+            tbRoleId.BackgroundImageLayout = ImageLayout.None;
+            tbRoleId.CharacterCasing = CharacterCasing.Normal;
+            tbRoleId.Depth = 0;
+            tbRoleId.Dock = DockStyle.Fill;
+            tbRoleId.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
+            tbRoleId.HideSelection = true;
+            tbRoleId.Hint = "ej: admin";
+            tbRoleId.LeadingIcon = null;
+            tbRoleId.Location = new Point(15, 34);
+            tbRoleId.MaxLength = 32767;
+            tbRoleId.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
+            tbRoleId.Name = "tbRoleId";
+            tbRoleId.PasswordChar = '\0';
+            tbRoleId.PrefixSuffixText = null;
+            tbRoleId.ReadOnly = false;
+            tbRoleId.RightToLeft = RightToLeft.No;
+            tbRoleId.SelectedText = "";
+            tbRoleId.SelectionLength = 0;
+            tbRoleId.SelectionStart = 0;
+            tbRoleId.ShortcutsEnabled = true;
+            tbRoleId.Size = new Size(280, 48);
+            tbRoleId.TabIndex = 2;
+            tbRoleId.TabStop = false;
+            tbRoleId.TextAlign = HorizontalAlignment.Left;
+            tbRoleId.TrailingIcon = null;
+            tbRoleId.UseSystemPasswordChar = false;
             // 
             // materialLabel4
             // 
@@ -273,7 +281,7 @@
             gbRegisterData.MinimumSize = new Size(0, 140);
             gbRegisterData.Name = "gbRegisterData";
             gbRegisterData.Padding = new Padding(10);
-            gbRegisterData.Size = new Size(1067, 140);
+            gbRegisterData.Size = new Size(640, 140);
             gbRegisterData.TabIndex = 4;
             gbRegisterData.TabStop = false;
             gbRegisterData.Text = "Datos de registro";
@@ -292,7 +300,7 @@
             tableLayoutPanel4.Name = "tableLayoutPanel4";
             tableLayoutPanel4.RowCount = 1;
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel4.Size = new Size(1047, 104);
+            tableLayoutPanel4.Size = new Size(620, 104);
             tableLayoutPanel4.TabIndex = 0;
             // 
             // panel6
@@ -304,7 +312,7 @@
             panel6.Margin = new Padding(0);
             panel6.Name = "panel6";
             panel6.Padding = new Padding(15);
-            panel6.Size = new Size(523, 104);
+            panel6.Size = new Size(310, 104);
             panel6.TabIndex = 4;
             // 
             // tbDateTime
@@ -332,7 +340,7 @@
             tbDateTime.SelectionLength = 0;
             tbDateTime.SelectionStart = 0;
             tbDateTime.ShortcutsEnabled = true;
-            tbDateTime.Size = new Size(493, 48);
+            tbDateTime.Size = new Size(280, 48);
             tbDateTime.TabIndex = 1;
             tbDateTime.TabStop = false;
             tbDateTime.Text = "20/20/2020 - 20:20";
@@ -358,11 +366,11 @@
             panel7.Controls.Add(tbCurrentUser);
             panel7.Controls.Add(materialLabel6);
             panel7.Dock = DockStyle.Fill;
-            panel7.Location = new Point(523, 0);
+            panel7.Location = new Point(310, 0);
             panel7.Margin = new Padding(0);
             panel7.Name = "panel7";
             panel7.Padding = new Padding(15);
-            panel7.Size = new Size(524, 104);
+            panel7.Size = new Size(310, 104);
             panel7.TabIndex = 3;
             // 
             // tbCurrentUser
@@ -390,7 +398,7 @@
             tbCurrentUser.SelectionLength = 0;
             tbCurrentUser.SelectionStart = 0;
             tbCurrentUser.ShortcutsEnabled = true;
-            tbCurrentUser.Size = new Size(494, 48);
+            tbCurrentUser.Size = new Size(280, 48);
             tbCurrentUser.TabIndex = 2;
             tbCurrentUser.TabStop = false;
             tbCurrentUser.Text = "Pepe Díaz";
@@ -411,13 +419,30 @@
             materialLabel6.TabIndex = 0;
             materialLabel6.Text = "Usuario registrante";
             // 
+            // gbRolesTable
+            // 
+            gbRolesTable.Controls.Add(tableLayoutPanel1);
+            gbRolesTable.Dock = DockStyle.Top;
+            gbRolesTable.Location = new Point(3, 295);
+            gbRolesTable.Name = "gbRolesTable";
+            gbRolesTable.Size = new Size(640, 313);
+            gbRolesTable.TabIndex = 9;
+            gbRolesTable.TabStop = false;
+            gbRolesTable.Text = "Permisos";
+            // 
             // tableLayoutPanel1
             // 
-            tableLayoutPanel1.AutoSize = true;
             tableLayoutPanel1.ColumnCount = 3;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333359F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333359F));
+            tableLayoutPanel1.Controls.Add(chbUserWrite, 2, 4);
+            tableLayoutPanel1.Controls.Add(chbUserRead, 1, 4);
+            tableLayoutPanel1.Controls.Add(chbFinancialStateWrite, 2, 3);
+            tableLayoutPanel1.Controls.Add(chbFinancialStateRead, 1, 3);
+            tableLayoutPanel1.Controls.Add(chbPurchaseWrite, 2, 2);
+            tableLayoutPanel1.Controls.Add(chbPurchaseRead, 1, 2);
+            tableLayoutPanel1.Controls.Add(chbSellWrite, 2, 1);
             tableLayoutPanel1.Controls.Add(materialLabel10, 2, 0);
             tableLayoutPanel1.Controls.Add(materialLabel9, 1, 0);
             tableLayoutPanel1.Controls.Add(materialLabel2, 0, 0);
@@ -425,10 +450,11 @@
             tableLayoutPanel1.Controls.Add(materialLabel7, 0, 3);
             tableLayoutPanel1.Controls.Add(materialLabel3, 0, 2);
             tableLayoutPanel1.Controls.Add(materialLabel12, 0, 1);
-            tableLayoutPanel1.Controls.Add(panel2, 1, 1);
+            tableLayoutPanel1.Controls.Add(chbSellRead, 1, 1);
             tableLayoutPanel1.Dock = DockStyle.Fill;
-            tableLayoutPanel1.Location = new Point(0, 292);
+            tableLayoutPanel1.Location = new Point(3, 19);
             tableLayoutPanel1.Margin = new Padding(0);
+            tableLayoutPanel1.MinimumSize = new Size(0, 200);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 5;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 20F));
@@ -436,8 +462,131 @@
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 20F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 20F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 20F));
-            tableLayoutPanel1.Size = new Size(1073, 220);
-            tableLayoutPanel1.TabIndex = 7;
+            tableLayoutPanel1.Size = new Size(634, 291);
+            tableLayoutPanel1.TabIndex = 10;
+            // 
+            // chbUserWrite
+            // 
+            chbUserWrite.Anchor = AnchorStyles.None;
+            chbUserWrite.AutoSize = true;
+            chbUserWrite.Depth = 0;
+            chbUserWrite.Location = new Point(510, 243);
+            chbUserWrite.Margin = new Padding(0);
+            chbUserWrite.MouseLocation = new Point(-1, -1);
+            chbUserWrite.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
+            chbUserWrite.Name = "chbUserWrite";
+            chbUserWrite.ReadOnly = false;
+            chbUserWrite.Ripple = true;
+            chbUserWrite.Size = new Size(35, 37);
+            chbUserWrite.TabIndex = 16;
+            chbUserWrite.UseAccentColor = false;
+            chbUserWrite.UseVisualStyleBackColor = true;
+            chbUserWrite.CheckedChanged += chbWrite_CheckedChanged;
+            // 
+            // chbUserRead
+            // 
+            chbUserRead.Anchor = AnchorStyles.None;
+            chbUserRead.AutoSize = true;
+            chbUserRead.Depth = 0;
+            chbUserRead.Location = new Point(299, 243);
+            chbUserRead.Margin = new Padding(0);
+            chbUserRead.MouseLocation = new Point(-1, -1);
+            chbUserRead.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
+            chbUserRead.Name = "chbUserRead";
+            chbUserRead.ReadOnly = false;
+            chbUserRead.Ripple = true;
+            chbUserRead.Size = new Size(35, 37);
+            chbUserRead.TabIndex = 15;
+            chbUserRead.UseAccentColor = false;
+            chbUserRead.UseVisualStyleBackColor = true;
+            // 
+            // chbFinancialStateWrite
+            // 
+            chbFinancialStateWrite.Anchor = AnchorStyles.None;
+            chbFinancialStateWrite.AutoSize = true;
+            chbFinancialStateWrite.Depth = 0;
+            chbFinancialStateWrite.Location = new Point(510, 184);
+            chbFinancialStateWrite.Margin = new Padding(0);
+            chbFinancialStateWrite.MouseLocation = new Point(-1, -1);
+            chbFinancialStateWrite.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
+            chbFinancialStateWrite.Name = "chbFinancialStateWrite";
+            chbFinancialStateWrite.ReadOnly = false;
+            chbFinancialStateWrite.Ripple = true;
+            chbFinancialStateWrite.Size = new Size(35, 37);
+            chbFinancialStateWrite.TabIndex = 14;
+            chbFinancialStateWrite.UseAccentColor = false;
+            chbFinancialStateWrite.UseVisualStyleBackColor = true;
+            chbFinancialStateWrite.CheckedChanged += chbWrite_CheckedChanged;
+            // 
+            // chbFinancialStateRead
+            // 
+            chbFinancialStateRead.Anchor = AnchorStyles.None;
+            chbFinancialStateRead.AutoSize = true;
+            chbFinancialStateRead.Depth = 0;
+            chbFinancialStateRead.Location = new Point(299, 184);
+            chbFinancialStateRead.Margin = new Padding(0);
+            chbFinancialStateRead.MouseLocation = new Point(-1, -1);
+            chbFinancialStateRead.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
+            chbFinancialStateRead.Name = "chbFinancialStateRead";
+            chbFinancialStateRead.ReadOnly = false;
+            chbFinancialStateRead.Ripple = true;
+            chbFinancialStateRead.Size = new Size(35, 37);
+            chbFinancialStateRead.TabIndex = 13;
+            chbFinancialStateRead.UseAccentColor = false;
+            chbFinancialStateRead.UseVisualStyleBackColor = true;
+            // 
+            // chbPurchaseWrite
+            // 
+            chbPurchaseWrite.Anchor = AnchorStyles.None;
+            chbPurchaseWrite.AutoSize = true;
+            chbPurchaseWrite.Depth = 0;
+            chbPurchaseWrite.Location = new Point(510, 126);
+            chbPurchaseWrite.Margin = new Padding(0);
+            chbPurchaseWrite.MouseLocation = new Point(-1, -1);
+            chbPurchaseWrite.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
+            chbPurchaseWrite.Name = "chbPurchaseWrite";
+            chbPurchaseWrite.ReadOnly = false;
+            chbPurchaseWrite.Ripple = true;
+            chbPurchaseWrite.Size = new Size(35, 37);
+            chbPurchaseWrite.TabIndex = 12;
+            chbPurchaseWrite.UseAccentColor = false;
+            chbPurchaseWrite.UseVisualStyleBackColor = true;
+            chbPurchaseWrite.CheckedChanged += chbWrite_CheckedChanged;
+            // 
+            // chbPurchaseRead
+            // 
+            chbPurchaseRead.Anchor = AnchorStyles.None;
+            chbPurchaseRead.AutoSize = true;
+            chbPurchaseRead.Depth = 0;
+            chbPurchaseRead.Location = new Point(299, 126);
+            chbPurchaseRead.Margin = new Padding(0);
+            chbPurchaseRead.MouseLocation = new Point(-1, -1);
+            chbPurchaseRead.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
+            chbPurchaseRead.Name = "chbPurchaseRead";
+            chbPurchaseRead.ReadOnly = false;
+            chbPurchaseRead.Ripple = true;
+            chbPurchaseRead.Size = new Size(35, 37);
+            chbPurchaseRead.TabIndex = 11;
+            chbPurchaseRead.UseAccentColor = false;
+            chbPurchaseRead.UseVisualStyleBackColor = true;
+            // 
+            // chbSellWrite
+            // 
+            chbSellWrite.Anchor = AnchorStyles.None;
+            chbSellWrite.AutoSize = true;
+            chbSellWrite.Depth = 0;
+            chbSellWrite.Location = new Point(510, 68);
+            chbSellWrite.Margin = new Padding(0);
+            chbSellWrite.MouseLocation = new Point(-1, -1);
+            chbSellWrite.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
+            chbSellWrite.Name = "chbSellWrite";
+            chbSellWrite.ReadOnly = false;
+            chbSellWrite.Ripple = true;
+            chbSellWrite.Size = new Size(35, 37);
+            chbSellWrite.TabIndex = 10;
+            chbSellWrite.UseAccentColor = false;
+            chbSellWrite.UseVisualStyleBackColor = true;
+            chbSellWrite.CheckedChanged += chbWrite_CheckedChanged;
             // 
             // materialLabel10
             // 
@@ -445,10 +594,10 @@
             materialLabel10.Depth = 0;
             materialLabel10.Dock = DockStyle.Fill;
             materialLabel10.Font = new Font("Roboto", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
-            materialLabel10.Location = new Point(717, 0);
+            materialLabel10.Location = new Point(425, 0);
             materialLabel10.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             materialLabel10.Name = "materialLabel10";
-            materialLabel10.Size = new Size(353, 44);
+            materialLabel10.Size = new Size(206, 58);
             materialLabel10.TabIndex = 6;
             materialLabel10.Text = "Escritura";
             materialLabel10.TextAlign = ContentAlignment.MiddleCenter;
@@ -459,10 +608,10 @@
             materialLabel9.Depth = 0;
             materialLabel9.Dock = DockStyle.Fill;
             materialLabel9.Font = new Font("Roboto", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
-            materialLabel9.Location = new Point(360, 0);
+            materialLabel9.Location = new Point(214, 0);
             materialLabel9.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             materialLabel9.Name = "materialLabel9";
-            materialLabel9.Size = new Size(351, 44);
+            materialLabel9.Size = new Size(205, 58);
             materialLabel9.TabIndex = 5;
             materialLabel9.Text = "Lectura";
             materialLabel9.TextAlign = ContentAlignment.MiddleCenter;
@@ -476,7 +625,7 @@
             materialLabel2.Location = new Point(3, 0);
             materialLabel2.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             materialLabel2.Name = "materialLabel2";
-            materialLabel2.Size = new Size(351, 44);
+            materialLabel2.Size = new Size(205, 58);
             materialLabel2.TabIndex = 0;
             materialLabel2.Text = "Módulo";
             materialLabel2.TextAlign = ContentAlignment.MiddleCenter;
@@ -487,10 +636,10 @@
             materialLabel8.Depth = 0;
             materialLabel8.Dock = DockStyle.Fill;
             materialLabel8.Font = new Font("Roboto", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
-            materialLabel8.Location = new Point(3, 176);
+            materialLabel8.Location = new Point(3, 232);
             materialLabel8.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             materialLabel8.Name = "materialLabel8";
-            materialLabel8.Size = new Size(351, 44);
+            materialLabel8.Size = new Size(205, 59);
             materialLabel8.TabIndex = 4;
             materialLabel8.Text = "Usuarios";
             materialLabel8.TextAlign = ContentAlignment.MiddleCenter;
@@ -501,10 +650,10 @@
             materialLabel7.Depth = 0;
             materialLabel7.Dock = DockStyle.Fill;
             materialLabel7.Font = new Font("Roboto", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
-            materialLabel7.Location = new Point(3, 132);
+            materialLabel7.Location = new Point(3, 174);
             materialLabel7.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             materialLabel7.Name = "materialLabel7";
-            materialLabel7.Size = new Size(351, 44);
+            materialLabel7.Size = new Size(205, 58);
             materialLabel7.TabIndex = 3;
             materialLabel7.Text = "Estado Contable";
             materialLabel7.TextAlign = ContentAlignment.MiddleCenter;
@@ -515,10 +664,10 @@
             materialLabel3.Depth = 0;
             materialLabel3.Dock = DockStyle.Fill;
             materialLabel3.Font = new Font("Roboto", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
-            materialLabel3.Location = new Point(3, 88);
+            materialLabel3.Location = new Point(3, 116);
             materialLabel3.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             materialLabel3.Name = "materialLabel3";
-            materialLabel3.Size = new Size(351, 44);
+            materialLabel3.Size = new Size(205, 58);
             materialLabel3.TabIndex = 2;
             materialLabel3.Text = "Compras";
             materialLabel3.TextAlign = ContentAlignment.MiddleCenter;
@@ -529,50 +678,39 @@
             materialLabel12.Depth = 0;
             materialLabel12.Dock = DockStyle.Fill;
             materialLabel12.Font = new Font("Roboto", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
-            materialLabel12.Location = new Point(3, 44);
+            materialLabel12.Location = new Point(3, 58);
             materialLabel12.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             materialLabel12.Name = "materialLabel12";
-            materialLabel12.Size = new Size(351, 44);
+            materialLabel12.Size = new Size(205, 58);
             materialLabel12.TabIndex = 8;
             materialLabel12.Text = "Ventas";
             materialLabel12.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // panel2
+            // chbSellRead
             // 
-            panel2.Controls.Add(materialCheckBox8);
-            panel2.Dock = DockStyle.Fill;
-            panel2.Location = new Point(360, 47);
-            panel2.Name = "panel2";
-            panel2.Size = new Size(351, 38);
-            panel2.TabIndex = 9;
-            // 
-            // materialCheckBox8
-            // 
-            materialCheckBox8.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            materialCheckBox8.AutoSize = true;
-            materialCheckBox8.CheckAlign = ContentAlignment.MiddleCenter;
-            materialCheckBox8.Cursor = Cursors.Hand;
-            materialCheckBox8.Depth = 0;
-            materialCheckBox8.Location = new Point(161, 1);
-            materialCheckBox8.Margin = new Padding(0);
-            materialCheckBox8.MouseLocation = new Point(-1, -1);
-            materialCheckBox8.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
-            materialCheckBox8.Name = "materialCheckBox8";
-            materialCheckBox8.ReadOnly = false;
-            materialCheckBox8.Ripple = true;
-            materialCheckBox8.Size = new Size(35, 37);
-            materialCheckBox8.TabIndex = 19;
-            materialCheckBox8.TextAlign = ContentAlignment.MiddleCenter;
-            materialCheckBox8.UseAccentColor = false;
-            materialCheckBox8.UseVisualStyleBackColor = true;
+            chbSellRead.Anchor = AnchorStyles.None;
+            chbSellRead.AutoSize = true;
+            chbSellRead.Depth = 0;
+            chbSellRead.Location = new Point(299, 68);
+            chbSellRead.Margin = new Padding(0);
+            chbSellRead.MouseLocation = new Point(-1, -1);
+            chbSellRead.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
+            chbSellRead.Name = "chbSellRead";
+            chbSellRead.ReadOnly = false;
+            chbSellRead.Ripple = true;
+            chbSellRead.Size = new Size(35, 37);
+            chbSellRead.TabIndex = 9;
+            chbSellRead.UseAccentColor = false;
+            chbSellRead.UseVisualStyleBackColor = true;
             // 
             // Role
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            AutoSize = true;
             Controls.Add(mepSellAdd);
             Name = "Role";
-            Size = new Size(1121, 646);
+            Size = new Size(711, 455);
             mepSellAdd.ResumeLayout(false);
             mepSellAdd.PerformLayout();
             tableLayoutPanel3.ResumeLayout(false);
@@ -590,10 +728,9 @@
             panel6.PerformLayout();
             panel7.ResumeLayout(false);
             panel7.PerformLayout();
+            gbRolesTable.ResumeLayout(false);
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
-            panel2.ResumeLayout(false);
-            panel2.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -612,11 +749,12 @@
         private GroupBox gbRoleData;
         private TableLayoutPanel tableLayoutPanel2;
         private Panel panel1;
-        private ReaLTaiizor.Controls.MaterialTextBoxEdit tbName;
+        private ReaLTaiizor.Controls.MaterialTextBoxEdit tbRoleName;
         private ReaLTaiizor.Controls.MaterialLabel materialLabel1;
         private Panel panel5;
-        private ReaLTaiizor.Controls.MaterialTextBoxEdit materialTextBoxEdit1;
+        private ReaLTaiizor.Controls.MaterialTextBoxEdit tbRoleId;
         private ReaLTaiizor.Controls.MaterialLabel materialLabel4;
+        private GroupBox gbRolesTable;
         private TableLayoutPanel tableLayoutPanel1;
         private ReaLTaiizor.Controls.MaterialLabel materialLabel10;
         private ReaLTaiizor.Controls.MaterialLabel materialLabel9;
@@ -625,7 +763,13 @@
         private ReaLTaiizor.Controls.MaterialLabel materialLabel7;
         private ReaLTaiizor.Controls.MaterialLabel materialLabel3;
         private ReaLTaiizor.Controls.MaterialLabel materialLabel12;
-        private Panel panel2;
-        private ReaLTaiizor.Controls.MaterialCheckBox materialCheckBox8;
+        private ReaLTaiizor.Controls.MaterialCheckBox chbUserWrite;
+        private ReaLTaiizor.Controls.MaterialCheckBox chbUserRead;
+        private ReaLTaiizor.Controls.MaterialCheckBox chbFinancialStateWrite;
+        private ReaLTaiizor.Controls.MaterialCheckBox chbFinancialStateRead;
+        private ReaLTaiizor.Controls.MaterialCheckBox chbPurchaseWrite;
+        private ReaLTaiizor.Controls.MaterialCheckBox chbPurchaseRead;
+        private ReaLTaiizor.Controls.MaterialCheckBox chbSellWrite;
+        private ReaLTaiizor.Controls.MaterialCheckBox chbSellRead;
     }
 }
