@@ -11,6 +11,12 @@
     <Compile Update="Views\Controls\MaterialExpansionPanelNonCollapsible.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Update="Views\Controls\SupplierArticleItem.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Views\Forms\Add\Purchase.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="Views\Forms\Add\Sell.cs">
       <SubType>UserControl</SubType>
     </Compile>

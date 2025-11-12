@@ -38,14 +38,6 @@
             panel5 = new Panel();
             tbRoleId = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
             materialLabel4 = new ReaLTaiizor.Controls.MaterialLabel();
-            gbRegisterData = new GroupBox();
-            tableLayoutPanel4 = new TableLayoutPanel();
-            panel6 = new Panel();
-            tbDateTime = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
-            materialLabel5 = new ReaLTaiizor.Controls.MaterialLabel();
-            panel7 = new Panel();
-            tbCurrentUser = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
-            materialLabel6 = new ReaLTaiizor.Controls.MaterialLabel();
             gbRolesTable = new GroupBox();
             tableLayoutPanel1 = new TableLayoutPanel();
             chbUserWrite = new ReaLTaiizor.Controls.MaterialCheckBox();
@@ -69,10 +61,6 @@
             tableLayoutPanel2.SuspendLayout();
             panel1.SuspendLayout();
             panel5.SuspendLayout();
-            gbRegisterData.SuspendLayout();
-            tableLayoutPanel4.SuspendLayout();
-            panel6.SuspendLayout();
-            panel7.SuspendLayout();
             gbRolesTable.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
@@ -108,16 +96,15 @@
             tableLayoutPanel3.AutoScroll = true;
             tableLayoutPanel3.ColumnCount = 1;
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel3.Controls.Add(gbRoleData, 0, 1);
-            tableLayoutPanel3.Controls.Add(gbRegisterData, 0, 0);
-            tableLayoutPanel3.Controls.Add(gbRolesTable, 0, 2);
+            tableLayoutPanel3.Controls.Add(gbRoleData, 0, 0);
+            tableLayoutPanel3.Controls.Add(gbRolesTable, 0, 1);
             tableLayoutPanel3.Dock = DockStyle.Fill;
             tableLayoutPanel3.Location = new Point(24, 64);
             tableLayoutPanel3.Name = "tableLayoutPanel3";
-            tableLayoutPanel3.RowCount = 3;
+            tableLayoutPanel3.RowCount = 2;
             tableLayoutPanel3.RowStyles.Add(new RowStyle());
             tableLayoutPanel3.RowStyles.Add(new RowStyle());
-            tableLayoutPanel3.RowStyles.Add(new RowStyle());
+            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel3.Size = new Size(663, 321);
             tableLayoutPanel3.TabIndex = 3;
             // 
@@ -126,14 +113,14 @@
             gbRoleData.AutoSize = true;
             gbRoleData.Controls.Add(tableLayoutPanel2);
             gbRoleData.Dock = DockStyle.Fill;
-            gbRoleData.Location = new Point(3, 149);
+            gbRoleData.Location = new Point(3, 3);
             gbRoleData.MinimumSize = new Size(0, 140);
             gbRoleData.Name = "gbRoleData";
             gbRoleData.Padding = new Padding(10);
             gbRoleData.Size = new Size(640, 140);
             gbRoleData.TabIndex = 8;
             gbRoleData.TabStop = false;
-            gbRoleData.Text = "Datos de facturación";
+            gbRoleData.Text = "Datos del rol";
             // 
             // tableLayoutPanel2
             // 
@@ -209,9 +196,9 @@
             materialLabel1.Location = new Point(15, 15);
             materialLabel1.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             materialLabel1.Name = "materialLabel1";
-            materialLabel1.Size = new Size(104, 19);
+            materialLabel1.Size = new Size(57, 19);
             materialLabel1.TabIndex = 0;
-            materialLabel1.Text = "Nombre del rol";
+            materialLabel1.Text = "Nombre";
             // 
             // panel5
             // 
@@ -272,158 +259,11 @@
             materialLabel4.TabIndex = 0;
             materialLabel4.Text = "Identificador";
             // 
-            // gbRegisterData
-            // 
-            gbRegisterData.AutoSize = true;
-            gbRegisterData.Controls.Add(tableLayoutPanel4);
-            gbRegisterData.Dock = DockStyle.Fill;
-            gbRegisterData.Location = new Point(3, 3);
-            gbRegisterData.MinimumSize = new Size(0, 140);
-            gbRegisterData.Name = "gbRegisterData";
-            gbRegisterData.Padding = new Padding(10);
-            gbRegisterData.Size = new Size(640, 140);
-            gbRegisterData.TabIndex = 4;
-            gbRegisterData.TabStop = false;
-            gbRegisterData.Text = "Datos de registro";
-            // 
-            // tableLayoutPanel4
-            // 
-            tableLayoutPanel4.ColumnCount = 2;
-            tableLayoutPanel4.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tableLayoutPanel4.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tableLayoutPanel4.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel4.Controls.Add(panel6, 0, 0);
-            tableLayoutPanel4.Controls.Add(panel7, 1, 0);
-            tableLayoutPanel4.Dock = DockStyle.Fill;
-            tableLayoutPanel4.Location = new Point(10, 26);
-            tableLayoutPanel4.Margin = new Padding(0);
-            tableLayoutPanel4.Name = "tableLayoutPanel4";
-            tableLayoutPanel4.RowCount = 1;
-            tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel4.Size = new Size(620, 104);
-            tableLayoutPanel4.TabIndex = 0;
-            // 
-            // panel6
-            // 
-            panel6.Controls.Add(tbDateTime);
-            panel6.Controls.Add(materialLabel5);
-            panel6.Dock = DockStyle.Fill;
-            panel6.Location = new Point(0, 0);
-            panel6.Margin = new Padding(0);
-            panel6.Name = "panel6";
-            panel6.Padding = new Padding(15);
-            panel6.Size = new Size(310, 104);
-            panel6.TabIndex = 4;
-            // 
-            // tbDateTime
-            // 
-            tbDateTime.AnimateReadOnly = false;
-            tbDateTime.AutoCompleteMode = AutoCompleteMode.None;
-            tbDateTime.AutoCompleteSource = AutoCompleteSource.None;
-            tbDateTime.BackgroundImageLayout = ImageLayout.None;
-            tbDateTime.CharacterCasing = CharacterCasing.Normal;
-            tbDateTime.Depth = 0;
-            tbDateTime.Dock = DockStyle.Fill;
-            tbDateTime.Enabled = false;
-            tbDateTime.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
-            tbDateTime.HideSelection = true;
-            tbDateTime.LeadingIcon = null;
-            tbDateTime.Location = new Point(15, 34);
-            tbDateTime.MaxLength = 32767;
-            tbDateTime.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
-            tbDateTime.Name = "tbDateTime";
-            tbDateTime.PasswordChar = '\0';
-            tbDateTime.PrefixSuffixText = null;
-            tbDateTime.ReadOnly = false;
-            tbDateTime.RightToLeft = RightToLeft.No;
-            tbDateTime.SelectedText = "";
-            tbDateTime.SelectionLength = 0;
-            tbDateTime.SelectionStart = 0;
-            tbDateTime.ShortcutsEnabled = true;
-            tbDateTime.Size = new Size(280, 48);
-            tbDateTime.TabIndex = 1;
-            tbDateTime.TabStop = false;
-            tbDateTime.Text = "20/20/2020 - 20:20";
-            tbDateTime.TextAlign = HorizontalAlignment.Left;
-            tbDateTime.TrailingIcon = null;
-            tbDateTime.UseSystemPasswordChar = false;
-            // 
-            // materialLabel5
-            // 
-            materialLabel5.AutoSize = true;
-            materialLabel5.Depth = 0;
-            materialLabel5.Dock = DockStyle.Top;
-            materialLabel5.Font = new Font("Roboto", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
-            materialLabel5.Location = new Point(15, 15);
-            materialLabel5.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
-            materialLabel5.Name = "materialLabel5";
-            materialLabel5.Size = new Size(44, 19);
-            materialLabel5.TabIndex = 0;
-            materialLabel5.Text = "Fecha";
-            // 
-            // panel7
-            // 
-            panel7.Controls.Add(tbCurrentUser);
-            panel7.Controls.Add(materialLabel6);
-            panel7.Dock = DockStyle.Fill;
-            panel7.Location = new Point(310, 0);
-            panel7.Margin = new Padding(0);
-            panel7.Name = "panel7";
-            panel7.Padding = new Padding(15);
-            panel7.Size = new Size(310, 104);
-            panel7.TabIndex = 3;
-            // 
-            // tbCurrentUser
-            // 
-            tbCurrentUser.AnimateReadOnly = false;
-            tbCurrentUser.AutoCompleteMode = AutoCompleteMode.None;
-            tbCurrentUser.AutoCompleteSource = AutoCompleteSource.None;
-            tbCurrentUser.BackgroundImageLayout = ImageLayout.None;
-            tbCurrentUser.CharacterCasing = CharacterCasing.Normal;
-            tbCurrentUser.Depth = 0;
-            tbCurrentUser.Dock = DockStyle.Fill;
-            tbCurrentUser.Enabled = false;
-            tbCurrentUser.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
-            tbCurrentUser.HideSelection = true;
-            tbCurrentUser.LeadingIcon = null;
-            tbCurrentUser.Location = new Point(15, 34);
-            tbCurrentUser.MaxLength = 32767;
-            tbCurrentUser.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
-            tbCurrentUser.Name = "tbCurrentUser";
-            tbCurrentUser.PasswordChar = '\0';
-            tbCurrentUser.PrefixSuffixText = null;
-            tbCurrentUser.ReadOnly = false;
-            tbCurrentUser.RightToLeft = RightToLeft.No;
-            tbCurrentUser.SelectedText = "";
-            tbCurrentUser.SelectionLength = 0;
-            tbCurrentUser.SelectionStart = 0;
-            tbCurrentUser.ShortcutsEnabled = true;
-            tbCurrentUser.Size = new Size(280, 48);
-            tbCurrentUser.TabIndex = 2;
-            tbCurrentUser.TabStop = false;
-            tbCurrentUser.Text = "Pepe Díaz";
-            tbCurrentUser.TextAlign = HorizontalAlignment.Left;
-            tbCurrentUser.TrailingIcon = null;
-            tbCurrentUser.UseSystemPasswordChar = false;
-            // 
-            // materialLabel6
-            // 
-            materialLabel6.AutoSize = true;
-            materialLabel6.Depth = 0;
-            materialLabel6.Dock = DockStyle.Top;
-            materialLabel6.Font = new Font("Roboto", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
-            materialLabel6.Location = new Point(15, 15);
-            materialLabel6.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
-            materialLabel6.Name = "materialLabel6";
-            materialLabel6.Size = new Size(134, 19);
-            materialLabel6.TabIndex = 0;
-            materialLabel6.Text = "Usuario registrante";
-            // 
             // gbRolesTable
             // 
             gbRolesTable.Controls.Add(tableLayoutPanel1);
             gbRolesTable.Dock = DockStyle.Top;
-            gbRolesTable.Location = new Point(3, 295);
+            gbRolesTable.Location = new Point(3, 149);
             gbRolesTable.Name = "gbRolesTable";
             gbRolesTable.Size = new Size(640, 313);
             gbRolesTable.TabIndex = 9;
@@ -722,12 +562,6 @@
             panel1.PerformLayout();
             panel5.ResumeLayout(false);
             panel5.PerformLayout();
-            gbRegisterData.ResumeLayout(false);
-            tableLayoutPanel4.ResumeLayout(false);
-            panel6.ResumeLayout(false);
-            panel6.PerformLayout();
-            panel7.ResumeLayout(false);
-            panel7.PerformLayout();
             gbRolesTable.ResumeLayout(false);
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
@@ -738,14 +572,6 @@
 
         private Controls.MaterialExpansionPanelNonCollapsible mepSellAdd;
         private TableLayoutPanel tableLayoutPanel3;
-        private GroupBox gbRegisterData;
-        private TableLayoutPanel tableLayoutPanel4;
-        private Panel panel6;
-        private ReaLTaiizor.Controls.MaterialTextBoxEdit tbDateTime;
-        private ReaLTaiizor.Controls.MaterialLabel materialLabel5;
-        private Panel panel7;
-        private ReaLTaiizor.Controls.MaterialTextBoxEdit tbCurrentUser;
-        private ReaLTaiizor.Controls.MaterialLabel materialLabel6;
         private GroupBox gbRoleData;
         private TableLayoutPanel tableLayoutPanel2;
         private Panel panel1;

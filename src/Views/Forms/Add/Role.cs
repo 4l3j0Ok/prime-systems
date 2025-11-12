@@ -29,8 +29,6 @@ namespace PrimeSystems.Views.Forms.Add
             {
                 isNewRole = true;
                 selectedRole = new RoleModel();
-                tbDateTime.Text = DateTime.Now.ToString("dd/MM/yyyy - HH:mm");
-                tbCurrentUser.Text = Session.CurrentUser?.Username ?? "Usuario Actual"; // TODO: Get from session
                 return;
             }
 
@@ -48,9 +46,6 @@ namespace PrimeSystems.Views.Forms.Add
             SetCheckboxesFromPermission(role.PurchasesPermission, chbPurchaseRead, chbPurchaseWrite);
             SetCheckboxesFromPermission(role.FinancialStatePermission, chbFinancialStateRead, chbFinancialStateWrite);
             SetCheckboxesFromPermission(role.UserPermission, chbUserRead, chbUserWrite);
-
-            tbDateTime.Text = DateTime.Now.ToString("dd/MM/yyyy - HH:mm");
-            tbCurrentUser.Text = "Usuario Actual"; // TODO: Get from session
         }
 
         private void SetCheckboxesFromPermission(AccessLevel permission, ReaLTaiizor.Controls.MaterialCheckBox readCheckbox, ReaLTaiizor.Controls.MaterialCheckBox writeCheckbox)

@@ -23,5 +23,6 @@ namespace PrimeSystems.Models
         public AccessLevel PurchasesPermission { get; set; } = AccessLevel.None;
         public AccessLevel FinancialStatePermission { get; set; } = AccessLevel.None;
         public AccessLevel UserPermission { get; set; } = AccessLevel.None;
+
     }
 }

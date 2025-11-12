@@ -38,12 +38,6 @@
             panel5 = new Panel();
             cbClient = new ReaLTaiizor.Controls.HopeComboBox();
             materialLabel4 = new ReaLTaiizor.Controls.MaterialLabel();
-            panel6 = new Panel();
-            tbDateTime = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
-            materialLabel5 = new ReaLTaiizor.Controls.MaterialLabel();
-            panel7 = new Panel();
-            tbCurrentUser = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
-            materialLabel6 = new ReaLTaiizor.Controls.MaterialLabel();
             gbBillingData = new GroupBox();
             tableLayoutPanel2 = new TableLayoutPanel();
             panel9 = new Panel();
@@ -62,8 +56,6 @@
             gbRegisterData.SuspendLayout();
             tableLayoutPanel4.SuspendLayout();
             panel5.SuspendLayout();
-            panel6.SuspendLayout();
-            panel7.SuspendLayout();
             gbBillingData.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             panel9.SuspendLayout();
@@ -177,13 +169,9 @@
             // 
             // tableLayoutPanel4
             // 
-            tableLayoutPanel4.ColumnCount = 3;
-            tableLayoutPanel4.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
-            tableLayoutPanel4.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel4.ColumnCount = 1;
             tableLayoutPanel4.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
             tableLayoutPanel4.Controls.Add(panel5, 0, 0);
-            tableLayoutPanel4.Controls.Add(panel6, 1, 0);
-            tableLayoutPanel4.Controls.Add(panel7, 2, 0);
             tableLayoutPanel4.Dock = DockStyle.Fill;
             tableLayoutPanel4.Location = new Point(10, 26);
             tableLayoutPanel4.Margin = new Padding(0);
@@ -202,7 +190,7 @@
             panel5.Margin = new Padding(0);
             panel5.Name = "panel5";
             panel5.Padding = new Padding(15);
-            panel5.Size = new Size(275, 104);
+            panel5.Size = new Size(827, 104);
             panel5.TabIndex = 5;
             // 
             // cbClient
@@ -218,7 +206,7 @@
             cbClient.ItemHeight = 40;
             cbClient.Location = new Point(15, 34);
             cbClient.Name = "cbClient";
-            cbClient.Size = new Size(245, 46);
+            cbClient.Size = new Size(797, 46);
             cbClient.TabIndex = 2;
             // 
             // materialLabel4
@@ -233,122 +221,6 @@
             materialLabel4.Size = new Size(49, 19);
             materialLabel4.TabIndex = 0;
             materialLabel4.Text = "Cliente";
-            // 
-            // panel6
-            // 
-            panel6.Controls.Add(tbDateTime);
-            panel6.Controls.Add(materialLabel5);
-            panel6.Dock = DockStyle.Fill;
-            panel6.Location = new Point(275, 0);
-            panel6.Margin = new Padding(0);
-            panel6.Name = "panel6";
-            panel6.Padding = new Padding(15);
-            panel6.Size = new Size(275, 104);
-            panel6.TabIndex = 4;
-            // 
-            // tbDateTime
-            // 
-            tbDateTime.AnimateReadOnly = false;
-            tbDateTime.AutoCompleteMode = AutoCompleteMode.None;
-            tbDateTime.AutoCompleteSource = AutoCompleteSource.None;
-            tbDateTime.BackgroundImageLayout = ImageLayout.None;
-            tbDateTime.CharacterCasing = CharacterCasing.Normal;
-            tbDateTime.Depth = 0;
-            tbDateTime.Dock = DockStyle.Fill;
-            tbDateTime.Enabled = false;
-            tbDateTime.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
-            tbDateTime.HideSelection = true;
-            tbDateTime.LeadingIcon = null;
-            tbDateTime.Location = new Point(15, 34);
-            tbDateTime.MaxLength = 32767;
-            tbDateTime.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
-            tbDateTime.Name = "tbDateTime";
-            tbDateTime.PasswordChar = '\0';
-            tbDateTime.PrefixSuffixText = null;
-            tbDateTime.ReadOnly = false;
-            tbDateTime.RightToLeft = RightToLeft.No;
-            tbDateTime.SelectedText = "";
-            tbDateTime.SelectionLength = 0;
-            tbDateTime.SelectionStart = 0;
-            tbDateTime.ShortcutsEnabled = true;
-            tbDateTime.Size = new Size(245, 48);
-            tbDateTime.TabIndex = 1;
-            tbDateTime.TabStop = false;
-            tbDateTime.Text = "20/20/2020 - 20:20";
-            tbDateTime.TextAlign = HorizontalAlignment.Left;
-            tbDateTime.TrailingIcon = null;
-            tbDateTime.UseSystemPasswordChar = false;
-            // 
-            // materialLabel5
-            // 
-            materialLabel5.AutoSize = true;
-            materialLabel5.Depth = 0;
-            materialLabel5.Dock = DockStyle.Top;
-            materialLabel5.Font = new Font("Roboto", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
-            materialLabel5.Location = new Point(15, 15);
-            materialLabel5.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
-            materialLabel5.Name = "materialLabel5";
-            materialLabel5.Size = new Size(44, 19);
-            materialLabel5.TabIndex = 0;
-            materialLabel5.Text = "Fecha";
-            // 
-            // panel7
-            // 
-            panel7.Controls.Add(tbCurrentUser);
-            panel7.Controls.Add(materialLabel6);
-            panel7.Dock = DockStyle.Fill;
-            panel7.Location = new Point(550, 0);
-            panel7.Margin = new Padding(0);
-            panel7.Name = "panel7";
-            panel7.Padding = new Padding(15);
-            panel7.Size = new Size(277, 104);
-            panel7.TabIndex = 3;
-            // 
-            // tbCurrentUser
-            // 
-            tbCurrentUser.AnimateReadOnly = false;
-            tbCurrentUser.AutoCompleteMode = AutoCompleteMode.None;
-            tbCurrentUser.AutoCompleteSource = AutoCompleteSource.None;
-            tbCurrentUser.BackgroundImageLayout = ImageLayout.None;
-            tbCurrentUser.CharacterCasing = CharacterCasing.Normal;
-            tbCurrentUser.Depth = 0;
-            tbCurrentUser.Dock = DockStyle.Fill;
-            tbCurrentUser.Enabled = false;
-            tbCurrentUser.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
-            tbCurrentUser.HideSelection = true;
-            tbCurrentUser.LeadingIcon = null;
-            tbCurrentUser.Location = new Point(15, 34);
-            tbCurrentUser.MaxLength = 32767;
-            tbCurrentUser.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
-            tbCurrentUser.Name = "tbCurrentUser";
-            tbCurrentUser.PasswordChar = '\0';
-            tbCurrentUser.PrefixSuffixText = null;
-            tbCurrentUser.ReadOnly = false;
-            tbCurrentUser.RightToLeft = RightToLeft.No;
-            tbCurrentUser.SelectedText = "";
-            tbCurrentUser.SelectionLength = 0;
-            tbCurrentUser.SelectionStart = 0;
-            tbCurrentUser.ShortcutsEnabled = true;
-            tbCurrentUser.Size = new Size(247, 48);
-            tbCurrentUser.TabIndex = 2;
-            tbCurrentUser.TabStop = false;
-            tbCurrentUser.Text = "Pepe Díaz";
-            tbCurrentUser.TextAlign = HorizontalAlignment.Left;
-            tbCurrentUser.TrailingIcon = null;
-            tbCurrentUser.UseSystemPasswordChar = false;
-            // 
-            // materialLabel6
-            // 
-            materialLabel6.AutoSize = true;
-            materialLabel6.Depth = 0;
-            materialLabel6.Dock = DockStyle.Top;
-            materialLabel6.Font = new Font("Roboto", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
-            materialLabel6.Location = new Point(15, 15);
-            materialLabel6.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
-            materialLabel6.Name = "materialLabel6";
-            materialLabel6.Size = new Size(134, 19);
-            materialLabel6.TabIndex = 0;
-            materialLabel6.Text = "Usuario registrante";
             // 
             // gbBillingData
             // 
@@ -575,10 +447,6 @@
             tableLayoutPanel4.ResumeLayout(false);
             panel5.ResumeLayout(false);
             panel5.PerformLayout();
-            panel6.ResumeLayout(false);
-            panel6.PerformLayout();
-            panel7.ResumeLayout(false);
-            panel7.PerformLayout();
             gbBillingData.ResumeLayout(false);
             tableLayoutPanel2.ResumeLayout(false);
             panel9.ResumeLayout(false);
@@ -598,12 +466,6 @@
         private TableLayoutPanel tableLayoutPanel4;
         private Panel panel5;
         private ReaLTaiizor.Controls.MaterialLabel materialLabel4;
-        private Panel panel6;
-        private ReaLTaiizor.Controls.MaterialTextBoxEdit tbDateTime;
-        private ReaLTaiizor.Controls.MaterialLabel materialLabel5;
-        private Panel panel7;
-        private ReaLTaiizor.Controls.MaterialTextBoxEdit tbCurrentUser;
-        private ReaLTaiizor.Controls.MaterialLabel materialLabel6;
         private GroupBox gbBillingData;
         private TableLayoutPanel tableLayoutPanel2;
         private Panel panel9;
