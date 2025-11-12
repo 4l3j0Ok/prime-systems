@@ -7,19 +7,19 @@ namespace PrimeSystems.Core
 {
     public class AppDbContext : DbContext
     {
-        public DbSet<UserModel> Usuarios { get; set; }
-        public DbSet<UserTypeModel> UsuariosTipo { get; set; }
-        public DbSet<ClientModel> Clientes { get; set; }
-        public DbSet<CategoryModel> Categorias { get; set; }
-        public DbSet<SupplierModel> Proveedores { get; set; }
-        public DbSet<SubcategoryModel> Subcategorias { get; set; }
-        public DbSet<ArticleModel> Articulos { get; set; }
+        public DbSet<UserModel> User { get; set; }
+        public DbSet<RoleModel> UserType { get; set; }
+        public DbSet<ClientModel> Client { get; set; }
+        public DbSet<CategoryModel> Category { get; set; }
+        public DbSet<SupplierModel> Supplier { get; set; }
+        public DbSet<SubcategoryModel> Subcategory { get; set; }
+        public DbSet<ArticleModel> Article { get; set; }
         public DbSet<StockModel> Stock { get; set; }
-        public DbSet<TransactionModel> HMovimientos { get; set; }
-        public DbSet<PurchaseModel> HCompras { get; set; }
-        public DbSet<PurchaseDetailModel> HComprasDetalle { get; set; }
-        public DbSet<SellModel> HVentas { get; set; }
-        public DbSet<SellDetailModel> HVentasDetalle { get; set; }
+        public DbSet<TransactionModel> Transaction { get; set; }
+        public DbSet<PurchaseModel> Purchase { get; set; }
+        public DbSet<PurchaseDetailModel> PurchaseDetail { get; set; }
+        public DbSet<SellModel> Sell { get; set; }
+        public DbSet<SellDetailModel> SellDetail { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -30,9 +30,9 @@ namespace PrimeSystems.Core
         {
             // Configuración de relación User-UsuarioTipo
             modelBuilder.Entity<UserModel>()
-                .HasOne(u => u.UserType)
+                .HasOne(u => u.Role)
                 .WithMany()
-                .HasForeignKey(u => u.UserTypeId)
+                .HasForeignKey(u => u.RoleId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Configuración de índices únicos para Users
@@ -40,7 +40,7 @@ namespace PrimeSystems.Core
                 .HasIndex(u => u.Username)
                 .IsUnique();
 
-            // Configuración de relaciones para Subcategoria
+            // Configuración de relaciones para Subcategory
             modelBuilder.Entity<SubcategoryModel>()
                 .HasOne(s => s.Category)
                 .WithMany(c => c.Subcategory)
@@ -135,14 +135,39 @@ namespace PrimeSystems.Core
             base.OnModelCreating(modelBuilder);
         }
 
-        public void SeedDefaultUsuariosTipo()
+        public void SeedDefaultUserTypes()
         {
-            if (!UsuariosTipo.Any())
+            if (!UserType.Any())
             {
-                UsuariosTipo.AddRange(
-                    new UserTypeModel { Id = "ADMIN", Description = "Administrador", Read = true, Write = true },
-                    new UserTypeModel { Id = "VENDOR", Description = "Vendedor", Read = false, Write = true },
-                    new UserTypeModel { Id = "MANAGER", Description = "Gerente", Read = true, Write = true }
+                UserType.AddRange(
+                    new RoleModel
+                    {
+                        Id = "admin",
+                        Name = "Administrador",
+                        PurchasesPermission = AccessLevel.Read,
+                        SellsPermission = AccessLevel.Write,
+                        FinancialStatePermission = AccessLevel.Read,
+                        UserPermission = AccessLevel.Write
+                    },
+                    new RoleModel
+                    {
+                        Id = "vendedor",
+                        Name = "Vendedor",
+                        PurchasesPermission = AccessLevel.Read,
+                        SellsPermission = AccessLevel.Write,
+                        FinancialStatePermission = AccessLevel.Read,
+                        UserPermission = AccessLevel.None
+                    },
+                    // acceso a compras
+                    new RoleModel
+                    {
+                        Id = "gestor_compras",
+                        Name = "Gestor de Compras",
+                        PurchasesPermission = AccessLevel.Write,
+                        SellsPermission = AccessLevel.Read,
+                        FinancialStatePermission = AccessLevel.Read,
+                        UserPermission = AccessLevel.None
+                    }
                 );
                 SaveChanges();
             }
@@ -150,23 +175,23 @@ namespace PrimeSystems.Core
 
         public UserModel? GetUserByUsername(string username)
         {
-            return Usuarios
-                .Include(u => u.UserType)
+            return User
+                .Include(u => u.Role)
                 .FirstOrDefault(u => u.Username == username);
         }
 
         public List<UserModel> GetAllUsersWithRoles()
         {
-            return Usuarios
-                .Include(u => u.UserType)
+            return User
+                .Include(u => u.Role)
                 .ToList();
         }
 
         public UserModel? CreateAdminUserIfNotExists()
         {
-            if (Usuarios.Any()) return null;
+            if (User.Any()) return null;
 
-            var adminTipo = UsuariosTipo.FirstOrDefault(ut => ut.Id == "ADMIN");
+            var adminTipo = UserType.FirstOrDefault(ut => ut.Id == "admin");
 
             var user = new UserModel
             {
@@ -177,11 +202,11 @@ namespace PrimeSystems.Core
                 PersonId = 10000000,
                 Email = "email@admin.com",
                 Phone = "2224123456",
-                UserTypeId = adminTipo?.Id,
+                RoleId = adminTipo?.Id,
                 ProfilePicture = Utils.ImageToByteArray(Config.default_profile_picture)
             };
 
-            Usuarios.Add(user);
+            User.Add(user);
             SaveChanges();
             return user;
         }

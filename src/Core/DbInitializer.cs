@@ -9,10 +9,10 @@ namespace PrimeSystems.Core
         public static void Initialize()
         {
             using var context = new AppDbContext();
-            
+
             // Verificar variable de entorno
             string? clearDb = Environment.GetEnvironmentVariable("CLEAR_DB_ON_STARTUP");
-            
+
             if (clearDb?.ToLower() == "true")
             {
                 Console.WriteLine("Limpiando base de datos...");
@@ -26,7 +26,7 @@ namespace PrimeSystems.Core
             using var context = new AppDbContext();
             // Sembramos los tipos de usuario por defecto porque
             // sin ellos no se puede crear el usuario admin
-            context.SeedDefaultUsuariosTipo();
+            context.SeedDefaultUserTypes();
             UserModel? user = context.CreateAdminUserIfNotExists();
             return user;
         }

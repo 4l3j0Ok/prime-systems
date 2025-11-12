@@ -8,23 +8,23 @@ using PrimeSystems.Core;
 
 namespace PrimeSystems.Controllers
 {
-    public class ClienteController : IGenericController<ClientModel>
+    public class ClientController : IGenericController<ClientModel>
     {
         private readonly AppDbContext _context;
 
-        public ClienteController()
+        public ClientController()
         {
             _context = new AppDbContext();
         }
 
-        public ClienteController(AppDbContext context)
+        public ClientController(AppDbContext context)
         {
             _context = context;
         }
 
         public List<ClientModel> GetAll()
         {
-            return _context.Clientes.ToList();
+            return _context.Client.ToList();
         }
 
         public ClientModel? GetById(object id)
@@ -36,14 +36,14 @@ namespace PrimeSystems.Controllers
 
         public ClientModel? GetClienteById(int id)
         {
-            return _context.Clientes.FirstOrDefault(c => c.Id == id);
+            return _context.Client.FirstOrDefault(c => c.Id == id);
         }
 
         public bool Create(ClientModel cliente)
         {
             try
             {
-                _context.Clientes.Add(cliente);
+                _context.Client.Add(cliente);
                 _context.SaveChanges();
                 return true;
             }
@@ -58,7 +58,7 @@ namespace PrimeSystems.Controllers
         {
             try
             {
-                var existingCliente = _context.Clientes.Find(cliente.Id);
+                var existingCliente = _context.Client.Find(cliente.Id);
                 if (existingCliente == null)
                     return false;
 
@@ -82,9 +82,9 @@ namespace PrimeSystems.Controllers
             try
             {
                 if (!int.TryParse(id?.ToString(), out int intId)) return false;
-                var cliente = _context.Clientes.Find(intId);
+                var cliente = _context.Client.Find(intId);
                 if (cliente == null) return false;
-                _context.Clientes.Remove(cliente);
+                _context.Client.Remove(cliente);
                 _context.SaveChanges();
                 return true;
             }

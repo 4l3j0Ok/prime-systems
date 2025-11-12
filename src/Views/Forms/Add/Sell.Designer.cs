@@ -80,7 +80,7 @@
             mepSellAdd.Depth = 0;
             mepSellAdd.Description = "";
             mepSellAdd.Dock = DockStyle.Fill;
-            mepSellAdd.ExpandHeight = 645;
+            mepSellAdd.ExpandHeight = 371;
             mepSellAdd.Font = new Font("Microsoft Sans Serif", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
             mepSellAdd.ForeColor = Color.FromArgb(222, 0, 0, 0);
             mepSellAdd.Location = new Point(0, 0);
@@ -89,11 +89,13 @@
             mepSellAdd.Name = "mepSellAdd";
             mepSellAdd.Padding = new Padding(24, 64, 24, 70);
             mepSellAdd.ShowCollapseExpand = false;
-            mepSellAdd.Size = new Size(918, 645);
+            mepSellAdd.Size = new Size(918, 371);
             mepSellAdd.TabIndex = 1;
             mepSellAdd.Title = "Registrar Venta";
             mepSellAdd.ValidationButtonEnable = true;
             mepSellAdd.ValidationButtonText = "Guardar";
+            mepSellAdd.SaveClick += mepSellAdd_SaveClick;
+            mepSellAdd.CancelClick += mepSellAdd_CancelClick;
             // 
             // tableLayoutPanel3
             // 
@@ -110,7 +112,7 @@
             tableLayoutPanel3.RowStyles.Add(new RowStyle());
             tableLayoutPanel3.RowStyles.Add(new RowStyle());
             tableLayoutPanel3.RowStyles.Add(new RowStyle());
-            tableLayoutPanel3.Size = new Size(870, 511);
+            tableLayoutPanel3.Size = new Size(870, 237);
             tableLayoutPanel3.TabIndex = 3;
             // 
             // gbArticlesData
@@ -237,7 +239,6 @@
             panel6.Controls.Add(tbDateTime);
             panel6.Controls.Add(materialLabel5);
             panel6.Dock = DockStyle.Fill;
-            panel6.Enabled = false;
             panel6.Location = new Point(281, 0);
             panel6.Margin = new Padding(0);
             panel6.Name = "panel6";
@@ -254,6 +255,7 @@
             tbDateTime.CharacterCasing = CharacterCasing.Normal;
             tbDateTime.Depth = 0;
             tbDateTime.Dock = DockStyle.Fill;
+            tbDateTime.Enabled = false;
             tbDateTime.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
             tbDateTime.HideSelection = true;
             tbDateTime.LeadingIcon = null;
@@ -295,7 +297,6 @@
             panel7.Controls.Add(tbCurrentUser);
             panel7.Controls.Add(materialLabel6);
             panel7.Dock = DockStyle.Fill;
-            panel7.Enabled = false;
             panel7.Location = new Point(562, 0);
             panel7.Margin = new Padding(0);
             panel7.Name = "panel7";
@@ -312,6 +313,7 @@
             tbCurrentUser.CharacterCasing = CharacterCasing.Normal;
             tbCurrentUser.Depth = 0;
             tbCurrentUser.Dock = DockStyle.Fill;
+            tbCurrentUser.Enabled = false;
             tbCurrentUser.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
             tbCurrentUser.HideSelection = true;
             tbCurrentUser.LeadingIcon = null;
@@ -357,7 +359,7 @@
             gbBillingData.MinimumSize = new Size(0, 140);
             gbBillingData.Name = "gbBillingData";
             gbBillingData.Padding = new Padding(10);
-            gbBillingData.Size = new Size(864, 281);
+            gbBillingData.Size = new Size(864, 140);
             gbBillingData.TabIndex = 6;
             gbBillingData.TabStop = false;
             gbBillingData.Text = "Datos de facturación";
@@ -377,7 +379,7 @@
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 1;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel2.Size = new Size(844, 245);
+            tableLayoutPanel2.Size = new Size(844, 104);
             tableLayoutPanel2.TabIndex = 0;
             // 
             // panel9
@@ -389,7 +391,7 @@
             panel9.Margin = new Padding(0);
             panel9.Name = "panel9";
             panel9.Padding = new Padding(15);
-            panel9.Size = new Size(281, 245);
+            panel9.Size = new Size(281, 104);
             panel9.TabIndex = 5;
             // 
             // tbSubtotal
@@ -401,6 +403,7 @@
             tbSubtotal.CharacterCasing = CharacterCasing.Normal;
             tbSubtotal.Depth = 0;
             tbSubtotal.Dock = DockStyle.Fill;
+            tbSubtotal.Enabled = false;
             tbSubtotal.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
             tbSubtotal.HideSelection = true;
             tbSubtotal.LeadingIcon = null;
@@ -420,7 +423,6 @@
             tbSubtotal.Size = new Size(251, 48);
             tbSubtotal.TabIndex = 3;
             tbSubtotal.TabStop = false;
-            tbSubtotal.Text = "2.000";
             tbSubtotal.TextAlign = HorizontalAlignment.Left;
             tbSubtotal.TrailingIcon = null;
             tbSubtotal.UseSystemPasswordChar = false;
@@ -447,7 +449,7 @@
             panel10.Margin = new Padding(0);
             panel10.Name = "panel10";
             panel10.Padding = new Padding(15);
-            panel10.Size = new Size(281, 245);
+            panel10.Size = new Size(281, 104);
             panel10.TabIndex = 4;
             // 
             // tbDiscount
@@ -478,7 +480,6 @@
             tbDiscount.Size = new Size(251, 48);
             tbDiscount.TabIndex = 1;
             tbDiscount.TabStop = false;
-            tbDiscount.Text = "50";
             tbDiscount.TextAlign = HorizontalAlignment.Left;
             tbDiscount.TrailingIcon = null;
             tbDiscount.UseSystemPasswordChar = false;
@@ -505,7 +506,7 @@
             panel11.Margin = new Padding(0);
             panel11.Name = "panel11";
             panel11.Padding = new Padding(15);
-            panel11.Size = new Size(282, 245);
+            panel11.Size = new Size(282, 104);
             panel11.TabIndex = 3;
             // 
             // tbTotal
@@ -517,6 +518,7 @@
             tbTotal.CharacterCasing = CharacterCasing.Normal;
             tbTotal.Depth = 0;
             tbTotal.Dock = DockStyle.Fill;
+            tbTotal.Enabled = false;
             tbTotal.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
             tbTotal.HideSelection = true;
             tbTotal.LeadingIcon = null;
@@ -536,7 +538,6 @@
             tbTotal.Size = new Size(252, 48);
             tbTotal.TabIndex = 2;
             tbTotal.TabStop = false;
-            tbTotal.Text = "1000";
             tbTotal.TextAlign = HorizontalAlignment.Left;
             tbTotal.TrailingIcon = null;
             tbTotal.UseSystemPasswordChar = false;
@@ -561,7 +562,7 @@
             Controls.Add(mepSellAdd);
             DoubleBuffered = true;
             Name = "Sell";
-            Size = new Size(918, 645);
+            Size = new Size(918, 371);
             mepSellAdd.ResumeLayout(false);
             mepSellAdd.PerformLayout();
             tableLayoutPanel3.ResumeLayout(false);

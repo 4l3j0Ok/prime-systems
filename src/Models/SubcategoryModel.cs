@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PrimeSystems.Models
 {
-    [Table("Subcategorias")]
+    [Table("Subcategories")]
     public class SubcategoryModel
     {
         [Key]

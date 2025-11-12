@@ -171,7 +171,6 @@
             tbArticleUnitPrice.Size = new Size(206, 36);
             tbArticleUnitPrice.TabIndex = 1;
             tbArticleUnitPrice.TabStop = false;
-            tbArticleUnitPrice.Text = "50";
             tbArticleUnitPrice.TextAlign = HorizontalAlignment.Left;
             tbArticleUnitPrice.TrailingIcon = null;
             tbArticleUnitPrice.UseSystemPasswordChar = false;
@@ -231,7 +230,6 @@
             tbArticleQuantity.Size = new Size(206, 36);
             tbArticleQuantity.TabIndex = 2;
             tbArticleQuantity.TabStop = false;
-            tbArticleQuantity.Text = "1000";
             tbArticleQuantity.TextAlign = HorizontalAlignment.Left;
             tbArticleQuantity.TrailingIcon = null;
             tbArticleQuantity.UseSystemPasswordChar = false;

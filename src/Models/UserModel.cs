@@ -33,12 +33,12 @@ namespace PrimeSystems.Models
 
         public byte[]? ProfilePicture { get; set; }
 
-        [StringLength(10)]
-        [ForeignKey("UserType")]
-        public string? UserTypeId { get; set; }
+        [StringLength(20)]
+        [ForeignKey("Role")]
+        public string? RoleId { get; set; }
 
         // Navigation properties
-        public virtual UserTypeModel? UserType { get; set; }
+        public virtual RoleModel? Role { get; set; }
 
     }
 }

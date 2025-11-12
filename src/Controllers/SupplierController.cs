@@ -8,35 +8,42 @@ using PrimeSystems.Core;
 
 namespace PrimeSystems.Controllers
 {
-    public class ProveedorController
+    public class SupplierController : IGenericController<SupplierModel>
     {
         private readonly AppDbContext _context;
 
-        public ProveedorController()
+        public SupplierController()
         {
             _context = new AppDbContext();
         }
 
-        public ProveedorController(AppDbContext context)
+        public SupplierController(AppDbContext context)
         {
             _context = context;
         }
 
-        public List<SupplierModel> GetAllProveedores()
+        public List<SupplierModel> GetAll()
         {
-            return _context.Proveedores.ToList();
+            return _context.Supplier.ToList();
+        }
+
+        public SupplierModel? GetById(object id)
+        {
+            if (id is int intId) return GetProveedorById(intId);
+            if (int.TryParse(id?.ToString(), out int parsed)) return GetProveedorById(parsed);
+            return null;
         }
 
         public SupplierModel? GetProveedorById(int id)
         {
-            return _context.Proveedores.FirstOrDefault(p => p.Id == id);
+            return _context.Supplier.FirstOrDefault(p => p.Id == id);
         }
 
-        public bool CreateProveedor(SupplierModel proveedor)
+        public bool Create(SupplierModel proveedor)
         {
             try
             {
-                _context.Proveedores.Add(proveedor);
+                _context.Supplier.Add(proveedor);
                 _context.SaveChanges();
                 return true;
             }
@@ -47,11 +54,11 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool UpdateProveedor(SupplierModel proveedor)
+        public bool Update(SupplierModel proveedor)
         {
             try
             {
-                var existingProveedor = _context.Proveedores.Find(proveedor.Id);
+                var existingProveedor = _context.Supplier.Find(proveedor.Id);
                 if (existingProveedor == null)
                     return false;
 
@@ -70,15 +77,14 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool DeleteProveedor(int id)
+        public bool Delete(object id)
         {
             try
             {
-                var proveedor = _context.Proveedores.Find(id);
-                if (proveedor == null)
-                    return false;
-
-                _context.Proveedores.Remove(proveedor);
+                if (!int.TryParse(id?.ToString(), out int intId)) return false;
+                var proveedor = _context.Supplier.Find(intId);
+                if (proveedor == null) return false;
+                _context.Supplier.Remove(proveedor);
                 _context.SaveChanges();
                 return true;
             }

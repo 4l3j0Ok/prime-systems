@@ -20,6 +20,28 @@ namespace PrimeSystems.Core
         };
         public static Bitmap default_profile_picture = Properties.Resources.user_placeholder;
     }
+    public enum ValidationType
+    {
+        Letters,
+        Numbers,
+        Decimal,
+        LettersAndNumbers,
+        Email
+    }
+
+    internal static class ValidationRegex
+    {
+        private static readonly Dictionary<ValidationType, string> patterns = new()
+        {
+            { ValidationType.Letters, "[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\\s]" },
+            { ValidationType.Numbers, "[0-9]" },
+            { ValidationType.Decimal, "[0-9\\.]" },
+            { ValidationType.LettersAndNumbers, "[a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ\\s]" },
+            { ValidationType.Email, "[\\w@\\.\\-_]" }
+        };
+        public static string Get(ValidationType type) => patterns[type];
+    }
+
     internal class UIConfig
     {
         public static int primary = 0x003554; // Color primario

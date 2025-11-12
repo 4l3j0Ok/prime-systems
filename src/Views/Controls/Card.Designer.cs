@@ -123,21 +123,19 @@ namespace PrimeSystems.Views.Controls
             // 
             // lblDescription
             // 
-            lblDescription.AutoSize = true;
             lblDescription.Depth = 0;
-            lblDescription.Dock = DockStyle.Fill;
+            lblDescription.Dock = DockStyle.Top;
             lblDescription.Font = new Font("Roboto", 12F, FontStyle.Italic, GraphicsUnit.Pixel);
             lblDescription.FontType = MaterialSkinManager.FontType.SubtleEmphasis;
             lblDescription.Location = new Point(4, 23);
             lblDescription.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             lblDescription.Name = "lblDescription";
-            lblDescription.Size = new Size(64, 14);
+            lblDescription.Size = new Size(616, 14);
             lblDescription.TabIndex = 7;
             lblDescription.Text = "Descripcion";
             // 
             // lblTitle
             // 
-            lblTitle.AutoSize = true;
             lblTitle.Depth = 0;
             lblTitle.Dock = DockStyle.Top;
             lblTitle.Font = new Font("Roboto", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
@@ -145,7 +143,7 @@ namespace PrimeSystems.Views.Controls
             lblTitle.Location = new Point(4, 4);
             lblTitle.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             lblTitle.Name = "lblTitle";
-            lblTitle.Size = new Size(42, 19);
+            lblTitle.Size = new Size(616, 19);
             lblTitle.TabIndex = 0;
             lblTitle.Text = "Título";
             // 
@@ -242,7 +240,6 @@ namespace PrimeSystems.Views.Controls
             tableLayoutPanel1.PerformLayout();
             tableLayoutPanel2.ResumeLayout(false);
             panel1.ResumeLayout(false);
-            panel1.PerformLayout();
             tableLayoutPanel3.ResumeLayout(false);
             tableLayoutPanel3.PerformLayout();
             ResumeLayout(false);

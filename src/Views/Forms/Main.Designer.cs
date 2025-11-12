@@ -43,8 +43,11 @@ namespace PrimeSystems
             ComponentResourceManager resources = new ComponentResourceManager(typeof(Main));
             imgList = new ImageList(components);
             tpUsers = new TabPage();
+            tcUsersPages = new ReaLTaiizor.Controls.MaterialTabControl();
+            tpUsersList = new TabPage();
             btnAddUser = new ReaLTaiizor.Controls.MaterialFloatingActionButton();
-            panel1 = new Panel();
+            tpUsersRoles = new TabPage();
+            materialTabSelector3 = new ReaLTaiizor.Controls.MaterialTabSelector();
             tpHome = new TabPage();
             tableLayoutPanel1 = new TableLayoutPanel();
             pictureBox1 = new PictureBox();
@@ -53,16 +56,16 @@ namespace PrimeSystems
             tpPurchases = new TabPage();
             materialTabControl1 = new ReaLTaiizor.Controls.MaterialTabControl();
             tpPurchasesHistory = new TabPage();
-            tpPurchasesProviders = new TabPage();
+            tpPurchasesSuppliers = new TabPage();
             materialTabSelector2 = new ReaLTaiizor.Controls.MaterialTabSelector();
             tpSells = new TabPage();
             tcSellsPages = new ReaLTaiizor.Controls.MaterialTabControl();
             tpSellsHistory = new TabPage();
             btnAddSell = new ReaLTaiizor.Controls.MaterialFloatingActionButton();
             tpSellsClients = new TabPage();
-            btnAddClients = new ReaLTaiizor.Controls.MaterialFloatingActionButton();
+            btnAddClient = new ReaLTaiizor.Controls.MaterialFloatingActionButton();
             tpSellsArticles = new TabPage();
-            btnAddArticles = new ReaLTaiizor.Controls.MaterialFloatingActionButton();
+            btnAddArticle = new ReaLTaiizor.Controls.MaterialFloatingActionButton();
             materialTabSelector1 = new ReaLTaiizor.Controls.MaterialTabSelector();
             tpFinancialState = new TabPage();
             tpLogout = new TabPage();
@@ -70,6 +73,8 @@ namespace PrimeSystems
             statusStrip1 = new StatusStrip();
             toolStripStatusLabel1 = new ToolStripStatusLabel();
             tpUsers.SuspendLayout();
+            tcUsersPages.SuspendLayout();
+            tpUsersList.SuspendLayout();
             tpHome.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             ((ISupportInitialize)pictureBox1).BeginInit();
@@ -94,45 +99,86 @@ namespace PrimeSystems
             imgList.Images.SetKeyName(2, "logout.png");
             imgList.Images.SetKeyName(3, "purchases.png");
             imgList.Images.SetKeyName(4, "sells.png");
-            imgList.Images.SetKeyName(5, "provider.png");
+            imgList.Images.SetKeyName(5, "supplier.png");
             imgList.Images.SetKeyName(6, "home.png");
             imgList.Images.SetKeyName(7, "user.png");
             // 
             // tpUsers
             // 
             tpUsers.AutoScroll = true;
-            tpUsers.Controls.Add(btnAddUser);
-            tpUsers.Controls.Add(panel1);
+            tpUsers.Controls.Add(tcUsersPages);
+            tpUsers.Controls.Add(materialTabSelector3);
             tpUsers.ImageKey = "user.png";
             tpUsers.Location = new Point(4, 39);
+            tpUsers.Margin = new Padding(0);
             tpUsers.Name = "tpUsers";
-            tpUsers.Padding = new Padding(20);
             tpUsers.Size = new Size(942, 471);
             tpUsers.TabIndex = 3;
             tpUsers.Text = "Usuarios";
             tpUsers.UseVisualStyleBackColor = true;
             // 
+            // tcUsersPages
+            // 
+            tcUsersPages.Controls.Add(tpUsersList);
+            tcUsersPages.Controls.Add(tpUsersRoles);
+            tcUsersPages.Depth = 0;
+            tcUsersPages.Dock = DockStyle.Fill;
+            tcUsersPages.Location = new Point(0, 48);
+            tcUsersPages.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
+            tcUsersPages.Multiline = true;
+            tcUsersPages.Name = "tcUsersPages";
+            tcUsersPages.SelectedIndex = 0;
+            tcUsersPages.Size = new Size(942, 423);
+            tcUsersPages.TabIndex = 3;
+            // 
+            // tpUsersList
+            // 
+            tpUsersList.Controls.Add(btnAddUser);
+            tpUsersList.Location = new Point(4, 24);
+            tpUsersList.Name = "tpUsersList";
+            tpUsersList.Padding = new Padding(20);
+            tpUsersList.Size = new Size(934, 395);
+            tpUsersList.TabIndex = 0;
+            tpUsersList.Text = "Usuarios";
+            tpUsersList.UseVisualStyleBackColor = true;
+            // 
             // btnAddUser
             // 
-            btnAddUser.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnAddUser.Depth = 0;
-            btnAddUser.Icon = Properties.Resources.add_user;
-            btnAddUser.Location = new Point(877, 409);
+            btnAddUser.Icon = Properties.Resources.add;
+            btnAddUser.Location = new Point(875, 336);
             btnAddUser.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             btnAddUser.Name = "btnAddUser";
             btnAddUser.Size = new Size(56, 56);
             btnAddUser.TabIndex = 0;
-            btnAddUser.Text = "Agregar Usuario";
             btnAddUser.UseVisualStyleBackColor = true;
             btnAddUser.Click += btnAddUser_Click;
             // 
-            // panel1
+            // tpUsersRoles
             // 
-            panel1.Dock = DockStyle.Fill;
-            panel1.Location = new Point(20, 20);
-            panel1.Name = "panel1";
-            panel1.Size = new Size(902, 431);
-            panel1.TabIndex = 1;
+            tpUsersRoles.Location = new Point(4, 24);
+            tpUsersRoles.Name = "tpUsersRoles";
+            tpUsersRoles.Padding = new Padding(20);
+            tpUsersRoles.Size = new Size(934, 395);
+            tpUsersRoles.TabIndex = 1;
+            tpUsersRoles.Text = "Roles";
+            tpUsersRoles.UseVisualStyleBackColor = true;
+            // 
+            // materialTabSelector3
+            // 
+            materialTabSelector3.BaseTabControl = tcUsersPages;
+            materialTabSelector3.CharacterCasing = ReaLTaiizor.Controls.MaterialTabSelector.CustomCharacterCasing.Normal;
+            materialTabSelector3.Depth = 0;
+            materialTabSelector3.Dock = DockStyle.Top;
+            materialTabSelector3.Font = new Font("Roboto", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
+            materialTabSelector3.HeadAlignment = ReaLTaiizor.Controls.MaterialTabSelector.Alignment.Left;
+            materialTabSelector3.Location = new Point(0, 0);
+            materialTabSelector3.Margin = new Padding(0);
+            materialTabSelector3.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
+            materialTabSelector3.Name = "materialTabSelector3";
+            materialTabSelector3.Size = new Size(942, 48);
+            materialTabSelector3.TabIndex = 4;
+            materialTabSelector3.Text = "materialTabSelector3";
             // 
             // tpHome
             // 
@@ -226,7 +272,7 @@ namespace PrimeSystems
             // materialTabControl1
             // 
             materialTabControl1.Controls.Add(tpPurchasesHistory);
-            materialTabControl1.Controls.Add(tpPurchasesProviders);
+            materialTabControl1.Controls.Add(tpPurchasesSuppliers);
             materialTabControl1.Depth = 0;
             materialTabControl1.Dock = DockStyle.Fill;
             materialTabControl1.Location = new Point(0, 48);
@@ -246,14 +292,14 @@ namespace PrimeSystems
             tpPurchasesHistory.Text = "Histórico";
             tpPurchasesHistory.UseVisualStyleBackColor = true;
             // 
-            // tpPurchasesProviders
+            // tpPurchasesSuppliers
             // 
-            tpPurchasesProviders.Location = new Point(4, 24);
-            tpPurchasesProviders.Name = "tpPurchasesProviders";
-            tpPurchasesProviders.Size = new Size(934, 395);
-            tpPurchasesProviders.TabIndex = 1;
-            tpPurchasesProviders.Text = "Proveedores";
-            tpPurchasesProviders.UseVisualStyleBackColor = true;
+            tpPurchasesSuppliers.Location = new Point(4, 24);
+            tpPurchasesSuppliers.Name = "tpPurchasesSuppliers";
+            tpPurchasesSuppliers.Size = new Size(934, 395);
+            tpPurchasesSuppliers.TabIndex = 1;
+            tpPurchasesSuppliers.Text = "Proveedores";
+            tpPurchasesSuppliers.UseVisualStyleBackColor = true;
             // 
             // materialTabSelector2
             // 
@@ -323,7 +369,7 @@ namespace PrimeSystems
             // 
             // tpSellsClients
             // 
-            tpSellsClients.Controls.Add(btnAddClients);
+            tpSellsClients.Controls.Add(btnAddClient);
             tpSellsClients.Location = new Point(4, 24);
             tpSellsClients.Name = "tpSellsClients";
             tpSellsClients.Size = new Size(934, 395);
@@ -331,20 +377,20 @@ namespace PrimeSystems
             tpSellsClients.Text = "Clientes";
             tpSellsClients.UseVisualStyleBackColor = true;
             // 
-            // btnAddClients
+            // btnAddClient
             // 
-            btnAddClients.Depth = 0;
-            btnAddClients.Icon = Properties.Resources.add;
-            btnAddClients.Location = new Point(875, 336);
-            btnAddClients.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
-            btnAddClients.Name = "btnAddClients";
-            btnAddClients.Size = new Size(56, 56);
-            btnAddClients.TabIndex = 1;
-            btnAddClients.UseVisualStyleBackColor = true;
+            btnAddClient.Depth = 0;
+            btnAddClient.Icon = Properties.Resources.add;
+            btnAddClient.Location = new Point(875, 336);
+            btnAddClient.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
+            btnAddClient.Name = "btnAddClient";
+            btnAddClient.Size = new Size(56, 56);
+            btnAddClient.TabIndex = 1;
+            btnAddClient.UseVisualStyleBackColor = true;
             // 
             // tpSellsArticles
             // 
-            tpSellsArticles.Controls.Add(btnAddArticles);
+            tpSellsArticles.Controls.Add(btnAddArticle);
             tpSellsArticles.Location = new Point(4, 24);
             tpSellsArticles.Name = "tpSellsArticles";
             tpSellsArticles.Size = new Size(934, 395);
@@ -352,16 +398,16 @@ namespace PrimeSystems
             tpSellsArticles.Text = "Artículos";
             tpSellsArticles.UseVisualStyleBackColor = true;
             // 
-            // btnAddArticles
+            // btnAddArticle
             // 
-            btnAddArticles.Depth = 0;
-            btnAddArticles.Icon = Properties.Resources.add;
-            btnAddArticles.Location = new Point(875, 336);
-            btnAddArticles.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
-            btnAddArticles.Name = "btnAddArticles";
-            btnAddArticles.Size = new Size(56, 56);
-            btnAddArticles.TabIndex = 1;
-            btnAddArticles.UseVisualStyleBackColor = true;
+            btnAddArticle.Depth = 0;
+            btnAddArticle.Icon = Properties.Resources.add;
+            btnAddArticle.Location = new Point(875, 336);
+            btnAddArticle.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
+            btnAddArticle.Name = "btnAddArticle";
+            btnAddArticle.Size = new Size(56, 56);
+            btnAddArticle.TabIndex = 1;
+            btnAddArticle.UseVisualStyleBackColor = true;
             // 
             // materialTabSelector1
             // 
@@ -441,9 +487,9 @@ namespace PrimeSystems
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Prime Systems";
             Load += Main_Load;
-            ResizeBegin += Main_ResizeBegin;
-            ResizeEnd += Main_ResizeEnd;
             tpUsers.ResumeLayout(false);
+            tcUsersPages.ResumeLayout(false);
+            tpUsersList.ResumeLayout(false);
             tpHome.ResumeLayout(false);
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
@@ -464,22 +510,15 @@ namespace PrimeSystems
 
         #endregion
         private ImageList imgList;
-        private TabPage tpHome;
         private TableLayoutPanel tableLayoutPanel1;
         private PictureBox pictureBox1;
         private ReaLTaiizor.Controls.MaterialLabel lblWelcome;
         private TabPage tabIndustryArea;
         public TabPage tabAnimalArea;
         private DataGridView dataGridView1;
-        private ReaLTaiizor.Controls.MaterialFloatingActionButton btnAddUser;
-        private TabPage tpLogout;
         public ReaLTaiizor.Controls.MaterialTabControl tcMain;
-        public TabPage tpUsers;
         private FlowLayoutPanel flowLayoutPanel4;
         public TabPage tabBlackBoard;
-        private TabPage tpPurchases;
-        private TabPage tpSells;
-        private TabPage tpFinancialState;
         private ReaLTaiizor.Controls.MaterialTabControl tcSellsPages;
         private TabPage tpSellsHistory;
         private TabPage tpSellsClients;
@@ -487,13 +526,23 @@ namespace PrimeSystems
         private ReaLTaiizor.Controls.MaterialTabSelector materialTabSelector1;
         private ReaLTaiizor.Controls.MaterialTabControl materialTabControl1;
         private TabPage tpPurchasesHistory;
-        private TabPage tpPurchasesProviders;
+        private TabPage tpPurchasesSuppliers;
         private ReaLTaiizor.Controls.MaterialTabSelector materialTabSelector2;
         private ReaLTaiizor.Controls.MaterialFloatingActionButton btnAddSell;
         private StatusStrip statusStrip1;
         private ToolStripStatusLabel toolStripStatusLabel1;
-        private ReaLTaiizor.Controls.MaterialFloatingActionButton btnAddClients;
-        private ReaLTaiizor.Controls.MaterialFloatingActionButton btnAddArticles;
-        private Panel panel1;
+        private ReaLTaiizor.Controls.MaterialFloatingActionButton btnAddClient;
+        private ReaLTaiizor.Controls.MaterialFloatingActionButton btnAddArticle;
+        public TabPage tpHome;
+        public TabPage tpLogout;
+        public TabPage tpPurchases;
+        public TabPage tpSells;
+        public TabPage tpFinancialState;
+        public TabPage tpUsers;
+        private ReaLTaiizor.Controls.MaterialTabControl tcUsersPages;
+        private TabPage tpUsersList;
+        private ReaLTaiizor.Controls.MaterialFloatingActionButton btnAddUser;
+        private TabPage tpUsersRoles;
+        private ReaLTaiizor.Controls.MaterialTabSelector materialTabSelector3;
     }
 }

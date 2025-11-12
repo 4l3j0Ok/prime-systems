@@ -8,23 +8,23 @@ using PrimeSystems.Core;
 
 namespace PrimeSystems.Controllers
 {
-    public class CategoriaController : IGenericController<CategoryModel>
+    public class CategoryController : IGenericController<CategoryModel>
     {
         private readonly AppDbContext _context;
 
-        public CategoriaController()
+        public CategoryController()
         {
             _context = new AppDbContext();
         }
 
-        public CategoriaController(AppDbContext context)
+        public CategoryController(AppDbContext context)
         {
             _context = context;
         }
 
         public List<CategoryModel> GetAll()
         {
-            return _context.Categorias.ToList();
+            return _context.Category.ToList();
         }
 
         public CategoryModel? GetById(object id)
@@ -36,16 +36,16 @@ namespace PrimeSystems.Controllers
 
         public CategoryModel? GetCategoriaById(int id)
         {
-            return _context.Categorias
+            return _context.Category
                 .Include(c => c.Subcategory)
                 .FirstOrDefault(c => c.Id == id);
         }
 
-        public bool Create(CategoryModel categoria)
+        public bool Create(CategoryModel category)
         {
             try
             {
-                _context.Categorias.Add(categoria);
+                _context.Category.Add(category);
                 _context.SaveChanges();
                 return true;
             }
@@ -56,15 +56,15 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool Update(CategoryModel categoria)
+        public bool Update(CategoryModel category)
         {
             try
             {
-                var existingCategoria = _context.Categorias.Find(categoria.Id);
+                var existingCategoria = _context.Category.Find(category.Id);
                 if (existingCategoria == null)
                     return false;
 
-                existingCategoria.Name = categoria.Name;
+                existingCategoria.Name = category.Name;
 
                 _context.SaveChanges();
                 return true;
@@ -80,9 +80,9 @@ namespace PrimeSystems.Controllers
             try
             {
                 if (!int.TryParse(id?.ToString(), out int intId)) return false;
-                var categoria = _context.Categorias.Find(intId);
-                if (categoria == null) return false;
-                _context.Categorias.Remove(categoria);
+                var category = _context.Category.Find(intId);
+                if (category == null) return false;
+                _context.Category.Remove(category);
                 _context.SaveChanges();
                 return true;
             }

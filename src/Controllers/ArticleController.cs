@@ -8,32 +8,39 @@ using PrimeSystems.Core;
 
 namespace PrimeSystems.Controllers
 {
-    public class ArticuloController
+    public class ArticleController : IGenericController<ArticleModel>
     {
         private readonly AppDbContext _context;
 
-        public ArticuloController()
+        public ArticleController()
         {
             _context = new AppDbContext();
         }
 
-        public ArticuloController(AppDbContext context)
+        public ArticleController(AppDbContext context)
         {
             _context = context;
         }
 
-        public List<ArticleModel> GetAllArticulos()
+        public List<ArticleModel> GetAll()
         {
-            return _context.Articulos
+            return _context.Article
                 .Include(a => a.Category)
                 .Include(a => a.Subcategory)
                 .Include(a => a.Supplier)
                 .ToList();
         }
 
+        public ArticleModel? GetById(object id)
+        {
+            if (id is int intId) return GetArticuloById(intId);
+            if (int.TryParse(id?.ToString(), out int parsed)) return GetArticuloById(parsed);
+            return null;
+        }
+
         public ArticleModel? GetArticuloById(int id)
         {
-            return _context.Articulos
+            return _context.Article
                 .Include(a => a.Category)
                 .Include(a => a.Subcategory)
                 .Include(a => a.Supplier)
@@ -43,7 +50,7 @@ namespace PrimeSystems.Controllers
 
         public ArticleModel? GetArticuloByCodigo(string codigo)
         {
-            return _context.Articulos
+            return _context.Article
                 .Include(a => a.Category)
                 .Include(a => a.Subcategory)
                 .Include(a => a.Supplier)
@@ -51,15 +58,15 @@ namespace PrimeSystems.Controllers
                 .FirstOrDefault(a => a.Code == codigo);
         }
 
-        public bool CreateArticulo(ArticleModel articulo)
+        public bool Create(ArticleModel articulo)
         {
             try
             {
                 // Validar que el código de artículo no exista
-                if (_context.Articulos.Any(a => a.Code == articulo.Code))
+                if (_context.Article.Any(a => a.Code == articulo.Code))
                     return false;
 
-                _context.Articulos.Add(articulo);
+                _context.Article.Add(articulo);
                 _context.SaveChanges();
                 return true;
             }
@@ -70,19 +77,20 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool UpdateArticulo(ArticleModel articulo)
+        public bool Update(ArticleModel articulo)
         {
             try
             {
-                var existingArticulo = _context.Articulos.Find(articulo.Id);
+                var existingArticulo = _context.Article.Find(articulo.Id);
                 if (existingArticulo == null)
                     return false;
 
                 // Validar que el código no exista (excepto el artículo actual)
-                if (_context.Articulos.Any(a => a.Code == articulo.Code && a.Id != articulo.Id))
+                if (_context.Article.Any(a => a.Code == articulo.Code && a.Id != articulo.Id))
                     return false;
 
                 existingArticulo.Code = articulo.Code;
+                existingArticulo.Name = articulo.Name;
                 existingArticulo.Description = articulo.Description;
                 existingArticulo.CategoryId = articulo.CategoryId;
                 existingArticulo.SubcategoryId = articulo.SubcategoryId;
@@ -97,15 +105,14 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool DeleteArticulo(int id)
+        public bool Delete(object id)
         {
             try
             {
-                var articulo = _context.Articulos.Find(id);
-                if (articulo == null)
-                    return false;
-
-                _context.Articulos.Remove(articulo);
+                if (!int.TryParse(id?.ToString(), out int intId)) return false;
+                var articulo = _context.Article.Find(intId);
+                if (articulo == null) return false;
+                _context.Article.Remove(articulo);
                 _context.SaveChanges();
                 return true;
             }

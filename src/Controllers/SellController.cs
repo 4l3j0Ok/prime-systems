@@ -8,23 +8,23 @@ using PrimeSystems.Core;
 
 namespace PrimeSystems.Controllers
 {
-    public class VentaController : IGenericController<SellModel>
+    public class SellController : IGenericController<SellModel>
     {
         private readonly AppDbContext _context;
 
-        public VentaController()
+        public SellController()
         {
             _context = new AppDbContext();
         }
 
-        public VentaController(AppDbContext context)
+        public SellController(AppDbContext context)
         {
             _context = context;
         }
 
         public List<SellModel> GetAll()
         {
-            return _context.HVentas
+            return _context.Sell
                 .Include(v => v.User)
                 .Include(v => v.Client)
                 .Include(v => v.Detail)
@@ -40,7 +40,7 @@ namespace PrimeSystems.Controllers
 
         public SellModel? GetVentaById(int id)
         {
-            return _context.HVentas
+            return _context.Sell
                 .Include(v => v.User)
                 .Include(v => v.Client)
                 .Include(v => v.Detail)
@@ -52,7 +52,7 @@ namespace PrimeSystems.Controllers
         {
             try
             {
-                _context.HVentas.Add(venta);
+                _context.Sell.Add(venta);
                 _context.SaveChanges();
                 return true;
             }
@@ -67,7 +67,7 @@ namespace PrimeSystems.Controllers
         {
             try
             {
-                var existing = _context.HVentas.Find(venta.Id);
+                var existing = _context.Sell.Find(venta.Id);
                 if (existing == null) return false;
                 // TODO: map fields as needed
                 // example: existing.Total = venta.Total;
@@ -85,9 +85,9 @@ namespace PrimeSystems.Controllers
             try
             {
                 if (!int.TryParse(id?.ToString(), out int intId)) return false;
-                var entity = _context.HVentas.Find(intId);
+                var entity = _context.Sell.Find(intId);
                 if (entity == null) return false;
-                _context.HVentas.Remove(entity);
+                _context.Sell.Remove(entity);
                 _context.SaveChanges();
                 return true;
             }
@@ -101,13 +101,13 @@ namespace PrimeSystems.Controllers
         {
             try
             {
-                _context.HVentas.Add(venta);
+                _context.Sell.Add(venta);
                 _context.SaveChanges();
 
                 foreach (var detalle in detalles)
                 {
                     detalle.SellId = venta.Id;
-                    _context.HVentasDetalle.Add(detalle);
+                    _context.SellDetail.Add(detalle);
                 }
                 _context.SaveChanges();
 
@@ -122,7 +122,7 @@ namespace PrimeSystems.Controllers
 
         public List<SellModel> GetVentasByCliente(int clienteId)
         {
-            return _context.HVentas
+            return _context.Sell
                 .Include(v => v.User)
                 .Include(v => v.Client)
                 .Where(v => v.ClientId == clienteId)
@@ -131,7 +131,7 @@ namespace PrimeSystems.Controllers
 
         public List<SellModel> GetVentasByUsuario(int usuarioId)
         {
-            return _context.HVentas
+            return _context.Sell
                 .Include(v => v.User)
                 .Include(v => v.Client)
                 .Where(v => v.UserId == usuarioId)

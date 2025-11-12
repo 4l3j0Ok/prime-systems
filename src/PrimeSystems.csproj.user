@@ -14,6 +14,9 @@
     <Compile Update="Views\Forms\Add\Sell.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="Views\Forms\Add\Role.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="Views\Forms\CustomMessageBox.cs">
       <SubType>Form</SubType>
     </Compile>

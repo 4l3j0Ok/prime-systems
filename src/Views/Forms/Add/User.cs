@@ -16,35 +16,34 @@ namespace PrimeSystems.Views.Forms.Add
     public partial class User : UserControl
     {
         private UserController userController;
-        private UsuarioTipoController usuarioTipoController;
-        private UserModel currentUser;
+        private UserTypeController usuarioTipoController;
+        private UserModel selectedUser;
         private Main? formMain = Application.OpenForms.OfType<Main>().FirstOrDefault();
 
         public User(UserModel? user = null)
         {
             userController = new UserController();
-            usuarioTipoController = new UsuarioTipoController();
+            usuarioTipoController = new UserTypeController();
             InitializeComponent();
-            if (user != null)
+            if (user == null)
             {
-                mepUserAdd.Title = "Modificar Usuario";
-                mepUserAdd.Description = "Edita los datos del usuario seleccionado";
-                currentUser = user;
-                tbUserName.Text = user.Name;
-                tbUserSurname.Text = user.LastName;
-                tbUserUsername.Text = user.Username;
-                tbUserPhone.Text = user.Phone;
-                tbUserEmail.Text = user.Email;
-                tbUserPassword.Text = user.PasswordHash;
-                tbUserPasswordConfirm.Text = user.PasswordHash;
-                tbUserPersonId.Text = user.PersonId?.ToString() ?? "";
+                selectedUser = new UserModel();
+                return;
+            }
+            mepUserAdd.Title = "Modificar Usuario";
+            mepUserAdd.Description = "Edita los datos del usuario seleccionado";
+            selectedUser = user;
+            tbUserName.Text = user.Name;
+            tbUserSurname.Text = user.LastName;
+            tbUserUsername.Text = user.Username;
+            tbUserPhone.Text = user.Phone;
+            tbUserEmail.Text = user.Email;
+            tbUserPassword.Text = user.PasswordHash;
+            tbUserPasswordConfirm.Text = user.PasswordHash;
+            tbUserPersonId.Text = user.PersonId?.ToString() ?? "";
+            cmbRole.SelectedItem = user.Role?.Name ?? "Sin tipo";
+            if (user.ProfilePicture != null)
                 pbUserProfilePicture.Image = Utils.ByteArrayToImage(user.ProfilePicture);
-                cmbRole.SelectedItem = user.UserType?.Description ?? "Sin tipo";
-            }
-            else
-            {
-                currentUser = new UserModel();
-            }
         }
 
         private void btnUploadProfilePicture_Click(object sender, EventArgs e)
@@ -61,10 +60,10 @@ namespace PrimeSystems.Views.Forms.Add
 
         private void UCUserAdd_Load(object sender, EventArgs e)
         {
-            List<UserTypeModel> usuariosTipo = usuarioTipoController.GetAll();
-            foreach (UserTypeModel tipo in usuariosTipo)
+            List<RoleModel> usuariosTipo = usuarioTipoController.GetAll();
+            foreach (RoleModel tipo in usuariosTipo)
             {
-                cmbRole.Items.Add(tipo.Description);
+                cmbRole.Items.Add(tipo.Name);
             }
         }
 
@@ -100,7 +99,6 @@ namespace PrimeSystems.Views.Forms.Add
             if (cmbRole.SelectedItem == null)
                 emptyFields.Add("Tipo de usuario");
 
-            // Mostrar mensaje de error si hay campos vacíos
             if (emptyFields.Count > 0)
             {
                 string message = "Los siguientes campos son obligatorios:\n\n" + string.Join("\n", emptyFields);
@@ -108,14 +106,12 @@ namespace PrimeSystems.Views.Forms.Add
                 return false;
             }
 
-            // Validar que las contraseñas coincidan
             if (tbUserPassword.Text != tbUserPasswordConfirm.Text)
             {
                 MessageBox.Show("Las contraseñas no coinciden.", "Error de validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
 
-            // Validar formato de email básico
             if (!tbUserEmail.Text.Contains("@") || !tbUserEmail.Text.Contains("."))
             {
                 MessageBox.Show("El formato del correo electrónico no es válido.", "Error de validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -127,39 +123,36 @@ namespace PrimeSystems.Views.Forms.Add
 
         private void mepUserAdd_SaveClick(object sender, EventArgs e)
         {
-            // Validar campos antes de guardar
             if (!ValidateFields())
                 return;
 
-            currentUser.Name = tbUserName.Text;
-            currentUser.LastName = tbUserSurname.Text;
-            currentUser.Username = tbUserUsername.Text;
-            currentUser.Phone = tbUserPhone.Text;
-            currentUser.Email = tbUserEmail.Text;
-            currentUser.PasswordHash = tbUserPassword.Text;
-            currentUser.PersonId = int.TryParse(tbUserPersonId.Text, out int dni) ? dni : null;
-            currentUser.ProfilePicture = Utils.ImageToByteArray(pbUserProfilePicture.Image);
+            selectedUser.Name = tbUserName.Text;
+            selectedUser.LastName = tbUserSurname.Text;
+            selectedUser.Username = tbUserUsername.Text;
+            selectedUser.Phone = tbUserPhone.Text;
+            selectedUser.Email = tbUserEmail.Text;
+            selectedUser.PasswordHash = tbUserPassword.Text;
+            selectedUser.PersonId = int.TryParse(tbUserPersonId.Text, out int dni) ? dni : null;
+            selectedUser.ProfilePicture = Utils.ImageToByteArray(pbUserProfilePicture.Image);
 
-            // Asignar UsuarioTipoId basado en la descripción seleccionada
             string? selectedTipoDescripcion = cmbRole.SelectedItem?.ToString();
             if (!string.IsNullOrEmpty(selectedTipoDescripcion))
             {
                 var usuarioTipo = usuarioTipoController.GetByDescription(selectedTipoDescripcion);
                 if (usuarioTipo != null)
                 {
-                    currentUser.UserTypeId = usuarioTipo.Id;
+                    selectedUser.RoleId = usuarioTipo.Id;
                 }
             }
             
             bool success;
-            if (currentUser.Id == 0)
-                success = userController.Create(currentUser);
+            if (selectedUser.Id == 0)
+                success = userController.Create(selectedUser);
             else
-                success = userController.Update(currentUser);
+                success = userController.Update(selectedUser);
             if (success)
             {
                 MessageBox.Show("Usuario guardado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                // Regresar a la vista de usuarios con las tarjetas actualizadas
                 ReturnToUsersView();
             }
             else
@@ -178,55 +171,6 @@ namespace PrimeSystems.Views.Forms.Add
             if (formMain != null)
             {
                 formMain.RestoreTabPage(formMain.tpUsers);
-            }
-        }
-
-        private Bitmap? GetUserProfilePicture(UserModel user)
-        {
-             if (user.ProfilePicture != null && user.ProfilePicture.Length > 0)
-           {
-         var image = Utils.ByteArrayToImage(user.ProfilePicture);
-          if (image is Bitmap bitmap)
-         {
-        return bitmap;
-          }
-          else if (image != null)
-       {
-        return new Bitmap(image);
-          }
-    }
-     return new Bitmap(Config.default_profile_picture);
-        }
-
-        private void ShowRemoveUserConfirmation(UserModel user)
-        {
-            var result = MessageBox.Show(
-                $"¿Está seguro que desea eliminar al usuario '{user.Username}'?",
-                "Confirmar eliminación",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question
-            );
-
-            if (result == DialogResult.Yes && formMain != null)
-            {
-                try
-                {
-                    bool success = userController.Delete(user.Id);
-        
-                    if (success)
-                    {
-                        MessageBox.Show("Usuario eliminado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        ReturnToUsersView();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Error al eliminar el usuario.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error al eliminar el usuario: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
             }
         }
     }

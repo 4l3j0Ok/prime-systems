@@ -8,23 +8,23 @@ using PrimeSystems.Core;
 
 namespace PrimeSystems.Controllers
 {
-    public class CompraController : IGenericController<PurchaseModel>
+    public class PurchaseController : IGenericController<PurchaseModel>
     {
         private readonly AppDbContext _context;
 
-        public CompraController()
+        public PurchaseController()
         {
             _context = new AppDbContext();
         }
 
-        public CompraController(AppDbContext context)
+        public PurchaseController(AppDbContext context)
         {
             _context = context;
         }
 
         public List<PurchaseModel> GetAll()
         {
-            return _context.HCompras
+            return _context.Purchase
                 .Include(c => c.User)
                 .Include(c => c.Supplier)
                 .Include(c => c.Detail)
@@ -40,7 +40,7 @@ namespace PrimeSystems.Controllers
 
         public PurchaseModel? GetCompraById(int id)
         {
-            return _context.HCompras
+            return _context.Purchase
                 .Include(c => c.User)
                 .Include(c => c.Supplier)
                 .Include(c => c.Detail)
@@ -52,7 +52,7 @@ namespace PrimeSystems.Controllers
         {
             try
             {
-                _context.HCompras.Add(compra);
+                _context.Purchase.Add(compra);
                 _context.SaveChanges();
                 return true;
             }
@@ -67,7 +67,7 @@ namespace PrimeSystems.Controllers
         {
             try
             {
-                var existing = _context.HCompras.Find(compra.Id);
+                var existing = _context.Purchase.Find(compra.Id);
                 if (existing == null) return false;
                 // TODO: map fields as needed
                 _context.SaveChanges();
@@ -84,9 +84,9 @@ namespace PrimeSystems.Controllers
             try
             {
                 if (!int.TryParse(id?.ToString(), out int intId)) return false;
-                var entity = _context.HCompras.Find(intId);
+                var entity = _context.Purchase.Find(intId);
                 if (entity == null) return false;
-                _context.HCompras.Remove(entity);
+                _context.Purchase.Remove(entity);
                 _context.SaveChanges();
                 return true;
             }
@@ -100,13 +100,13 @@ namespace PrimeSystems.Controllers
         {
             try
             {
-                _context.HCompras.Add(compra);
+                _context.Purchase.Add(compra);
                 _context.SaveChanges();
 
                 foreach (var detalle in detalles)
                 {
                     detalle.PurchaseId = compra.Id;
-                    _context.HComprasDetalle.Add(detalle);
+                    _context.PurchaseDetail.Add(detalle);
                 }
                 _context.SaveChanges();
 
@@ -121,7 +121,7 @@ namespace PrimeSystems.Controllers
 
         public List<PurchaseModel> GetComprasByProveedor(int proveedorId)
         {
-            return _context.HCompras
+            return _context.Purchase
                 .Include(c => c.User)
                 .Include(c => c.Supplier)
                 .Where(c => c.SupplierId == proveedorId)
@@ -130,7 +130,7 @@ namespace PrimeSystems.Controllers
 
         public List<PurchaseModel> GetComprasByUsuario(int usuarioId)
         {
-            return _context.HCompras
+            return _context.Purchase
                 .Include(c => c.User)
                 .Include(c => c.Supplier)
                 .Where(c => c.UserId == usuarioId)
