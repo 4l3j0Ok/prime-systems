@@ -109,13 +109,15 @@
             cbArticleName.DrawMode = DrawMode.OwnerDrawFixed;
             cbArticleName.DropDownStyle = ComboBoxStyle.DropDownList;
             cbArticleName.FlatStyle = FlatStyle.Flat;
-            cbArticleName.Font = new Font("Segoe UI", 12F);
+            cbArticleName.Font = new Font("Segoe UI", 14F);
             cbArticleName.FormattingEnabled = true;
             cbArticleName.ItemHeight = 30;
             cbArticleName.Location = new Point(15, 22);
             cbArticleName.Name = "cbArticleName";
             cbArticleName.Size = new Size(206, 36);
             cbArticleName.TabIndex = 3;
+            cbArticleName.DropDown += cbArticleName_DropDown;
+            cbArticleName.SelectedIndexChanged += cbArticleName_SelectedIndexChanged;
             // 
             // materialLabel1
             // 
@@ -219,6 +221,7 @@
             tbArticleQuantity.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbArticleQuantity.Name = "tbArticleQuantity";
             tbArticleQuantity.PasswordChar = '\0';
+            tbArticleQuantity.PrefixSuffixText = null;
             tbArticleQuantity.ReadOnly = false;
             tbArticleQuantity.RightToLeft = RightToLeft.No;
             tbArticleQuantity.SelectedText = "";
@@ -272,13 +275,13 @@
         private TableLayoutPanel tlpArticle0;
         private ReaLTaiizor.Controls.MaterialButton btnRemove;
         private Panel panel1;
-        private ReaLTaiizor.Controls.HopeComboBox cbArticleName;
         private ReaLTaiizor.Controls.MaterialLabel materialLabel1;
         private Panel panel2;
-        private ReaLTaiizor.Controls.MaterialTextBoxEdit tbArticleUnitPrice;
         private ReaLTaiizor.Controls.MaterialLabel materialLabel2;
         private Panel panel3;
-        private ReaLTaiizor.Controls.MaterialTextBoxEdit tbArticleQuantity;
         private ReaLTaiizor.Controls.MaterialLabel materialLabel3;
+        public ReaLTaiizor.Controls.HopeComboBox cbArticleName;
+        public ReaLTaiizor.Controls.MaterialTextBoxEdit tbArticleUnitPrice;
+        public ReaLTaiizor.Controls.MaterialTextBoxEdit tbArticleQuantity;
     }
 }

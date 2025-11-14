@@ -44,8 +44,6 @@ namespace PrimeSystems.Controllers
                 .Include(u => u.Role)
                 .FirstOrDefault(u => u.Id == id);
         }
-
-        // Interface implementation that accepts object id
         public UserModel? GetById(object id)
         {
             if (id is int intId)
@@ -59,15 +57,10 @@ namespace PrimeSystems.Controllers
         {
             try
             {
-                // Validar que el username no exista
                 if (_context.User.Any(u => u.Username == user.Username))
                     return false;
-
-                // Validar que el email no exista
                 if (!string.IsNullOrEmpty(user.Email) && _context.User.Any(u => u.Email == user.Email))
                     return false;
-
-                // Validar que el DNI no exista
                 if (user.PersonId.HasValue && _context.User.Any(u => u.PersonId == user.PersonId))
                     return false;
 
@@ -89,20 +82,12 @@ namespace PrimeSystems.Controllers
                 var existingUser = _context.User.Find(user.Id);
                 if (existingUser == null)
                     return false;
-
-                // Validar que el username no exista (excepto el usuario actual)
                 if (_context.User.Any(u => u.Username == user.Username && u.Id != user.Id))
                     return false;
-
-                // Validar que el email no exista (excepto el usuario actual)
                 if (!string.IsNullOrEmpty(user.Email) && _context.User.Any(u => u.Email == user.Email && u.Id != user.Id))
                     return false;
-
-                // Validar que el DNI no exista (excepto el usuario actual)
                 if (user.PersonId.HasValue && _context.User.Any(u => u.PersonId == user.PersonId && u.Id != user.Id))
                     return false;
-
-                // Actualizar propiedades
                 existingUser.Username = user.Username;
                 existingUser.PasswordHash = user.PasswordHash;
                 existingUser.Name = user.Name;
@@ -112,7 +97,6 @@ namespace PrimeSystems.Controllers
                 existingUser.PersonId = user.PersonId;
                 existingUser.ProfilePicture = user.ProfilePicture;
                 existingUser.RoleId = user.RoleId;
-
                 _context.SaveChanges();
                 return true;
             }

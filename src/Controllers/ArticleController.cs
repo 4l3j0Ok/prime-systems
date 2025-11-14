@@ -28,6 +28,7 @@ namespace PrimeSystems.Controllers
                 .Include(a => a.Category)
                 .Include(a => a.Subcategory)
                 .Include(a => a.Supplier)
+                .Include(a => a.Stock)
                 .ToList();
         }
 
@@ -56,6 +57,16 @@ namespace PrimeSystems.Controllers
                 .Include(a => a.Supplier)
                 .Include(a => a.Stock)
                 .FirstOrDefault(a => a.Code == codigo);
+        }
+
+        public ArticleModel? GetByName(string name)
+        {
+            return _context.Article
+                .Include(a => a.Category)
+                .Include(a => a.Subcategory)
+                .Include(a => a.Supplier)
+                .Include(a => a.Stock)
+                .FirstOrDefault(a => a.Name == name);
         }
 
         public bool Create(ArticleModel articulo)

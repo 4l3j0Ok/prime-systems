@@ -72,7 +72,7 @@
             mepSellAdd.Depth = 0;
             mepSellAdd.Description = "";
             mepSellAdd.Dock = DockStyle.Fill;
-            mepSellAdd.ExpandHeight = 371;
+            mepSellAdd.ExpandHeight = 516;
             mepSellAdd.Font = new Font("Microsoft Sans Serif", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
             mepSellAdd.ForeColor = Color.FromArgb(222, 0, 0, 0);
             mepSellAdd.Location = new Point(0, 0);
@@ -81,7 +81,7 @@
             mepSellAdd.Name = "mepSellAdd";
             mepSellAdd.Padding = new Padding(24, 64, 24, 70);
             mepSellAdd.ShowCollapseExpand = false;
-            mepSellAdd.Size = new Size(918, 371);
+            mepSellAdd.Size = new Size(631, 516);
             mepSellAdd.TabIndex = 1;
             mepSellAdd.Title = "Registrar Venta";
             mepSellAdd.ValidationButtonEnable = true;
@@ -104,7 +104,7 @@
             tableLayoutPanel3.RowStyles.Add(new RowStyle());
             tableLayoutPanel3.RowStyles.Add(new RowStyle());
             tableLayoutPanel3.RowStyles.Add(new RowStyle());
-            tableLayoutPanel3.Size = new Size(870, 237);
+            tableLayoutPanel3.Size = new Size(583, 382);
             tableLayoutPanel3.TabIndex = 3;
             // 
             // gbArticlesData
@@ -115,7 +115,7 @@
             gbArticlesData.Location = new Point(3, 149);
             gbArticlesData.Name = "gbArticlesData";
             gbArticlesData.Padding = new Padding(10);
-            gbArticlesData.Size = new Size(847, 72);
+            gbArticlesData.Size = new Size(577, 72);
             gbArticlesData.TabIndex = 8;
             gbArticlesData.TabStop = false;
             gbArticlesData.Text = "Artículos";
@@ -128,7 +128,7 @@
             panel4.Location = new Point(10, 26);
             panel4.Name = "panel4";
             panel4.Padding = new Padding(200, 0, 200, 0);
-            panel4.Size = new Size(827, 36);
+            panel4.Size = new Size(557, 36);
             panel4.TabIndex = 1;
             // 
             // btnAddArticle
@@ -145,7 +145,7 @@
             btnAddArticle.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             btnAddArticle.Name = "btnAddArticle";
             btnAddArticle.NoAccentTextColor = Color.Empty;
-            btnAddArticle.Size = new Size(427, 36);
+            btnAddArticle.Size = new Size(157, 36);
             btnAddArticle.TabIndex = 2;
             btnAddArticle.Text = "Agregar";
             btnAddArticle.Type = ReaLTaiizor.Controls.MaterialButton.MaterialButtonType.Contained;
@@ -162,7 +162,7 @@
             gbRegisterData.MinimumSize = new Size(0, 140);
             gbRegisterData.Name = "gbRegisterData";
             gbRegisterData.Padding = new Padding(10);
-            gbRegisterData.Size = new Size(847, 140);
+            gbRegisterData.Size = new Size(577, 140);
             gbRegisterData.TabIndex = 4;
             gbRegisterData.TabStop = false;
             gbRegisterData.Text = "Datos de registro";
@@ -178,7 +178,7 @@
             tableLayoutPanel4.Name = "tableLayoutPanel4";
             tableLayoutPanel4.RowCount = 1;
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel4.Size = new Size(827, 104);
+            tableLayoutPanel4.Size = new Size(557, 104);
             tableLayoutPanel4.TabIndex = 0;
             // 
             // panel5
@@ -190,7 +190,7 @@
             panel5.Margin = new Padding(0);
             panel5.Name = "panel5";
             panel5.Padding = new Padding(15);
-            panel5.Size = new Size(827, 104);
+            panel5.Size = new Size(557, 104);
             panel5.TabIndex = 5;
             // 
             // cbClient
@@ -206,8 +206,9 @@
             cbClient.ItemHeight = 40;
             cbClient.Location = new Point(15, 34);
             cbClient.Name = "cbClient";
-            cbClient.Size = new Size(797, 46);
+            cbClient.Size = new Size(527, 46);
             cbClient.TabIndex = 2;
+            cbClient.DropDown += cbClient_DropDown;
             // 
             // materialLabel4
             // 
@@ -231,7 +232,7 @@
             gbBillingData.MinimumSize = new Size(0, 140);
             gbBillingData.Name = "gbBillingData";
             gbBillingData.Padding = new Padding(10);
-            gbBillingData.Size = new Size(847, 141);
+            gbBillingData.Size = new Size(577, 152);
             gbBillingData.TabIndex = 6;
             gbBillingData.TabStop = false;
             gbBillingData.Text = "Datos de facturación";
@@ -251,7 +252,7 @@
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 1;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel2.Size = new Size(827, 105);
+            tableLayoutPanel2.Size = new Size(557, 116);
             tableLayoutPanel2.TabIndex = 0;
             // 
             // panel9
@@ -263,7 +264,7 @@
             panel9.Margin = new Padding(0);
             panel9.Name = "panel9";
             panel9.Padding = new Padding(15);
-            panel9.Size = new Size(275, 105);
+            panel9.Size = new Size(185, 116);
             panel9.TabIndex = 5;
             // 
             // tbSubtotal
@@ -292,7 +293,7 @@
             tbSubtotal.SelectionLength = 0;
             tbSubtotal.SelectionStart = 0;
             tbSubtotal.ShortcutsEnabled = true;
-            tbSubtotal.Size = new Size(245, 48);
+            tbSubtotal.Size = new Size(155, 48);
             tbSubtotal.TabIndex = 3;
             tbSubtotal.TabStop = false;
             tbSubtotal.TextAlign = HorizontalAlignment.Left;
@@ -317,11 +318,11 @@
             panel10.Controls.Add(tbDiscount);
             panel10.Controls.Add(materialLabel8);
             panel10.Dock = DockStyle.Fill;
-            panel10.Location = new Point(275, 0);
+            panel10.Location = new Point(185, 0);
             panel10.Margin = new Padding(0);
             panel10.Name = "panel10";
             panel10.Padding = new Padding(15);
-            panel10.Size = new Size(275, 105);
+            panel10.Size = new Size(185, 116);
             panel10.TabIndex = 4;
             // 
             // tbDiscount
@@ -349,7 +350,7 @@
             tbDiscount.SelectionLength = 0;
             tbDiscount.SelectionStart = 0;
             tbDiscount.ShortcutsEnabled = true;
-            tbDiscount.Size = new Size(245, 48);
+            tbDiscount.Size = new Size(155, 48);
             tbDiscount.TabIndex = 1;
             tbDiscount.TabStop = false;
             tbDiscount.TextAlign = HorizontalAlignment.Left;
@@ -374,11 +375,11 @@
             panel11.Controls.Add(tbTotal);
             panel11.Controls.Add(materialLabel9);
             panel11.Dock = DockStyle.Fill;
-            panel11.Location = new Point(550, 0);
+            panel11.Location = new Point(370, 0);
             panel11.Margin = new Padding(0);
             panel11.Name = "panel11";
             panel11.Padding = new Padding(15);
-            panel11.Size = new Size(277, 105);
+            panel11.Size = new Size(187, 116);
             panel11.TabIndex = 3;
             // 
             // tbTotal
@@ -407,7 +408,7 @@
             tbTotal.SelectionLength = 0;
             tbTotal.SelectionStart = 0;
             tbTotal.ShortcutsEnabled = true;
-            tbTotal.Size = new Size(247, 48);
+            tbTotal.Size = new Size(157, 48);
             tbTotal.TabIndex = 2;
             tbTotal.TabStop = false;
             tbTotal.TextAlign = HorizontalAlignment.Left;
@@ -434,7 +435,7 @@
             Controls.Add(mepSellAdd);
             DoubleBuffered = true;
             Name = "Sell";
-            Size = new Size(918, 371);
+            Size = new Size(631, 516);
             mepSellAdd.ResumeLayout(false);
             mepSellAdd.PerformLayout();
             tableLayoutPanel3.ResumeLayout(false);

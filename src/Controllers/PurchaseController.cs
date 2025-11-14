@@ -11,15 +11,18 @@ namespace PrimeSystems.Controllers
     public class PurchaseController : IGenericController<PurchaseModel>
     {
         private readonly AppDbContext _context;
+        private readonly StockController _stockController;
 
         public PurchaseController()
         {
             _context = new AppDbContext();
+            _stockController = new StockController(_context);
         }
 
         public PurchaseController(AppDbContext context)
         {
             _context = context;
+            _stockController = new StockController(context);
         }
 
         public List<PurchaseModel> GetAll()
@@ -69,7 +72,14 @@ namespace PrimeSystems.Controllers
             {
                 var existing = _context.Purchase.Find(compra.Id);
                 if (existing == null) return false;
-                // TODO: map fields as needed
+
+                existing.UserId = compra.UserId;
+                existing.SupplierId = compra.SupplierId;
+                existing.FechaHora = compra.FechaHora;
+                existing.Subtotal = compra.Subtotal;
+                existing.Discount = compra.Discount;
+                existing.Total = compra.Total;
+
                 _context.SaveChanges();
                 return true;
             }
@@ -107,9 +117,76 @@ namespace PrimeSystems.Controllers
                 {
                     detalle.PurchaseId = compra.Id;
                     _context.PurchaseDetail.Add(detalle);
+                    
+                    // Aumentar el stock si el detalle tiene un artículo asociado
+                    if (detalle.ArticleId.HasValue && int.TryParse(detalle.Quantity, out int quantity))
+                    {
+                        bool stockAdjusted = _stockController.AdjustStock(detalle.ArticleId.Value, quantity);
+                        if (!stockAdjusted)
+                        {
+                            Debug.WriteLine($"Advertencia: No se pudo ajustar el stock para el artículo {detalle.ArticleId.Value}");
+                        }
+                    }
                 }
                 _context.SaveChanges();
 
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                return false;
+            }
+        }
+
+        public bool UpdateCompraConDetalles(PurchaseModel compra, List<PurchaseDetailModel> detalles)
+        {
+            try
+            {
+                // Actualizar la compra
+                var existing = _context.Purchase.Find(compra.Id);
+                if (existing == null) return false;
+
+                existing.UserId = compra.UserId;
+                existing.SupplierId = compra.SupplierId;
+                existing.FechaHora = compra.FechaHora;
+                existing.Subtotal = compra.Subtotal;
+                existing.Discount = compra.Discount;
+                existing.Total = compra.Total;
+
+                // Obtener los detalles anteriores para restaurar el stock
+                var oldDetails = _context.PurchaseDetail.Where(d => d.PurchaseId == compra.Id).ToList();
+                
+                // Restaurar el stock de los artículos comprados anteriormente (restar)
+                foreach (var oldDetail in oldDetails)
+                {
+                    if (oldDetail.ArticleId.HasValue && int.TryParse(oldDetail.Quantity, out int quantity))
+                    {
+                        _stockController.AdjustStock(oldDetail.ArticleId.Value, -quantity);
+                    }
+                }
+
+                // Eliminar los detalles anteriores
+                _context.PurchaseDetail.RemoveRange(oldDetails);
+
+                // Agregar los nuevos detalles y aumentar el stock
+                foreach (var detalle in detalles)
+                {
+                    detalle.PurchaseId = compra.Id;
+                    _context.PurchaseDetail.Add(detalle);
+                    
+                    // Aumentar el stock si el detalle tiene un artículo asociado
+                    if (detalle.ArticleId.HasValue && int.TryParse(detalle.Quantity, out int quantity))
+                    {
+                        bool stockAdjusted = _stockController.AdjustStock(detalle.ArticleId.Value, quantity);
+                        if (!stockAdjusted)
+                        {
+                            Debug.WriteLine($"Advertencia: No se pudo ajustar el stock para el artículo {detalle.ArticleId.Value}");
+                        }
+                    }
+                }
+
+                _context.SaveChanges();
                 return true;
             }
             catch (Exception ex)

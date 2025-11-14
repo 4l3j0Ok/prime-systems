@@ -38,7 +38,7 @@
             panel3 = new Panel();
             tbArticleQuantity = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
             materialLabel3 = new ReaLTaiizor.Controls.MaterialLabel();
-            tbArticleName = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
+            cbArticleName = new ReaLTaiizor.Controls.HopeComboBox();
             tlpArticle0.SuspendLayout();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
@@ -87,11 +87,12 @@
             btnRemove.Type = ReaLTaiizor.Controls.MaterialButton.MaterialButtonType.Contained;
             btnRemove.UseAccentColor = true;
             btnRemove.UseVisualStyleBackColor = true;
+            btnRemove.Click += btnRemove_Click;
             // 
             // panel1
             // 
             panel1.AutoSize = true;
-            panel1.Controls.Add(tbArticleName);
+            panel1.Controls.Add(cbArticleName);
             panel1.Controls.Add(materialLabel1);
             panel1.Dock = DockStyle.Fill;
             panel1.Location = new Point(0, 0);
@@ -203,6 +204,7 @@
             tbArticleQuantity.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbArticleQuantity.Name = "tbArticleQuantity";
             tbArticleQuantity.PasswordChar = '\0';
+            tbArticleQuantity.PrefixSuffixText = null;
             tbArticleQuantity.ReadOnly = false;
             tbArticleQuantity.RightToLeft = RightToLeft.No;
             tbArticleQuantity.SelectedText = "";
@@ -230,36 +232,21 @@
             materialLabel3.TabIndex = 0;
             materialLabel3.Text = "Cantidad";
             // 
-            // tbArticleName
+            // cbArticleName
             // 
-            tbArticleName.AnimateReadOnly = false;
-            tbArticleName.AutoCompleteMode = AutoCompleteMode.None;
-            tbArticleName.AutoCompleteSource = AutoCompleteSource.None;
-            tbArticleName.BackgroundImageLayout = ImageLayout.None;
-            tbArticleName.CharacterCasing = CharacterCasing.Normal;
-            tbArticleName.Depth = 0;
-            tbArticleName.Dock = DockStyle.Fill;
-            tbArticleName.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
-            tbArticleName.HideSelection = true;
-            tbArticleName.LeadingIcon = null;
-            tbArticleName.Location = new Point(15, 22);
-            tbArticleName.MaxLength = 32767;
-            tbArticleName.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
-            tbArticleName.Name = "tbArticleName";
-            tbArticleName.PasswordChar = '\0';
-            tbArticleName.ReadOnly = false;
-            tbArticleName.RightToLeft = RightToLeft.No;
-            tbArticleName.SelectedText = "";
-            tbArticleName.SelectionLength = 0;
-            tbArticleName.SelectionStart = 0;
-            tbArticleName.ShortcutsEnabled = true;
-            tbArticleName.Size = new Size(206, 36);
-            tbArticleName.TabIndex = 3;
-            tbArticleName.TabStop = false;
-            tbArticleName.TextAlign = HorizontalAlignment.Left;
-            tbArticleName.TrailingIcon = null;
-            tbArticleName.UseSystemPasswordChar = false;
-            tbArticleName.UseTallSize = false;
+            cbArticleName.AutoCompleteMode = AutoCompleteMode.Suggest;
+            cbArticleName.AutoCompleteSource = AutoCompleteSource.ListItems;
+            cbArticleName.Dock = DockStyle.Top;
+            cbArticleName.DrawMode = DrawMode.OwnerDrawFixed;
+            cbArticleName.DropDownStyle = ComboBoxStyle.DropDownList;
+            cbArticleName.FlatStyle = FlatStyle.Flat;
+            cbArticleName.Font = new Font("Segoe UI", 14F);
+            cbArticleName.FormattingEnabled = true;
+            cbArticleName.ItemHeight = 30;
+            cbArticleName.Location = new Point(15, 22);
+            cbArticleName.Name = "cbArticleName";
+            cbArticleName.Size = new Size(206, 36);
+            cbArticleName.TabIndex = 4;
             // 
             // SupplierArticleItem
             // 
@@ -284,15 +271,15 @@
         #endregion
 
         private TableLayoutPanel tlpArticle0;
-        private ReaLTaiizor.Controls.MaterialButton btnRemove;
         private Panel panel1;
-        private ReaLTaiizor.Controls.MaterialTextBoxEdit tbArticleName;
         private ReaLTaiizor.Controls.MaterialLabel materialLabel1;
         private Panel panel2;
-        private ReaLTaiizor.Controls.MaterialTextBoxEdit tbArticleUnitPrice;
         private ReaLTaiizor.Controls.MaterialLabel materialLabel2;
         private Panel panel3;
-        private ReaLTaiizor.Controls.MaterialTextBoxEdit tbArticleQuantity;
         private ReaLTaiizor.Controls.MaterialLabel materialLabel3;
+        public ReaLTaiizor.Controls.MaterialTextBoxEdit tbArticleUnitPrice;
+        public ReaLTaiizor.Controls.MaterialTextBoxEdit tbArticleQuantity;
+        public ReaLTaiizor.Controls.MaterialButton btnRemove;
+        public ReaLTaiizor.Controls.HopeComboBox cbArticleName;
     }
 }

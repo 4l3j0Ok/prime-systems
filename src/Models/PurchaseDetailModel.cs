@@ -12,6 +12,9 @@ namespace PrimeSystems.Models
         [ForeignKey("Purchase")]
         public int? PurchaseId { get; set; }
 
+        [ForeignKey("Article")]
+        public int? ArticleId { get; set; }
+
         [StringLength(255)]
         public string? Description { get; set; }
 
@@ -26,5 +29,6 @@ namespace PrimeSystems.Models
 
         // Navigation properties
         public virtual PurchaseModel? Purchase { get; set; }
+        public virtual ArticleModel? Article { get; set; }
     }
 }

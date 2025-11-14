@@ -60,12 +60,6 @@ namespace PrimeSystems.Core
                 .HasForeignKey(a => a.SubcategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<ArticleModel>()
-                .HasOne(a => a.Supplier)
-                .WithMany(p => p.Articles)
-                .HasForeignKey(a => a.SupplierId)
-                .OnDelete(DeleteBehavior.Restrict);
-
             // Configuración de relaciones para Stock
             modelBuilder.Entity<StockModel>()
                 .HasOne(s => s.Article)

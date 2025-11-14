@@ -62,7 +62,7 @@
             mepPurchaseAdd.Depth = 0;
             mepPurchaseAdd.Description = "";
             mepPurchaseAdd.Dock = DockStyle.Fill;
-            mepPurchaseAdd.ExpandHeight = 518;
+            mepPurchaseAdd.ExpandHeight = 527;
             mepPurchaseAdd.Font = new Font("Microsoft Sans Serif", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
             mepPurchaseAdd.ForeColor = Color.FromArgb(222, 0, 0, 0);
             mepPurchaseAdd.Location = new Point(0, 0);
@@ -71,11 +71,13 @@
             mepPurchaseAdd.Name = "mepPurchaseAdd";
             mepPurchaseAdd.Padding = new Padding(24, 64, 24, 70);
             mepPurchaseAdd.ShowCollapseExpand = false;
-            mepPurchaseAdd.Size = new Size(904, 518);
+            mepPurchaseAdd.Size = new Size(620, 527);
             mepPurchaseAdd.TabIndex = 2;
             mepPurchaseAdd.Title = "Registrar Compra";
             mepPurchaseAdd.ValidationButtonEnable = true;
             mepPurchaseAdd.ValidationButtonText = "Guardar";
+            mepPurchaseAdd.SaveClick += mepPurchaseAdd_SaveClick;
+            mepPurchaseAdd.CancelClick += mepPurchaseAdd_CancelClick;
             // 
             // tableLayoutPanel3
             // 
@@ -92,7 +94,7 @@
             tableLayoutPanel3.RowStyles.Add(new RowStyle());
             tableLayoutPanel3.RowStyles.Add(new RowStyle());
             tableLayoutPanel3.RowStyles.Add(new RowStyle());
-            tableLayoutPanel3.Size = new Size(856, 384);
+            tableLayoutPanel3.Size = new Size(572, 393);
             tableLayoutPanel3.TabIndex = 3;
             // 
             // gbArticlesData
@@ -103,7 +105,7 @@
             gbArticlesData.Location = new Point(3, 149);
             gbArticlesData.Name = "gbArticlesData";
             gbArticlesData.Padding = new Padding(10);
-            gbArticlesData.Size = new Size(850, 72);
+            gbArticlesData.Size = new Size(566, 72);
             gbArticlesData.TabIndex = 8;
             gbArticlesData.TabStop = false;
             gbArticlesData.Text = "Artículos";
@@ -116,7 +118,7 @@
             panel4.Location = new Point(10, 26);
             panel4.Name = "panel4";
             panel4.Padding = new Padding(200, 0, 200, 0);
-            panel4.Size = new Size(830, 36);
+            panel4.Size = new Size(546, 36);
             panel4.TabIndex = 1;
             // 
             // btnAddArticle
@@ -133,12 +135,13 @@
             btnAddArticle.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             btnAddArticle.Name = "btnAddArticle";
             btnAddArticle.NoAccentTextColor = Color.Empty;
-            btnAddArticle.Size = new Size(430, 36);
+            btnAddArticle.Size = new Size(146, 36);
             btnAddArticle.TabIndex = 2;
             btnAddArticle.Text = "Agregar";
             btnAddArticle.Type = ReaLTaiizor.Controls.MaterialButton.MaterialButtonType.Contained;
             btnAddArticle.UseAccentColor = false;
             btnAddArticle.UseVisualStyleBackColor = true;
+            btnAddArticle.Click += btnAddArticle_Click;
             // 
             // gbRegisterData
             // 
@@ -149,7 +152,7 @@
             gbRegisterData.MinimumSize = new Size(0, 140);
             gbRegisterData.Name = "gbRegisterData";
             gbRegisterData.Padding = new Padding(10);
-            gbRegisterData.Size = new Size(850, 140);
+            gbRegisterData.Size = new Size(566, 140);
             gbRegisterData.TabIndex = 4;
             gbRegisterData.TabStop = false;
             gbRegisterData.Text = "Datos de registro";
@@ -165,7 +168,7 @@
             tableLayoutPanel4.Name = "tableLayoutPanel4";
             tableLayoutPanel4.RowCount = 1;
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel4.Size = new Size(830, 104);
+            tableLayoutPanel4.Size = new Size(546, 104);
             tableLayoutPanel4.TabIndex = 0;
             // 
             // panel5
@@ -177,7 +180,7 @@
             panel5.Margin = new Padding(0);
             panel5.Name = "panel5";
             panel5.Padding = new Padding(15);
-            panel5.Size = new Size(830, 104);
+            panel5.Size = new Size(546, 104);
             panel5.TabIndex = 5;
             // 
             // cbProvider
@@ -193,8 +196,9 @@
             cbProvider.ItemHeight = 40;
             cbProvider.Location = new Point(15, 34);
             cbProvider.Name = "cbProvider";
-            cbProvider.Size = new Size(800, 46);
+            cbProvider.Size = new Size(516, 46);
             cbProvider.TabIndex = 2;
+            cbProvider.DropDown += cbProvider_DropDown;
             // 
             // materialLabel4
             // 
@@ -218,7 +222,7 @@
             gbBillingData.MinimumSize = new Size(0, 140);
             gbBillingData.Name = "gbBillingData";
             gbBillingData.Padding = new Padding(10);
-            gbBillingData.Size = new Size(850, 154);
+            gbBillingData.Size = new Size(566, 163);
             gbBillingData.TabIndex = 6;
             gbBillingData.TabStop = false;
             gbBillingData.Text = "Datos de facturación";
@@ -232,7 +236,7 @@
             panel11.Margin = new Padding(0);
             panel11.Name = "panel11";
             panel11.Padding = new Padding(15);
-            panel11.Size = new Size(830, 118);
+            panel11.Size = new Size(546, 127);
             panel11.TabIndex = 4;
             // 
             // tbTotal
@@ -261,7 +265,7 @@
             tbTotal.SelectionLength = 0;
             tbTotal.SelectionStart = 0;
             tbTotal.ShortcutsEnabled = true;
-            tbTotal.Size = new Size(800, 48);
+            tbTotal.Size = new Size(516, 48);
             tbTotal.TabIndex = 2;
             tbTotal.TabStop = false;
             tbTotal.TextAlign = HorizontalAlignment.Left;
@@ -287,7 +291,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(mepPurchaseAdd);
             Name = "Purchase";
-            Size = new Size(904, 518);
+            Size = new Size(620, 527);
             mepPurchaseAdd.ResumeLayout(false);
             mepPurchaseAdd.PerformLayout();
             tableLayoutPanel3.ResumeLayout(false);

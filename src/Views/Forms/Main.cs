@@ -23,13 +23,14 @@ namespace PrimeSystems
 
         private void Main_Load(object sender, EventArgs e)
         {
+            SaveOriginalTabContents(); // Guardar ANTES de cargar para preservar botones flotantes
             ReloadAllTabPages();
-            SaveOriginalTabContents();
             PositionFloatingButtonsInTabControl(tcMain);
         }
 
         private void ReloadAllTabPages()
         {
+            // Usuarios
             ReloadTabPage<UserModel, User>(
                 tpUsersList,
                 () => new UserController(),
@@ -39,6 +40,7 @@ namespace PrimeSystems
                 u => new User(u)
             );
 
+            // Roles
             ReloadTabPage<RoleModel, Role>(
                 tpUsersRoles,
                 () => new UserTypeController(),
@@ -46,6 +48,56 @@ namespace PrimeSystems
                 r => r.Id,
                 null,
                 r => new Role(r)
+            );
+
+            // Proveedores
+            ReloadTabPage<SupplierModel, Supplier>(
+                tpSuppliers,
+                () => new SupplierController(),
+                s => s.Name ?? "Sin nombre",
+                s => $"CUIT: {s.Cuit?.ToString() ?? "N/A"}",
+                null,
+                s => new Supplier(s)
+            );
+
+            // Clientes
+            ReloadTabPage<ClientModel, Client>(
+                tpSellsClients,
+                () => new ClientController(),
+                c => c.Name ?? "Sin nombre",
+                c => $"CUIT: {c.Cuit?.ToString() ?? "N/A"} | Entidad: {c.Entity ?? "N/A"}",
+                null,
+                c => new Client(c)
+            );
+
+            // Artículos
+            ReloadTabPage<ArticleModel, Article>(
+                tpSellsArticles,
+                () => new ArticleController(),
+                a => a.Name ?? "Sin nombre",
+                a => $"Código: {a.Code} | Categoría: {a.Category?.Name ?? "N/A"}",
+                null,
+                a => new Article(a)
+            );
+
+            // Histórico de ventas
+            ReloadTabPage<SellModel, Sell>(
+                tpSellsList,
+                () => new SellController(),
+                s => $"Venta #{s.Id}",
+                s => $"Cliente: {s.Client?.Name ?? "N/A"} | Fecha: {s.Date ?? "N/A"}",
+                null,
+                s => new Sell(s)
+            );
+            
+            // Histórico de compras
+            ReloadTabPage<PurchaseModel, Purchase>(
+                tpPurchasesHistory,
+                () => new PurchaseController(),
+                p => $"Compra #{p.Id}",
+                p => $"Proveedor: {p.Supplier?.Name ?? "N/A"} | Total: ${p.Total ?? "0.00"} | Fecha: {p.FechaHora ?? "N/A"}",
+                null,
+                p => new Purchase(p)
             );
         }
 
@@ -83,7 +135,39 @@ namespace PrimeSystems
                             titleSelector(entity),
                             controllerFactory,
                             tabPage,
-                            ReloadAllTabPages // usa método central
+                            () => ReloadSingleTabPage(tabPage, controllerFactory, titleSelector, descriptionSelector, pictureSelector, formFactory)
+                        )
+                )
+            );
+
+            PositionFloatingButtonsInTabControl(tcMain);
+        }
+
+        private void ReloadSingleTabPage<T, TForm>(
+            TabPage tabPage,
+            Func<IGenericController<T>> controllerFactory,
+            Func<T, string> titleSelector,
+            Func<T, string> descriptionSelector,
+            Func<T, Bitmap?>? pictureSelector,
+            Func<T, TForm> formFactory
+        ) where TForm : Control
+        {
+            LoadCardsOnTabPage(
+                tabPage,
+                controllerFactory,
+                entity => new Card(
+                    title: titleSelector(entity),
+                    description: descriptionSelector(entity),
+                    picture: pictureSelector?.Invoke(entity),
+                    editCallback: () => ShowControlInTabPage(tabPage, formFactory(entity)),
+                    removeCallback: () =>
+                        RemoveEntity(
+                            entity,
+                            GetEntityId(entity),
+                            titleSelector(entity),
+                            controllerFactory,
+                            tabPage,
+                            () => ReloadSingleTabPage(tabPage, controllerFactory, titleSelector, descriptionSelector, pictureSelector, formFactory)
                         )
                 )
             );
@@ -140,7 +224,29 @@ namespace PrimeSystems
         private void SaveOriginalTabContents()
         {
             foreach (TabPage tab in tcMain.TabPages)
-                originalTabContents[tab] = tab.Controls.Cast<Control>().ToList();
+            {
+                SaveTabPageContents(tab);
+            }
+        }
+
+        private void SaveTabPageContents(TabPage tabPage)
+        {
+            if (!originalTabContents.ContainsKey(tabPage))
+            {
+                originalTabContents[tabPage] = tabPage.Controls.Cast<Control>().ToList();
+            }
+
+            foreach (Control control in tabPage.Controls)
+            {
+                if (control is MaterialTabControl nestedTabControl)
+                {
+                    Debug.WriteLine($"SaveTabPageContents: Found nested TabControl in {tabPage.Name}");
+                    foreach (TabPage nestedTab in nestedTabControl.TabPages)
+                    {
+                        SaveTabPageContents(nestedTab);
+                    }
+                }
+            }
         }
 
         public void LoadCardsOnTabPage<T>(
@@ -174,6 +280,7 @@ namespace PrimeSystems
                         Dock = DockStyle.Fill,
                         TextAlign = System.Drawing.ContentAlignment.MiddleCenter
                     });
+                    tabPage.ResumeLayout();
                     return;
                 }
 
@@ -203,14 +310,9 @@ namespace PrimeSystems
             }
         }
 
-        private void btnAddUser_Click(object sender, EventArgs e) =>
-            ShowControlInTabPage(tpUsersList, new User());
-
-        private void btnAddRole_Click(object sender, EventArgs e) =>
-            ShowControlInTabPage(tpUsersRoles, new Role());
-
         public void ShowControlInTabPage(TabPage tabPage, Control control)
         {
+            Debug.WriteLine($"ShowControlInTabPage: Showing control {control.GetType().Name} in tab {tabPage.Name}");
             if (!originalTabContents.ContainsKey(tabPage))
                 originalTabContents[tabPage] = tabPage.Controls.Cast<Control>().ToList();
 
@@ -221,13 +323,102 @@ namespace PrimeSystems
 
         public void RestoreTabPage(TabPage tabPage)
         {
-            if (!originalTabContents.ContainsKey(tabPage)) return;
-
+            Debug.WriteLine($"RestoreTabPage: Restoring tab {tabPage.Name}");
+            
             tabPage.Controls.Clear();
-            foreach (var control in originalTabContents[tabPage])
-                tabPage.Controls.Add(control);
+            
+            // Restaurar los controles originales (incluyendo botones flotantes)
+            if (originalTabContents.ContainsKey(tabPage))
+            {
+                foreach (var control in originalTabContents[tabPage])
+                    tabPage.Controls.Add(control);
+            }
 
-            ReloadAllTabPages(); // centralizado
+            // Solo recargar la página específica, no todas
+            ReloadSpecificTabPage(tabPage);
+            PositionFloatingButtonsInTabControl(tcMain);
+        }
+
+        private void ReloadSpecificTabPage(TabPage tabPage)
+        {
+            // Determinar qué página recargar basándose en el nombre de la página
+            if (tabPage == tpUsersList)
+            {
+                ReloadTabPage<UserModel, User>(
+                    tpUsersList,
+                    () => new UserController(),
+                    u => u.Username,
+                    u => $"{u.Name} {u.LastName}",
+                    u => GetUserProfilePicture(u),
+                    u => new User(u)
+                );
+            }
+            else if (tabPage == tpUsersRoles)
+            {
+                ReloadTabPage<RoleModel, Role>(
+                    tpUsersRoles,
+                    () => new UserTypeController(),
+                    r => r.Name ?? "",
+                    r => r.Id,
+                    null,
+                    r => new Role(r)
+                );
+            }
+            else if (tabPage == tpSuppliers)
+            {
+                ReloadTabPage<SupplierModel, Supplier>(
+                    tpSuppliers,
+                    () => new SupplierController(),
+                    s => s.Name ?? "Sin nombre",
+                    s => $"CUIT: {s.Cuit?.ToString() ?? "N/A"}",
+                    null,
+                    s => new Supplier(s)
+                );
+            }
+            else if (tabPage == tpSellsClients)
+            {
+                ReloadTabPage<ClientModel, Client>(
+                    tpSellsClients,
+                    () => new ClientController(),
+                    c => c.Name ?? "Sin nombre",
+                    c => $"CUIT: {c.Cuit?.ToString() ?? "N/A"} | Entidad: {c.Entity ?? "N/A"}",
+                    null,
+                    c => new Client(c)
+                );
+            }
+            else if (tabPage == tpSellsArticles)
+            {
+                ReloadTabPage<ArticleModel, Article>(
+                    tpSellsArticles,
+                    () => new ArticleController(),
+                    a => a.Name ?? "Sin nombre",
+                    a => $"Código: {a.Code} | Categoría: {a.Category?.Name ?? "N/A"}",
+                    null,
+                    a => new Article(a)
+                );
+            }
+            else if (tabPage == tpSellsList)
+            {
+                ReloadTabPage<SellModel, Sell>(
+                    tpSellsList,
+                    () => new SellController(),
+                    s => $"Venta #{s.Id}",
+                    s => $"Cliente: {s.Client?.Name ?? "N/A"} | Fecha: {s.Date ?? "N/A"}",
+                    null,
+                    s => new Sell(s)
+                );
+            }
+            else if (tabPage == tpPurchasesHistory)
+            {
+                ReloadTabPage<PurchaseModel, Purchase>(
+                    tpPurchasesHistory,
+                    () => new PurchaseController(),
+                    p => $"Compra #{p.Id}",
+                    p => $"Proveedor: {p.Supplier?.Name ?? "N/A"} | Total: ${p.Total ?? "0.00"} | Fecha: {p.FechaHora ?? "N/A"}",
+                    null,
+                    p => new Purchase(p)
+                );
+            }
         }
 
         private void PositionFloatingButtonsInTabControl(MaterialTabControl tabControl)
@@ -263,8 +454,29 @@ namespace PrimeSystems
                 y -= btn.Height + SPACING;
             }
         }
-
+        
+        // Event Handlers
         private void tabCerrarSesion_Click(object sender, EventArgs e) => Application.Restart();
-        private void btnAddSell_Click(object sender, EventArgs e) => ShowControlInTabPage(tpSells, new Sell());
+        
+        private void btnAddUser_Click(object sender, EventArgs e) =>
+            ShowControlInTabPage(tpUsersList, new User());
+
+        private void btnAddRole_Click(object sender, EventArgs e) =>
+            ShowControlInTabPage(tpUsersRoles, new Role());
+
+        private void btnAddSell_Click(object sender, EventArgs e) => 
+            ShowControlInTabPage(tpSellsList, new Sell());
+        
+        private void btnAddPurchase_Click(object sender, EventArgs e) => 
+            ShowControlInTabPage(tpPurchasesHistory, new Purchase());
+        
+        private void btnAddSupplier_Click(object sender, EventArgs e) => 
+            ShowControlInTabPage(tpSuppliers, new Supplier());
+        
+        private void btnAddClient_Click(object sender, EventArgs e) => 
+            ShowControlInTabPage(tpSellsClients, new Client());
+
+        private void btnAddArticle_Click(object sender, EventArgs e) => 
+            ShowControlInTabPage(tpSellsArticles, new Article());
     }
 }

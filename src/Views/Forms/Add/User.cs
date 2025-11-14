@@ -170,7 +170,7 @@ namespace PrimeSystems.Views.Forms.Add
         {
             if (formMain != null)
             {
-                formMain.RestoreTabPage(formMain.tpUsers);
+                formMain.RestoreTabPage(formMain.tpUsersList);
             }
         }
     }

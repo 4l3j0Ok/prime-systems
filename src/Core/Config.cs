@@ -14,10 +14,6 @@ namespace PrimeSystems.Core
         public static string sql_connection_string = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") ?? "Server=127.0.0.1;Database=PrimeSystems;Trusted_Connection=True;TrustServerCertificate=True;";
         public static string sql_database_name = "PrimeSystems";
         public static string random_password_characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;':,.<>?/~`";
-        public static List<string> defaultRoles = new List<string>
-        {
-            "Administrador",
-        };
         public static Bitmap default_profile_picture = Properties.Resources.user_placeholder;
     }
     public enum ValidationType
@@ -35,7 +31,7 @@ namespace PrimeSystems.Core
         {
             { ValidationType.Letters, "[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\\s]" },
             { ValidationType.Numbers, "[0-9]" },
-            { ValidationType.Decimal, "[0-9\\.]" },
+            { ValidationType.Decimal, "[0-9\\,]" },
             { ValidationType.LettersAndNumbers, "[a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ\\s]" },
             { ValidationType.Email, "[\\w@\\.\\-_]" }
         };
