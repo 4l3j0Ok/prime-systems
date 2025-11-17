@@ -50,7 +50,7 @@ namespace PrimeSystems.Core
         {
             MaterialSkinManager materialSkinManager;
             materialSkinManager = MaterialSkinManager.Instance;
-            
+
             materialSkinManager.Theme = MaterialSkinManager.Themes.LIGHT;
             materialSkinManager.ColorScheme = new MaterialColorScheme(
                 primary: primary,

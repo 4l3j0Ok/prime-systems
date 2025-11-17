@@ -8,7 +8,7 @@ using PrimeSystems.Core;
 
 namespace PrimeSystems.Controllers
 {
-    public class SellController : IGenericController<SellModel>
+    public class SellController : IGenericController<SellModel, int>
     {
         private readonly AppDbContext _context;
         private readonly StockController _stockController;
@@ -33,15 +33,7 @@ namespace PrimeSystems.Controllers
                 .Include(v => v.Detail)
                 .ToList();
         }
-
-        public SellModel? GetById(object id)
-        {
-            if (id is int intId) return GetVentaById(intId);
-            if (int.TryParse(id?.ToString(), out int parsed)) return GetVentaById(parsed);
-            return null;
-        }
-
-        public SellModel? GetVentaById(int id)
+        public SellModel? GetById(int id)
         {
             return _context.Sell
                 .Include(v => v.User)
@@ -86,14 +78,13 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool Delete(object id)
+        public bool Delete(int id)
         {
             try
             {
-                if (!int.TryParse(id?.ToString(), out int intId)) return false;
-                var entity = _context.Sell.Find(intId);
-                if (entity == null) return false;
-                _context.Sell.Remove(entity);
+                var venta = _context.Sell.Find(id);
+                if (venta == null) return false;
+                _context.Sell.Remove(venta);
                 _context.SaveChanges();
                 return true;
             }

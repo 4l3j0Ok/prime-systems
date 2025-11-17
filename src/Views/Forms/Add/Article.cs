@@ -2,6 +2,7 @@
 using PrimeSystems.Core;
 using PrimeSystems.Models;
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -18,6 +19,7 @@ namespace PrimeSystems.Views.Forms.Add
         private ArticleController articleController;
         private CategoryController categoryController;
         private SubcategoryController subcategoryController;
+        private ActivityRecordController activityRecordController;
         private StockController stockController;
         private ArticleModel selectedArticle;
         private StockModel? selectedStock;
@@ -29,24 +31,20 @@ namespace PrimeSystems.Views.Forms.Add
             categoryController = new CategoryController();
             subcategoryController = new SubcategoryController();
             stockController = new StockController();
-            
+
             InitializeComponent();
             SetupControls();
             LoadCategories();
-            
+
             if (article == null)
             {
                 selectedArticle = new ArticleModel();
                 selectedStock = new StockModel();
                 return;
             }
-            
-            // Modo edición - Recargar el artículo desde la base de datos para obtener datos frescos
             mepArticleAdd.Title = "Modificar Artículo";
             mepArticleAdd.Description = "Edita los datos del artículo seleccionado";
-            
-            // Obtener el artículo completo desde la base de datos para tener datos actualizados
-            var freshArticle = articleController.GetArticuloById(article.Id);
+            var freshArticle = articleController.GetById(article.Id);
             if (freshArticle != null)
             {
                 selectedArticle = freshArticle;
@@ -55,63 +53,54 @@ namespace PrimeSystems.Views.Forms.Add
             {
                 selectedArticle = article;
             }
-            
-            // Obtener el stock asociado al artículo desde la base de datos
             selectedStock = stockController.GetStockByArticuloId(selectedArticle.Id);
             if (selectedStock == null)
             {
                 selectedStock = new StockModel { ArticleId = selectedArticle.Id };
             }
-            
-            // Precargar datos del artículo
+
             tbArticleCode.Text = selectedArticle.Code;
             cbArticleName.Text = selectedArticle.Name;
             cbArticleDescription.Text = selectedArticle.Description;
-            
+
             if (selectedArticle.CategoryId.HasValue && selectedArticle.Category != null)
             {
                 cbArticleCategory.SelectedItem = selectedArticle.Category.Name;
                 LoadSubcategories(selectedArticle.CategoryId.Value);
             }
-            
+
             if (selectedArticle.SubcategoryId.HasValue && selectedArticle.Subcategory != null)
             {
                 cbArticleSubcategory.SelectedItem = selectedArticle.Subcategory.Name;
             }
-            
-            // Cargar datos del stock
+
             tbStockQuantity.Text = selectedStock.Stock?.ToString() ?? "0";
-            
+
             if (decimal.TryParse(selectedStock.Cost, out decimal cost))
                 tbStockCost.Text = cost.ToString("F2");
-            
+
             tbCostProfit.Text = selectedStock.Profit?.ToString() ?? "0";
-            
-            // Calcular precio de venta
+
             CalculateSellPrice();
         }
 
         private void SetupControls()
         {
-            // Configurar validación de campos numéricos
             tbStockQuantity.KeyPress += (sender, e) => Utils.HandleTextBoxInput(sender, e, ValidationType.Numbers);
             tbStockQuantity.TextChanged += (sender, e) => Utils.HandlePostTextBoxInput(sender, e, ValidationType.Numbers);
-            
+
             tbStockCost.KeyPress += (sender, e) => Utils.HandleTextBoxInput(sender, e, ValidationType.Decimal);
             tbStockCost.TextChanged += (sender, e) => Utils.HandlePostTextBoxInput(sender, e, ValidationType.Decimal);
-            
+
             tbCostProfit.KeyPress += (sender, e) => Utils.HandleTextBoxInput(sender, e, ValidationType.Numbers);
             tbCostProfit.TextChanged += (sender, e) => Utils.HandlePostTextBoxInput(sender, e, ValidationType.Numbers);
-            
-            // Configurar eventos de los botones
+
             mepArticleAdd.SaveClick += mepArticleAdd_SaveClick;
             mepArticleAdd.CancelClick += mepArticleAdd_CancelClick;
-            
-            // Configurar eventos de los combos
+
             cbArticleCategory.SelectedIndexChanged += cbArticleCategory_SelectedIndexChanged;
-            cbArticleCategory.KeyPress += cbArticleCategory_KeyPress;
-            
-            // Calcular precio de venta automáticamente
+            cbArticleCategory.KeyPress += (s, e) => Utils.HandleTextBoxInput(s, e, ValidationType.LettersAndNumbers);
+
             tbStockCost.TextChanged += (s, e) => CalculateSellPrice();
             tbCostProfit.TextChanged += (s, e) => CalculateSellPrice();
         }
@@ -122,7 +111,7 @@ namespace PrimeSystems.Views.Forms.Add
             {
                 var categories = categoryController.GetAll();
                 cbArticleCategory.Items.Clear();
-                
+
                 foreach (var category in categories)
                 {
                     if (!string.IsNullOrWhiteSpace(category.Name))
@@ -142,7 +131,7 @@ namespace PrimeSystems.Views.Forms.Add
             {
                 var subcategories = subcategoryController.GetSubcategoriesByCategoria(categoryId);
                 cbArticleSubcategory.Items.Clear();
-                
+
                 foreach (var subcategory in subcategories)
                 {
                     if (!string.IsNullOrWhiteSpace(subcategory.Name))
@@ -162,18 +151,12 @@ namespace PrimeSystems.Views.Forms.Add
             {
                 string categoryName = cbArticleCategory.SelectedItem.ToString() ?? "";
                 var category = categoryController.GetAll().FirstOrDefault(c => c.Name == categoryName);
-                
+
                 if (category != null)
                 {
                     LoadSubcategories(category.Id);
                 }
             }
-        }
-
-        private void cbArticleCategory_KeyPress(object? sender, KeyPressEventArgs e)
-        {
-            // Permitir que el usuario escriba en el combo (modo SuggestAppend)
-            // La creación se manejará al guardar
         }
 
         private void CalculateSellPrice()
@@ -201,7 +184,6 @@ namespace PrimeSystems.Views.Forms.Add
         {
             List<string> errors = new List<string>();
 
-            // Validar campos obligatorios
             if (string.IsNullOrWhiteSpace(tbArticleCode.Text))
                 errors.Add("Código del artículo");
 
@@ -239,20 +221,20 @@ namespace PrimeSystems.Views.Forms.Add
             {
                 string categoryName = cbArticleCategory.Text.Trim();
                 var category = categoryController.GetAll().FirstOrDefault(c => c.Name == categoryName);
-                
+
                 if (category == null)
                 {
                     var newCategory = new CategoryModel
                     {
                         Name = categoryName
                     };
-                    
+
                     if (!categoryController.Create(newCategory))
                     {
                         MessageBox.Show("Error al crear la nueva categoría.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
-                    
+
                     category = categoryController.GetAll().FirstOrDefault(c => c.Name == categoryName);
                     if (category == null)
                     {
@@ -261,46 +243,42 @@ namespace PrimeSystems.Views.Forms.Add
                     }
                 }
 
-                // Obtener o crear subcategoría (si se especificó)
                 int? subcategoryId = null;
                 if (!string.IsNullOrWhiteSpace(cbArticleSubcategory.Text))
                 {
                     string subcategoryName = cbArticleSubcategory.Text.Trim();
                     var subcategory = subcategoryController.GetAll()
                         .FirstOrDefault(s => s.Name == subcategoryName && s.CategoryId == category.Id);
-                    
+
                     if (subcategory == null)
                     {
-                        // Crear nueva subcategoría
                         var newSubcategory = new SubcategoryModel
                         {
                             Name = subcategoryName,
                             CategoryId = category.Id
                         };
-                        
+
                         if (!subcategoryController.Create(newSubcategory))
                         {
                             MessageBox.Show("Error al crear la nueva subcategoría.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return;
                         }
-                        
+
                         subcategory = subcategoryController.GetAll()
                             .FirstOrDefault(s => s.Name == subcategoryName && s.CategoryId == category.Id);
                     }
-                    
+
                     subcategoryId = subcategory?.Id;
                 }
 
-                // Asignar valores al artículo
                 selectedArticle.Code = tbArticleCode.Text.Trim().ToUpper();
                 selectedArticle.Name = cbArticleName.Text.Trim();
-                selectedArticle.Description = string.IsNullOrWhiteSpace(cbArticleDescription.Text) 
-                    ? null 
+                selectedArticle.Description = string.IsNullOrWhiteSpace(cbArticleDescription.Text)
+                    ? null
                     : cbArticleDescription.Text.Trim();
                 selectedArticle.CategoryId = category.Id;
                 selectedArticle.SubcategoryId = subcategoryId;
 
-                // Guardar artículo
                 bool articleSuccess;
                 if (selectedArticle.Id == 0)
                     articleSuccess = articleController.Create(selectedArticle);
@@ -313,7 +291,6 @@ namespace PrimeSystems.Views.Forms.Add
                     return;
                 }
 
-                // Si es nuevo artículo, obtener el ID generado
                 if (selectedStock?.ArticleId == null || selectedStock.ArticleId == 0)
                 {
                     var savedArticle = articleController.GetArticuloByCodigo(selectedArticle.Code);
@@ -324,7 +301,6 @@ namespace PrimeSystems.Views.Forms.Add
                     }
                 }
 
-                // Asignar valores al stock
                 selectedStock.ArticleId = selectedArticle.Id;
                 selectedStock.Stock = int.TryParse(tbStockQuantity.Text, out int stock) ? stock : 0;
                 selectedStock.Cost = decimal.TryParse(tbStockCost.Text, out decimal cost) ? cost.ToString("F2") : "0.00";
@@ -339,20 +315,36 @@ namespace PrimeSystems.Views.Forms.Add
 
                 if (!stockSuccess)
                 {
-                    MessageBox.Show("Artículo guardado, pero hubo un error al guardar el stock.", "Advertencia", 
+                    MessageBox.Show("Artículo guardado, pero hubo un error al guardar el stock.", "Advertencia",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
                 else
                 {
-                    MessageBox.Show("Artículo guardado correctamente.", "Éxito", 
+                    MessageBox.Show("Artículo guardado correctamente.", "Éxito",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 
+                // Registramos actividad
+                activityRecordController = new ActivityRecordController();
+                bool isCreate = selectedArticle.Id == 0;
+                var activityRecord = new ActivityRecordModel
+                {
+                    UserId = Session.CurrentUser?.Id,
+                    Module = ActivityModules.Articles,
+                    Description = ActivityModules.DescriptionTemplate(
+                        user: Session.CurrentUser?.Name ?? "Desconocido",
+                        action: isCreate ? ActivityActions.Created : ActivityActions.Updated,
+                        module: ActivityModules.Articles
+                    ),
+                    Date = DateTime.Now
+                };
+                activityRecordController.Create(activityRecord);
+                Debug.WriteLine("Actividad registrada: " + activityRecord.Description);
                 ReturnToArticlesView();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al guardar el artículo: {ex.Message}", "Error", 
+                MessageBox.Show($"Error al guardar el artículo: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

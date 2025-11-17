@@ -318,7 +318,7 @@ namespace PrimeSystems.Views.Forms.Add
                     purchase = currentPurchase;
                     purchase.UserId = Session.CurrentUser?.Id;
                     purchase.SupplierId = selectedSupplier.Id;
-                    purchase.FechaHora = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    purchase.Date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                     purchase.Subtotal = subtotal.ToString("F2");
                     purchase.Discount = discount.ToString("F2");
                     purchase.Total = total.ToString("F2");
@@ -330,7 +330,7 @@ namespace PrimeSystems.Views.Forms.Add
                     {
                         UserId = Session.CurrentUser?.Id,
                         SupplierId = selectedSupplier.Id,
-                        FechaHora = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                        Date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                         Subtotal = subtotal.ToString("F2"),
                         Discount = discount.ToString("F2"),
                         Total = total.ToString("F2")

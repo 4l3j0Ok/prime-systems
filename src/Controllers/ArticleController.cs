@@ -8,7 +8,7 @@ using PrimeSystems.Core;
 
 namespace PrimeSystems.Controllers
 {
-    public class ArticleController : IGenericController<ArticleModel>
+    public class ArticleController : IGenericController<ArticleModel, int>
     {
         private readonly AppDbContext _context;
 
@@ -32,14 +32,7 @@ namespace PrimeSystems.Controllers
                 .ToList();
         }
 
-        public ArticleModel? GetById(object id)
-        {
-            if (id is int intId) return GetArticuloById(intId);
-            if (int.TryParse(id?.ToString(), out int parsed)) return GetArticuloById(parsed);
-            return null;
-        }
-
-        public ArticleModel? GetArticuloById(int id)
+        public ArticleModel? GetById(int id)
         {
             return _context.Article
                 .Include(a => a.Category)
@@ -116,12 +109,11 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool Delete(object id)
+        public bool Delete(int id)
         {
             try
             {
-                if (!int.TryParse(id?.ToString(), out int intId)) return false;
-                var articulo = _context.Article.Find(intId);
+                var articulo = _context.Article.Find(id);
                 if (articulo == null) return false;
                 _context.Article.Remove(articulo);
                 _context.SaveChanges();

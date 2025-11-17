@@ -15,7 +15,7 @@ namespace PrimeSystems.Core
         public DbSet<SubcategoryModel> Subcategory { get; set; }
         public DbSet<ArticleModel> Article { get; set; }
         public DbSet<StockModel> Stock { get; set; }
-        public DbSet<TransactionModel> Transaction { get; set; }
+        public DbSet<ActivityRecordModel> Transaction { get; set; }
         public DbSet<PurchaseModel> Purchase { get; set; }
         public DbSet<PurchaseDetailModel> PurchaseDetail { get; set; }
         public DbSet<SellModel> Sell { get; set; }
@@ -68,7 +68,7 @@ namespace PrimeSystems.Core
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Configuración de relaciones para H_Movimientos
-            modelBuilder.Entity<TransactionModel>()
+            modelBuilder.Entity<ActivityRecordModel>()
                 .HasOne(h => h.User)
                 .WithMany()
                 .HasForeignKey(h => h.UserId)

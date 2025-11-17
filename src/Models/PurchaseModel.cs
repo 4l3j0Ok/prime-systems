@@ -13,7 +13,7 @@ namespace PrimeSystems.Models
         public int? UserId { get; set; }
 
         [StringLength(255)]
-        public string? FechaHora { get; set; }
+        public string? Date { get; set; }
 
         [ForeignKey("Supplier")]
         public int? SupplierId { get; set; }

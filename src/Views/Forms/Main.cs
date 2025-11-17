@@ -23,15 +23,14 @@ namespace PrimeSystems
 
         private void Main_Load(object sender, EventArgs e)
         {
-            SaveOriginalTabContents(); // Guardar ANTES de cargar para preservar botones flotantes
+            SaveOriginalTabContents();
             ReloadAllTabPages();
             PositionFloatingButtonsInTabControl(tcMain);
         }
 
         private void ReloadAllTabPages()
         {
-            // Usuarios
-            ReloadTabPage<UserModel, User>(
+            ReloadTabPage<UserModel, int, User>(
                 tpUsersList,
                 () => new UserController(),
                 u => u.Username,
@@ -40,8 +39,7 @@ namespace PrimeSystems
                 u => new User(u)
             );
 
-            // Roles
-            ReloadTabPage<RoleModel, Role>(
+            ReloadTabPage<RoleModel, string, Role>(
                 tpUsersRoles,
                 () => new UserTypeController(),
                 r => r.Name ?? "",
@@ -51,7 +49,7 @@ namespace PrimeSystems
             );
 
             // Proveedores
-            ReloadTabPage<SupplierModel, Supplier>(
+            ReloadTabPage<SupplierModel, int, Supplier>(
                 tpSuppliers,
                 () => new SupplierController(),
                 s => s.Name ?? "Sin nombre",
@@ -61,7 +59,7 @@ namespace PrimeSystems
             );
 
             // Clientes
-            ReloadTabPage<ClientModel, Client>(
+            ReloadTabPage<ClientModel, int, Client>(
                 tpSellsClients,
                 () => new ClientController(),
                 c => c.Name ?? "Sin nombre",
@@ -71,7 +69,7 @@ namespace PrimeSystems
             );
 
             // Artículos
-            ReloadTabPage<ArticleModel, Article>(
+            ReloadTabPage<ArticleModel, int, Article>(
                 tpSellsArticles,
                 () => new ArticleController(),
                 a => a.Name ?? "Sin nombre",
@@ -81,7 +79,7 @@ namespace PrimeSystems
             );
 
             // Histórico de ventas
-            ReloadTabPage<SellModel, Sell>(
+            ReloadTabPage<SellModel, int, Sell>(
                 tpSellsList,
                 () => new SellController(),
                 s => $"Venta #{s.Id}",
@@ -89,13 +87,13 @@ namespace PrimeSystems
                 null,
                 s => new Sell(s)
             );
-            
+
             // Histórico de compras
-            ReloadTabPage<PurchaseModel, Purchase>(
+            ReloadTabPage<PurchaseModel, int, Purchase>(
                 tpPurchasesHistory,
                 () => new PurchaseController(),
                 p => $"Compra #{p.Id}",
-                p => $"Proveedor: {p.Supplier?.Name ?? "N/A"} | Total: ${p.Total ?? "0.00"} | Fecha: {p.FechaHora ?? "N/A"}",
+                p => $"Proveedor: {p.Supplier?.Name ?? "N/A"} | Total: ${p.Total ?? "0.00"} | Fecha: {p.Date ?? "N/A"}",
                 null,
                 p => new Purchase(p)
             );
@@ -111,9 +109,9 @@ namespace PrimeSystems
             return new Bitmap(Config.default_profile_picture);
         }
 
-        private void ReloadTabPage<T, TForm>(
+        private void ReloadTabPage<T, TId, TForm>(
             TabPage tabPage,
-            Func<IGenericController<T>> controllerFactory,
+            Func<IGenericController<T, TId>> controllerFactory,
             Func<T, string> titleSelector,
             Func<T, string> descriptionSelector,
             Func<T, Bitmap?>? pictureSelector,
@@ -143,9 +141,9 @@ namespace PrimeSystems
             PositionFloatingButtonsInTabControl(tcMain);
         }
 
-        private void ReloadSingleTabPage<T, TForm>(
+        private void ReloadSingleTabPage<T, TId, TForm>(
             TabPage tabPage,
-            Func<IGenericController<T>> controllerFactory,
+            Func<IGenericController<T, TId>> controllerFactory,
             Func<T, string> titleSelector,
             Func<T, string> descriptionSelector,
             Func<T, Bitmap?>? pictureSelector,
@@ -182,11 +180,11 @@ namespace PrimeSystems
             return idProp.GetValue(entity) ?? throw new InvalidOperationException("Entity ID cannot be null");
         }
 
-        private void RemoveEntity<T>(
+        private void RemoveEntity<T, TId>(
             T entity,
             object id,
             string displayName,
-            Func<IGenericController<T>> controllerFactory,
+            Func<IGenericController<T, TId>> controllerFactory,
             TabPage tabPage,
             Action reloadAll
         )
@@ -202,7 +200,7 @@ namespace PrimeSystems
             try
             {
                 var controller = controllerFactory();
-                if (controller.Delete(id))
+                if (controller.Delete((TId)id))
                 {
                     MessageBox.Show($"'{displayName}' eliminado correctamente.",
                         "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -249,9 +247,9 @@ namespace PrimeSystems
             }
         }
 
-        public void LoadCardsOnTabPage<T>(
+        public void LoadCardsOnTabPage<T, TId>(
             TabPage tabPage,
-            Func<IGenericController<T>> controllerFactory,
+            Func<IGenericController<T, TId>> controllerFactory,
             Func<T, Card> cardFactory
         )
         {
@@ -324,27 +322,22 @@ namespace PrimeSystems
         public void RestoreTabPage(TabPage tabPage)
         {
             Debug.WriteLine($"RestoreTabPage: Restoring tab {tabPage.Name}");
-            
+
             tabPage.Controls.Clear();
-            
-            // Restaurar los controles originales (incluyendo botones flotantes)
             if (originalTabContents.ContainsKey(tabPage))
             {
                 foreach (var control in originalTabContents[tabPage])
                     tabPage.Controls.Add(control);
             }
-
-            // Solo recargar la página específica, no todas
             ReloadSpecificTabPage(tabPage);
             PositionFloatingButtonsInTabControl(tcMain);
         }
 
         private void ReloadSpecificTabPage(TabPage tabPage)
         {
-            // Determinar qué página recargar basándose en el nombre de la página
             if (tabPage == tpUsersList)
             {
-                ReloadTabPage<UserModel, User>(
+                ReloadTabPage<UserModel, int, User>(
                     tpUsersList,
                     () => new UserController(),
                     u => u.Username,
@@ -355,7 +348,7 @@ namespace PrimeSystems
             }
             else if (tabPage == tpUsersRoles)
             {
-                ReloadTabPage<RoleModel, Role>(
+                ReloadTabPage<RoleModel, string, Role>(
                     tpUsersRoles,
                     () => new UserTypeController(),
                     r => r.Name ?? "",
@@ -366,7 +359,7 @@ namespace PrimeSystems
             }
             else if (tabPage == tpSuppliers)
             {
-                ReloadTabPage<SupplierModel, Supplier>(
+                ReloadTabPage<SupplierModel, int, Supplier>(
                     tpSuppliers,
                     () => new SupplierController(),
                     s => s.Name ?? "Sin nombre",
@@ -377,7 +370,7 @@ namespace PrimeSystems
             }
             else if (tabPage == tpSellsClients)
             {
-                ReloadTabPage<ClientModel, Client>(
+                ReloadTabPage<ClientModel, int, Client>(
                     tpSellsClients,
                     () => new ClientController(),
                     c => c.Name ?? "Sin nombre",
@@ -388,7 +381,7 @@ namespace PrimeSystems
             }
             else if (tabPage == tpSellsArticles)
             {
-                ReloadTabPage<ArticleModel, Article>(
+                ReloadTabPage<ArticleModel, int, Article>(
                     tpSellsArticles,
                     () => new ArticleController(),
                     a => a.Name ?? "Sin nombre",
@@ -399,7 +392,7 @@ namespace PrimeSystems
             }
             else if (tabPage == tpSellsList)
             {
-                ReloadTabPage<SellModel, Sell>(
+                ReloadTabPage<SellModel, int, Sell>(
                     tpSellsList,
                     () => new SellController(),
                     s => $"Venta #{s.Id}",
@@ -410,11 +403,11 @@ namespace PrimeSystems
             }
             else if (tabPage == tpPurchasesHistory)
             {
-                ReloadTabPage<PurchaseModel, Purchase>(
+                ReloadTabPage<PurchaseModel, int, Purchase>(
                     tpPurchasesHistory,
                     () => new PurchaseController(),
                     p => $"Compra #{p.Id}",
-                    p => $"Proveedor: {p.Supplier?.Name ?? "N/A"} | Total: ${p.Total ?? "0.00"} | Fecha: {p.FechaHora ?? "N/A"}",
+                    p => $"Proveedor: {p.Supplier?.Name ?? "N/A"} | Total: ${p.Total ?? "0.00"} | Fecha: {p.Date ?? "N/A"}",
                     null,
                     p => new Purchase(p)
                 );
@@ -454,29 +447,29 @@ namespace PrimeSystems
                 y -= btn.Height + SPACING;
             }
         }
-        
+
         // Event Handlers
         private void tabCerrarSesion_Click(object sender, EventArgs e) => Application.Restart();
-        
+
         private void btnAddUser_Click(object sender, EventArgs e) =>
             ShowControlInTabPage(tpUsersList, new User());
 
         private void btnAddRole_Click(object sender, EventArgs e) =>
             ShowControlInTabPage(tpUsersRoles, new Role());
 
-        private void btnAddSell_Click(object sender, EventArgs e) => 
+        private void btnAddSell_Click(object sender, EventArgs e) =>
             ShowControlInTabPage(tpSellsList, new Sell());
-        
-        private void btnAddPurchase_Click(object sender, EventArgs e) => 
+
+        private void btnAddPurchase_Click(object sender, EventArgs e) =>
             ShowControlInTabPage(tpPurchasesHistory, new Purchase());
-        
-        private void btnAddSupplier_Click(object sender, EventArgs e) => 
+
+        private void btnAddSupplier_Click(object sender, EventArgs e) =>
             ShowControlInTabPage(tpSuppliers, new Supplier());
-        
-        private void btnAddClient_Click(object sender, EventArgs e) => 
+
+        private void btnAddClient_Click(object sender, EventArgs e) =>
             ShowControlInTabPage(tpSellsClients, new Client());
 
-        private void btnAddArticle_Click(object sender, EventArgs e) => 
+        private void btnAddArticle_Click(object sender, EventArgs e) =>
             ShowControlInTabPage(tpSellsArticles, new Article());
     }
 }

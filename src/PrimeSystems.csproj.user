@@ -8,6 +8,9 @@
     <Compile Update="Views\Controls\CardHeader.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="Views\Controls\FinancialStateCard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="Views\Controls\MaterialExpansionPanelNonCollapsible.cs">
       <SubType>Component</SubType>
     </Compile>

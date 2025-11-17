@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace PrimeSystems.Controllers
 {
-    public class UserTypeController : IGenericController<RoleModel>
+    public class UserTypeController : IGenericController<RoleModel, string>
     {
         private readonly AppDbContext _context;
 
@@ -24,12 +24,6 @@ namespace PrimeSystems.Controllers
         public List<RoleModel> GetAll()
         {
             return _context.UserType.ToList();
-        }
-
-        public RoleModel? GetById(object id)
-        {
-            if (id is string strId) return GetById(strId);
-            return GetById(id?.ToString() ?? "");
         }
 
         public RoleModel? GetById(string id)
@@ -84,12 +78,11 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool Delete(object id)
+        public bool Delete(string id)
         {
             try
             {
-                string strId = id?.ToString() ?? "";
-                var usuarioTipo = _context.UserType.Find(strId);
+                var usuarioTipo = _context.UserType.Find(id);
                 if (usuarioTipo == null) return false;
                 _context.UserType.Remove(usuarioTipo);
                 _context.SaveChanges();

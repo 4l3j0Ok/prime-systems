@@ -8,7 +8,7 @@ using PrimeSystems.Core;
 
 namespace PrimeSystems.Controllers
 {
-    public class PurchaseController : IGenericController<PurchaseModel>
+    public class PurchaseController : IGenericController<PurchaseModel, int>
     {
         private readonly AppDbContext _context;
         private readonly StockController _stockController;
@@ -34,14 +34,7 @@ namespace PrimeSystems.Controllers
                 .ToList();
         }
 
-        public PurchaseModel? GetById(object id)
-        {
-            if (id is int intId) return GetCompraById(intId);
-            if (int.TryParse(id?.ToString(), out int parsed)) return GetCompraById(parsed);
-            return null;
-        }
-
-        public PurchaseModel? GetCompraById(int id)
+        public PurchaseModel? GetById(int id)
         {
             return _context.Purchase
                 .Include(c => c.User)
@@ -75,7 +68,7 @@ namespace PrimeSystems.Controllers
 
                 existing.UserId = compra.UserId;
                 existing.SupplierId = compra.SupplierId;
-                existing.FechaHora = compra.FechaHora;
+                existing.Date = compra.Date;
                 existing.Subtotal = compra.Subtotal;
                 existing.Discount = compra.Discount;
                 existing.Total = compra.Total;
@@ -89,12 +82,11 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool Delete(object id)
+        public bool Delete(int id)
         {
             try
             {
-                if (!int.TryParse(id?.ToString(), out int intId)) return false;
-                var entity = _context.Purchase.Find(intId);
+                var entity = _context.Purchase.Find(id);
                 if (entity == null) return false;
                 _context.Purchase.Remove(entity);
                 _context.SaveChanges();
@@ -117,14 +109,12 @@ namespace PrimeSystems.Controllers
                 {
                     detalle.PurchaseId = compra.Id;
                     _context.PurchaseDetail.Add(detalle);
-                    
-                    // Aumentar el stock si el detalle tiene un artículo asociado
                     if (detalle.ArticleId.HasValue && int.TryParse(detalle.Quantity, out int quantity))
                     {
                         bool stockAdjusted = _stockController.AdjustStock(detalle.ArticleId.Value, quantity);
                         if (!stockAdjusted)
                         {
-                            Debug.WriteLine($"Advertencia: No se pudo ajustar el stock para el artículo {detalle.ArticleId.Value}");
+                            Debug.WriteLine($"Advertencia: No se pudo ajustar el stock para el artÃ­culo {detalle.ArticleId.Value}");
                         }
                     }
                 }
@@ -149,15 +139,15 @@ namespace PrimeSystems.Controllers
 
                 existing.UserId = compra.UserId;
                 existing.SupplierId = compra.SupplierId;
-                existing.FechaHora = compra.FechaHora;
+                existing.Date = compra.Date;
                 existing.Subtotal = compra.Subtotal;
                 existing.Discount = compra.Discount;
                 existing.Total = compra.Total;
 
                 // Obtener los detalles anteriores para restaurar el stock
                 var oldDetails = _context.PurchaseDetail.Where(d => d.PurchaseId == compra.Id).ToList();
-                
-                // Restaurar el stock de los artículos comprados anteriormente (restar)
+
+                // Restaurar el stock de los artï¿½culos comprados anteriormente (restar)
                 foreach (var oldDetail in oldDetails)
                 {
                     if (oldDetail.ArticleId.HasValue && int.TryParse(oldDetail.Quantity, out int quantity))
@@ -174,14 +164,14 @@ namespace PrimeSystems.Controllers
                 {
                     detalle.PurchaseId = compra.Id;
                     _context.PurchaseDetail.Add(detalle);
-                    
-                    // Aumentar el stock si el detalle tiene un artículo asociado
+
+                    // Aumentar el stock si el detalle tiene un artï¿½culo asociado
                     if (detalle.ArticleId.HasValue && int.TryParse(detalle.Quantity, out int quantity))
                     {
                         bool stockAdjusted = _stockController.AdjustStock(detalle.ArticleId.Value, quantity);
                         if (!stockAdjusted)
                         {
-                            Debug.WriteLine($"Advertencia: No se pudo ajustar el stock para el artículo {detalle.ArticleId.Value}");
+                            Debug.WriteLine($"Advertencia: No se pudo ajustar el stock para el artï¿½culo {detalle.ArticleId.Value}");
                         }
                     }
                 }

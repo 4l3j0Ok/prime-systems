@@ -8,7 +8,7 @@ using PrimeSystems.Core;
 
 namespace PrimeSystems.Controllers
 {
-    public class ClientController : IGenericController<ClientModel>
+    public class ClientController : IGenericController<ClientModel, int>
     {
         private readonly AppDbContext _context;
 
@@ -27,14 +27,7 @@ namespace PrimeSystems.Controllers
             return _context.Client.ToList();
         }
 
-        public ClientModel? GetById(object id)
-        {
-            if (id is int intId) return GetClienteById(intId);
-            if (int.TryParse(id?.ToString(), out int parsed)) return GetClienteById(parsed);
-            return null;
-        }
-
-        public ClientModel? GetClienteById(int id)
+        public ClientModel? GetById(int id)
         {
             return _context.Client.FirstOrDefault(c => c.Id == id);
         }
@@ -77,12 +70,11 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool Delete(object id)
+        public bool Delete(int id)
         {
             try
             {
-                if (!int.TryParse(id?.ToString(), out int intId)) return false;
-                var cliente = _context.Client.Find(intId);
+                var cliente = _context.Client.Find(id);
                 if (cliente == null) return false;
                 _context.Client.Remove(cliente);
                 _context.SaveChanges();

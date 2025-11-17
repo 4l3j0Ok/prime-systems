@@ -108,7 +108,7 @@
             gbRegisterData.Size = new Size(905, 397);
             gbRegisterData.TabIndex = 4;
             gbRegisterData.TabStop = false;
-            gbRegisterData.Text = "Datos de registro";
+            gbRegisterData.Text = "Datos de cliente";
             // 
             // tableLayoutPanel4
             // 

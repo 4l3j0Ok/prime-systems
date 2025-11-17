@@ -8,7 +8,7 @@ using PrimeSystems.Core;
 
 namespace PrimeSystems.Controllers
 {
-    public class StockController : IGenericController<StockModel>
+    public class StockController : IGenericController<StockModel, int>
     {
         private readonly AppDbContext _context;
 
@@ -29,14 +29,7 @@ namespace PrimeSystems.Controllers
                 .ToList();
         }
 
-        public StockModel? GetById(object id)
-        {
-            if (id is int intId) return GetStockById(intId);
-            if (int.TryParse(id?.ToString(), out int parsed)) return GetStockById(parsed);
-            return null;
-        }
-
-        public StockModel? GetStockById(int id)
+        public StockModel? GetById(int id)
         {
             return _context.Stock
                 .Include(s => s.Article)
@@ -87,12 +80,11 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool Delete(object id)
+        public bool Delete(int id)
         {
             try
             {
-                if (!int.TryParse(id?.ToString(), out int intId)) return false;
-                var stock = _context.Stock.Find(intId);
+                var stock = _context.Stock.Find(id);
                 if (stock == null) return false;
                 _context.Stock.Remove(stock);
                 _context.SaveChanges();

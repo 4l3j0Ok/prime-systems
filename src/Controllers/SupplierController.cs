@@ -8,7 +8,7 @@ using PrimeSystems.Core;
 
 namespace PrimeSystems.Controllers
 {
-    public class SupplierController : IGenericController<SupplierModel>
+    public class SupplierController : IGenericController<SupplierModel, int>
     {
         private readonly AppDbContext _context;
 
@@ -27,14 +27,7 @@ namespace PrimeSystems.Controllers
             return _context.Supplier.ToList();
         }
 
-        public SupplierModel? GetById(object id)
-        {
-            if (id is int intId) return GetProveedorById(intId);
-            if (int.TryParse(id?.ToString(), out int parsed)) return GetProveedorById(parsed);
-            return null;
-        }
-
-        public SupplierModel? GetProveedorById(int id)
+        public SupplierModel? GetById(int id)
         {
             return _context.Supplier.FirstOrDefault(p => p.Id == id);
         }
@@ -77,12 +70,11 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool Delete(object id)
+        public bool Delete(int id)
         {
             try
             {
-                if (!int.TryParse(id?.ToString(), out int intId)) return false;
-                var proveedor = _context.Supplier.Find(intId);
+                var proveedor = _context.Supplier.Find(id);
                 if (proveedor == null) return false;
                 _context.Supplier.Remove(proveedor);
                 _context.SaveChanges();

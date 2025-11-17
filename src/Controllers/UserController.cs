@@ -10,7 +10,7 @@ using PrimeSystems.Core;
 
 namespace PrimeSystems.Controllers
 {
-    public class UserController : IGenericController<UserModel>
+    public class UserController : IGenericController<UserModel, int>
     {
         private readonly AppDbContext _context;
 
@@ -44,6 +44,8 @@ namespace PrimeSystems.Controllers
                 .Include(u => u.Role)
                 .FirstOrDefault(u => u.Id == id);
         }
+
+        // Interface implementation that accepts object id
         public UserModel? GetById(object id)
         {
             if (id is int intId)
@@ -106,12 +108,11 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool Delete(object id)
+        public bool Delete(int id)
         {
             try
             {
-                if (!int.TryParse(id?.ToString(), out int intId)) return false;
-                var user = _context.User.Find(intId);
+                var user = _context.User.Find(id);
                 if (user == null) return false;
                 _context.User.Remove(user);
                 _context.SaveChanges();

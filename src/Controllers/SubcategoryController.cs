@@ -8,7 +8,7 @@ using PrimeSystems.Core;
 
 namespace PrimeSystems.Controllers
 {
-    public class SubcategoryController : IGenericController<SubcategoryModel>
+    public class SubcategoryController : IGenericController<SubcategoryModel, int>
     {
         private readonly AppDbContext _context;
 
@@ -29,14 +29,7 @@ namespace PrimeSystems.Controllers
                 .ToList();
         }
 
-    public SubcategoryModel? GetById(object id)
-        {
-            if (id is int intId) return GetSubcategoryById(intId);
-            if (int.TryParse(id?.ToString(), out int parsed)) return GetSubcategoryById(parsed);
-        return null;
-        }
-
-        public SubcategoryModel? GetSubcategoryById(int id)
+        public SubcategoryModel? GetById(int id)
         {
             return _context.Subcategory
                 .Include(s => s.Category)
@@ -87,14 +80,13 @@ namespace PrimeSystems.Controllers
             }
         }
 
-        public bool Delete(object id)
+        public bool Delete(int id)
         {
             try
             {
-                if (!int.TryParse(id?.ToString(), out int intId)) return false;
-                    var subcategory = _context.Subcategory.Find(intId);
+                var subcategory = _context.Subcategory.Find(id);
                 if (subcategory == null) return false;
-                    _context.Subcategory.Remove(subcategory);
+                _context.Subcategory.Remove(subcategory);
                 _context.SaveChanges();
                 return true;
             }
