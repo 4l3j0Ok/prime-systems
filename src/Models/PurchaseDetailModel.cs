@@ -24,9 +24,6 @@ namespace PrimeSystems.Models
         [StringLength(255)]
         public string? Quantity { get; set; }
 
-        [StringLength(255)]
-        public string? Total { get; set; }
-
         // Navigation properties
         public virtual PurchaseModel? Purchase { get; set; }
         public virtual ArticleModel? Article { get; set; }

@@ -15,6 +15,7 @@ namespace PrimeSystems.Views.Controls
         public FinancialStateCard()
         {
             InitializeComponent();
+            this.BackColor = Color.White;
         }
         // Hacemos que sea modificable desde el designer lblTitle.Text y lblValue.Text
         [Category("Custom Props")]

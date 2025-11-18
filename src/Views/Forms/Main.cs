@@ -90,7 +90,7 @@ namespace PrimeSystems
 
             // Histórico de compras
             ReloadTabPage<PurchaseModel, int, Purchase>(
-                tpPurchasesHistory,
+                tpPurchasesList,
                 () => new PurchaseController(),
                 p => $"Compra #{p.Id}",
                 p => $"Proveedor: {p.Supplier?.Name ?? "N/A"} | Total: ${p.Total ?? "0.00"} | Fecha: {p.Date ?? "N/A"}",
@@ -204,6 +204,10 @@ namespace PrimeSystems
                 {
                     MessageBox.Show($"'{displayName}' eliminado correctamente.",
                         "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    // Registrar actividad de eliminación
+                    LogDeleteActivity(entity, tabPage);
+
                     reloadAll();
                 }
                 else
@@ -216,6 +220,74 @@ namespace PrimeSystems
             {
                 MessageBox.Show($"Error al eliminar '{displayName}': {ex.Message}",
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void LogDeleteActivity<T>(T entity, TabPage tabPage)
+        {
+            try
+            {
+                // Determinar el módulo y los IDs según el tipo de entidad
+                if (entity is ArticleModel article)
+                {
+                    ActivityLogger.LogActivity(
+                        ActivityActions.Delete,
+                        ActivityModules.Articles,
+                        articleId: article.Id
+                    );
+                }
+                else if (entity is ClientModel client)
+                {
+                    ActivityLogger.LogActivity(
+                        ActivityActions.Delete,
+                        ActivityModules.Clients,
+                        clientId: client.Id
+                    );
+                }
+                else if (entity is SupplierModel supplier)
+                {
+                    ActivityLogger.LogActivity(
+                        ActivityActions.Delete,
+                        ActivityModules.Suppliers,
+                        supplierId: supplier.Id
+                    );
+                }
+                else if (entity is SellModel sell)
+                {
+                    ActivityLogger.LogActivity(
+                        ActivityActions.Delete,
+                        ActivityModules.Sells,
+                        sellId: sell.Id,
+                        clientId: sell.ClientId
+                    );
+                }
+                else if (entity is PurchaseModel purchase)
+                {
+                    ActivityLogger.LogActivity(
+                        ActivityActions.Delete,
+                        ActivityModules.Purchases,
+                        purchaseId: purchase.Id,
+                        supplierId: purchase.SupplierId
+                    );
+                }
+                else if (entity is UserModel user)
+                {
+                    ActivityLogger.LogActivity(
+                        ActivityActions.Delete,
+                        ActivityModules.Users
+                    );
+                }
+                else if (entity is RoleModel role)
+                {
+                    ActivityLogger.LogActivity(
+                        ActivityActions.Delete,
+                        ActivityModules.Roles
+                    );
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error al registrar actividad de eliminación: {ex.Message}");
             }
         }
 
@@ -401,10 +473,10 @@ namespace PrimeSystems
                     s => new Sell(s)
                 );
             }
-            else if (tabPage == tpPurchasesHistory)
+            else if (tabPage == tpPurchasesList)
             {
                 ReloadTabPage<PurchaseModel, int, Purchase>(
-                    tpPurchasesHistory,
+                    tpPurchasesList,
                     () => new PurchaseController(),
                     p => $"Compra #{p.Id}",
                     p => $"Proveedor: {p.Supplier?.Name ?? "N/A"} | Total: ${p.Total ?? "0.00"} | Fecha: {p.Date ?? "N/A"}",
@@ -461,7 +533,7 @@ namespace PrimeSystems
             ShowControlInTabPage(tpSellsList, new Sell());
 
         private void btnAddPurchase_Click(object sender, EventArgs e) =>
-            ShowControlInTabPage(tpPurchasesHistory, new Purchase());
+            ShowControlInTabPage(tpPurchasesList, new Purchase());
 
         private void btnAddSupplier_Click(object sender, EventArgs e) =>
             ShowControlInTabPage(tpSuppliers, new Supplier());
@@ -471,5 +543,44 @@ namespace PrimeSystems
 
         private void btnAddArticle_Click(object sender, EventArgs e) =>
             ShowControlInTabPage(tpSellsArticles, new Article());
+
+        private void tpFinancialState_Paint(object sender, PaintEventArgs e)
+        {
+            ActivityRecordController activityController = new ActivityRecordController();
+            List<string> activityRecordModules = new List<string> { ActivityModules.Sells, ActivityModules.Purchases };
+            List<ActivityRecordModel> activityRecords = activityController.GetRecordByModules(activityRecordModules);
+            pFinancialStateTableItems.Controls.Clear();
+            foreach (var record in activityRecords)
+            {
+                FinancialStateTableItem item = new FinancialStateTableItem();
+                item.Date = record.Date?.ToString("g") ?? "N/A";
+                item.UserName = record.User != null ? $"{record.User.Name} {record.User.LastName}" : "N/A";
+                item.Module = record.Module ?? "N/A";
+
+                // Obtener el monto directamente del modelo relacionado
+                string amount = "N/A";
+                if (record.Module == ActivityModules.Sells && record.Sell != null)
+                {
+                    amount = !string.IsNullOrWhiteSpace(record.Sell.Total) ? $"${record.Sell.Total}" : "N/A";
+                }
+                else if (record.Module == ActivityModules.Purchases && record.Purchase != null)
+                {
+                    amount = !string.IsNullOrWhiteSpace(record.Purchase.Total) ? $"${record.Purchase.Total}" : "N/A";
+                }
+
+                item.Amount = amount;
+                item.Dock = DockStyle.Top;
+                item.Margin = new Padding(0, 0, 0, 0);
+                item.lblShowDetails.Click += (s, e) =>
+                {
+                    Debug.WriteLine($"FinancialStateTableItem: Show details clicked for module {record.Module}");
+                    if (record.Module == ActivityModules.Sells && record.Sell != null)
+                        ShowControlInTabPage(tpFinancialState, new Sell(record.Sell, tpFinancialState));
+                    else if (record.Module == ActivityModules.Purchases && record.Purchase != null)
+                        ShowControlInTabPage(tpFinancialState, new Purchase(record.Purchase, tpFinancialState));
+                };
+                pFinancialStateTableItems.Controls.Add(item);
+            }
+        }
     }
 }

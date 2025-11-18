@@ -11,6 +11,12 @@
     <Compile Update="Views\Controls\FinancialStateCard.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="Views\Controls\FinancialStateTableHeader.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Views\Controls\FinancialStateTableItem.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="Views\Controls\MaterialExpansionPanelNonCollapsible.cs">
       <SubType>Component</SubType>
     </Compile>

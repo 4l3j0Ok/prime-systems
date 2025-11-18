@@ -22,19 +22,24 @@ namespace PrimeSystems.Views.Forms.Add
         private PurchaseDetailController purchaseDetailController;
         private ArticleController articleController;
         private Main? formMain = Application.OpenForms.OfType<Main>().FirstOrDefault();
+        private TabPage ParentTabPage = null;
         private PurchaseModel? currentPurchase;
         private bool isEditMode = false;
         private bool isLoadingData = false; // Para evitar cálculos durante la carga inicial
 
-        public Purchase(PurchaseModel? purchase = null)
+        public Purchase(PurchaseModel? purchase = null, TabPage? parentTabPage = null)
         {
+            if (parentTabPage != null)
+                ParentTabPage = parentTabPage;
+            else
+                ParentTabPage = formMain?.tpPurchasesList ?? new TabPage();
             purchaseController = new PurchaseController();
             supplierController = new SupplierController();
             purchaseDetailController = new PurchaseDetailController();
             articleController = new ArticleController();
             InitializeComponent();
             SetupControls();
-            
+
             // Si se recibe una compra, cargar sus datos
             if (purchase != null)
             {
@@ -90,12 +95,12 @@ namespace PrimeSystems.Views.Forms.Add
                 {
                     var articleItem = new Controls.SupplierArticleItem();
                     articleItem.Dock = DockStyle.Top;
-                    
+
                     // Suscribir eventos
                     articleItem.tbArticleUnitPrice.TextChanged += CalculateTotals;
                     articleItem.tbArticleQuantity.TextChanged += CalculateTotals;
                     articleItem.btnRemove.Click += CalculateTotals;
-                    
+
                     gbArticlesData.Controls.Add(articleItem);
                     gbArticlesData.Controls.SetChildIndex(articleItem, 1);
 
@@ -178,12 +183,12 @@ namespace PrimeSystems.Views.Forms.Add
 
                 cbProvider.Items.Clear();
                 cbProvider.Items.Add("-- Seleccione un proveedor --");
-                
+
                 foreach (var supplier in suppliers)
                 {
                     cbProvider.Items.Add(supplier.Name);
                 }
-                
+
                 if (cbProvider.Items.Count > 0 && string.IsNullOrWhiteSpace(cbProvider.Text))
                     cbProvider.SelectedIndex = 0;
             }
@@ -312,9 +317,12 @@ namespace PrimeSystems.Views.Forms.Add
 
                 // Crear o actualizar la compra
                 PurchaseModel purchase;
+                int originalId = 0;
+
                 if (isEditMode && currentPurchase != null)
                 {
                     // Modo edición: usar la compra existente
+                    originalId = currentPurchase.Id;
                     purchase = currentPurchase;
                     purchase.UserId = Session.CurrentUser?.Id;
                     purchase.SupplierId = selectedSupplier.Id;
@@ -351,7 +359,6 @@ namespace PrimeSystems.Views.Forms.Add
                     {
                         decimal unitPrice = decimal.Parse(tbUnitPrice.Text);
                         int quantity = int.Parse(tbQuantity.Text);
-                        decimal itemTotal = unitPrice * quantity;
 
                         // Obtener el artículo para la descripción
                         var article = articleController.GetById(articleId.Value);
@@ -361,8 +368,7 @@ namespace PrimeSystems.Views.Forms.Add
                             ArticleId = articleId.Value,
                             Description = article?.Name ?? "",
                             UnitPrice = unitPrice.ToString("F2"),
-                            Quantity = quantity.ToString(),
-                            Total = itemTotal.ToString("F2")
+                            Quantity = quantity.ToString()
                         };
 
                         details.Add(detail);
@@ -384,6 +390,13 @@ namespace PrimeSystems.Views.Forms.Add
                 {
                     string message = isEditMode ? "Compra actualizada correctamente." : "Compra registrada correctamente.";
                     MessageBox.Show(message, "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    
+                    // Registrar actividad usando el helper con las referencias de la compra
+                    // Obtener el ID de la compra (sea nueva o actualizada)
+                    int purchaseId = isEditMode && currentPurchase != null ? currentPurchase.Id : purchase.Id;
+                    string action = originalId == 0 ? ActivityActions.Create : ActivityActions.Update;
+                    ActivityLogger.LogActivity(action, ActivityModules.Purchases, purchaseId: purchaseId, supplierId: selectedSupplier.Id);
+                    
                     ReturnToPurchaseView();
                 }
                 else
@@ -405,9 +418,9 @@ namespace PrimeSystems.Views.Forms.Add
 
         private void ReturnToPurchaseView()
         {
-            if (formMain != null)
+            if (ParentTabPage != null && formMain != null)
             {
-                formMain.RestoreTabPage(formMain.tpPurchasesHistory);
+                formMain.RestoreTabPage(ParentTabPage);
             }
         }
 

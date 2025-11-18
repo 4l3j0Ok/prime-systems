@@ -82,10 +82,6 @@ namespace PrimeSystems.Controllers
                 existingDetalle.SellId = detalle.SellId;
                 existingDetalle.ArticleId = detalle.ArticleId;
                 existingDetalle.Quantity = detalle.Quantity;
-                existingDetalle.Description = detalle.Description;
-                existingDetalle.Subtotal = detalle.Subtotal;
-                existingDetalle.Discount = detalle.Discount;
-                existingDetalle.Total = detalle.Total;
 
                 _context.SaveChanges();
                 return true;
@@ -139,27 +135,6 @@ namespace PrimeSystems.Controllers
             catch
             {
                 return false;
-            }
-        }
-
-        public decimal GetTotalByVenta(int ventaId)
-        {
-            try
-            {
-                var detalles = GetDetallesByVenta(ventaId);
-                decimal total = 0;
-                foreach (var detalle in detalles)
-                {
-                    if (decimal.TryParse(detalle.Total, out decimal detalleTotal))
-                    {
-                        total += detalleTotal;
-                    }
-                }
-                return total;
-            }
-            catch
-            {
-                return 0;
             }
         }
     }

@@ -18,7 +18,7 @@ namespace PrimeSystems.Views.Controls
         private ArticleController articleController = new();
         private StockController stockController = new();
         private ArticleModel? selectedArticle;
-        
+
         public ArticleItem()
         {
             InitializeComponent();
@@ -27,14 +27,11 @@ namespace PrimeSystems.Views.Controls
 
         private void SetupControls()
         {
-            // Validate unit price as decimal
             tbArticleUnitPrice.KeyPress += (sender, e) => Utils.HandleTextBoxInput(sender, e, ValidationType.Decimal);
             tbArticleUnitPrice.TextChanged += (sender, e) => Utils.HandlePostTextBoxInput(sender, e, ValidationType.Decimal);
-            
-            // Validate quantity as number
+
             tbArticleQuantity.KeyPress += (sender, e) => Utils.HandleTextBoxInput(sender, e, ValidationType.Numbers);
             tbArticleQuantity.TextChanged += (sender, e) => Utils.HandlePostTextBoxInput(sender, e, ValidationType.Numbers);
-            
             btnRemove.Click += BtnRemove_Click;
         }
 
@@ -63,12 +60,12 @@ namespace PrimeSystems.Views.Controls
             }
 
             selectedArticle = articleController.GetByName(cbArticleName.Text);
-            
+
             if (selectedArticle != null)
             {
                 // Obtener el stock asociado para obtener el precio
                 var stock = stockController.GetStockByArticuloId(selectedArticle.Id);
-                
+
                 if (stock != null)
                 {
                     // Calcular el precio de venta basado en costo + ganancia
@@ -90,7 +87,7 @@ namespace PrimeSystems.Views.Controls
                 {
                     tbArticleUnitPrice.Text = "0.00";
                 }
-                
+
                 // Inicializar cantidad en 1
                 tbArticleQuantity.Text = "1";
             }

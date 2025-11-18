@@ -74,6 +74,36 @@ namespace PrimeSystems.Core
                 .HasForeignKey(h => h.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<ActivityRecordModel>()
+                .HasOne(h => h.Sell)
+                .WithMany()
+                .HasForeignKey(h => h.SellId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ActivityRecordModel>()
+                .HasOne(h => h.Purchase)
+                .WithMany()
+                .HasForeignKey(h => h.PurchaseId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ActivityRecordModel>()
+                .HasOne(h => h.Article)
+                .WithMany()
+                .HasForeignKey(h => h.ArticleId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ActivityRecordModel>()
+                .HasOne(h => h.Client)
+                .WithMany()
+                .HasForeignKey(h => h.ClientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ActivityRecordModel>()
+                .HasOne(h => h.Supplier)
+                .WithMany()
+                .HasForeignKey(h => h.SupplierId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             // Configuración de relaciones para H_Compras
             modelBuilder.Entity<PurchaseModel>()
                 .HasOne(h => h.User)

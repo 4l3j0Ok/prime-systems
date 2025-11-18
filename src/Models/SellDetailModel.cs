@@ -16,18 +16,6 @@ namespace PrimeSystems.Models
         public int? ArticleId { get; set; }
 
         public int? Quantity { get; set; }
-
-        [StringLength(255)]
-        public string? Description { get; set; }
-
-        [StringLength(255)]
-        public string? Subtotal { get; set; }
-
-        [StringLength(255)]
-        public string? Discount { get; set; }
-
-        [StringLength(255)]
-        public string? Total { get; set; }
         // Navigation properties
         public virtual SellModel? Sell { get; set; }
         public virtual ArticleModel? Article { get; set; }

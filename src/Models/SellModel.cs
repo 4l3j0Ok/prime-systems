@@ -18,6 +18,15 @@ namespace PrimeSystems.Models
         [ForeignKey("Client")]
         public int? ClientId { get; set; }
 
+        [StringLength(255)]
+        public string? Subtotal { get; set; }
+
+        [StringLength(255)]
+        public string? Discount { get; set; }
+
+        [StringLength(255)]
+        public string? Total { get; set; }
+
         // Navigation properties
         public virtual UserModel? User { get; set; }
         public virtual ClientModel? Client { get; set; }

@@ -103,6 +103,7 @@ namespace PrimeSystems.Views.Forms.Add
             if (!ValidateFields())
                 return;
 
+            string originalId = isNewRole ? "" : selectedRole.Id;
             selectedRole.Id = tbRoleId.Text.Trim();
             selectedRole.Name = tbRoleName.Text.Trim();
 
@@ -121,6 +122,13 @@ namespace PrimeSystems.Views.Forms.Add
             if (success)
             {
                 MessageBox.Show("Rol guardado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // Registrar actividad usando el helper - para roles string ID, usamos la sobrecarga con action explícito
+                ActivityLogger.LogActivity(
+                    isNewRole ? ActivityActions.Create : ActivityActions.Update,
+                    ActivityModules.Roles
+                );
+
                 ReturnToRolesView();
             }
             else

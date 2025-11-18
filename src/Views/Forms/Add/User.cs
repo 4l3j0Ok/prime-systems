@@ -126,6 +126,7 @@ namespace PrimeSystems.Views.Forms.Add
             if (!ValidateFields())
                 return;
 
+            int originalId = selectedUser.Id;
             selectedUser.Name = tbUserName.Text;
             selectedUser.LastName = tbUserSurname.Text;
             selectedUser.Username = tbUserUsername.Text;
@@ -144,15 +145,22 @@ namespace PrimeSystems.Views.Forms.Add
                     selectedUser.RoleId = usuarioTipo.Id;
                 }
             }
-            
+
             bool success;
             if (selectedUser.Id == 0)
                 success = userController.Create(selectedUser);
             else
                 success = userController.Update(selectedUser);
+
             if (success)
             {
                 MessageBox.Show("Usuario guardado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // Registrar actividad usando el helper
+                string action = originalId == 0 ? ActivityActions.Create : ActivityActions.Update;
+                ActivityLogger.LogActivity(action, ActivityModules.Users);
+
+
                 ReturnToUsersView();
             }
             else

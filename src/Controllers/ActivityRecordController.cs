@@ -25,30 +25,53 @@ namespace PrimeSystems.Controllers
         public List<ActivityRecordModel> GetAll()
         {
             return _context.Transaction
-            .Include(t => t.User)
-            .ToList();
+                .Include(t => t.User)
+                .Include(t => t.Sell)
+                .Include(t => t.Purchase)
+                .Include(t => t.Article)
+                .Include(t => t.Client)
+                .Include(t => t.Supplier)
+                .ToList();
         }
 
         public ActivityRecordModel? GetById(int id)
         {
             return _context.Transaction
-            .Include(t => t.User)
-            .FirstOrDefault(t => t.Id == id);
+                .Include(t => t.User)
+                .Include(t => t.Sell)
+                .Include(t => t.Purchase)
+                .Include(t => t.Article)
+                .Include(t => t.Client)
+                .Include(t => t.Supplier)
+                .FirstOrDefault(t => t.Id == id);
         }
 
         public List<ActivityRecordModel> GetMovimientosByUsuario(int usuarioId)
         {
             return _context.Transaction
                 .Include(t => t.User)
+                .Include(t => t.Sell)
+                .Include(t => t.Purchase)
+                .Include(t => t.Article)
+                .Include(t => t.Client)
+                .Include(t => t.Supplier)
                 .Where(t => t.UserId == usuarioId)
                 .ToList();
         }
 
-        public List<ActivityRecordModel> GetMovimientosByType(string type)
+        public List<ActivityRecordModel> GetRecordByModules(List<string> modules)
         {
             return _context.Transaction
                 .Include(t => t.User)
-                .Where(t => t.Module == type)
+                .Include(t => t.Sell)
+                    .ThenInclude(s => s.Client)
+                .Include(t => t.Purchase)
+                    .ThenInclude(p => p.Supplier)
+                .Include(t => t.Article)
+                .Include(t => t.Client)
+                .Include(t => t.Supplier)
+                .Where(t => modules.Contains(t.Module ?? string.Empty))
+                .OrderByDescending(t => t.Date)
                 .ToList();
         }
 
@@ -56,6 +79,11 @@ namespace PrimeSystems.Controllers
         {
             return _context.Transaction
                 .Include(t => t.User)
+                .Include(t => t.Sell)
+                .Include(t => t.Purchase)
+                .Include(t => t.Article)
+                .Include(t => t.Client)
+                .Include(t => t.Supplier)
                 .Where(t => t.Date.HasValue && t.Date.Value.Date == fecha.Date)
                 .ToList();
         }

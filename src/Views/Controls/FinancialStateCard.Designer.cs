@@ -28,29 +28,16 @@
         /// </summary>
         private void InitializeComponent()
         {
-            pTotalRevenue = new Panel();
             tableLayoutPanel2 = new TableLayoutPanel();
             lblValue = new ReaLTaiizor.Controls.MaterialLabel();
             lblTitle = new ReaLTaiizor.Controls.MaterialLabel();
-            pTotalRevenue.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             SuspendLayout();
-            // 
-            // pTotalRevenue
-            // 
-            pTotalRevenue.AutoSize = true;
-            pTotalRevenue.BackColor = Color.White;
-            pTotalRevenue.Controls.Add(tableLayoutPanel2);
-            pTotalRevenue.Dock = DockStyle.Fill;
-            pTotalRevenue.Location = new Point(0, 0);
-            pTotalRevenue.Name = "pTotalRevenue";
-            pTotalRevenue.Size = new Size(200, 95);
-            pTotalRevenue.TabIndex = 1;
             // 
             // tableLayoutPanel2
             // 
             tableLayoutPanel2.AutoSize = true;
-            tableLayoutPanel2.BackColor = Color.Transparent;
+            tableLayoutPanel2.BackColor = Color.White;
             tableLayoutPanel2.ColumnCount = 1;
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tableLayoutPanel2.Controls.Add(lblValue, 0, 1);
@@ -62,7 +49,7 @@
             tableLayoutPanel2.RowStyles.Add(new RowStyle());
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel2.Size = new Size(200, 95);
-            tableLayoutPanel2.TabIndex = 1;
+            tableLayoutPanel2.TabIndex = 2;
             // 
             // lblValue
             // 
@@ -102,12 +89,10 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
-            Controls.Add(pTotalRevenue);
+            Controls.Add(tableLayoutPanel2);
             MinimumSize = new Size(200, 95);
             Name = "FinancialStateCard";
             Size = new Size(200, 95);
-            pTotalRevenue.ResumeLayout(false);
-            pTotalRevenue.PerformLayout();
             tableLayoutPanel2.ResumeLayout(false);
             tableLayoutPanel2.PerformLayout();
             ResumeLayout(false);
@@ -116,7 +101,6 @@
 
         #endregion
 
-        private Panel pTotalRevenue;
         private TableLayoutPanel tableLayoutPanel2;
         public ReaLTaiizor.Controls.MaterialLabel lblValue;
         public ReaLTaiizor.Controls.MaterialLabel lblTitle;

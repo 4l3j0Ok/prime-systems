@@ -22,12 +22,17 @@ namespace PrimeSystems.Views.Forms.Add
         private ArticleController articleController;
         private StockController stockController;
         private Main? formMain = Application.OpenForms.OfType<Main>().FirstOrDefault();
+        private TabPage ParentTabPage;
         private SellModel? currentSell;
         private bool isEditMode = false;
         private bool isLoadingData = false; // Para evitar cálculos durante la carga inicial
 
-        public Sell(SellModel? sell = null)
+        public Sell(SellModel? sell = null, TabPage? parentTabPage = null)
         {
+            if (parentTabPage != null)
+                ParentTabPage = parentTabPage;
+            else
+                ParentTabPage = formMain?.tpSellsList ?? new TabPage();
             sellController = new SellController();
             clientController = new ClientController();
             sellDetailController = new SellDetailController();
@@ -35,7 +40,7 @@ namespace PrimeSystems.Views.Forms.Add
             stockController = new StockController();
             InitializeComponent();
             SetupControls();
-            
+
             // Si se recibe una venta, cargar sus datos
             if (sell != null)
             {
@@ -76,6 +81,17 @@ namespace PrimeSystems.Views.Forms.Add
                     }
                 }
 
+                // Cargar el descuento desde el modelo de venta
+                if (!string.IsNullOrWhiteSpace(sell.Discount) && decimal.TryParse(sell.Discount, out decimal discountAmount))
+                {
+                    // Calcular el porcentaje de descuento basado en el subtotal
+                    if (!string.IsNullOrWhiteSpace(sell.Subtotal) && decimal.TryParse(sell.Subtotal, out decimal subtotal) && subtotal > 0)
+                    {
+                        decimal discountPercent = (discountAmount / subtotal) * 100;
+                        tbDiscount.Text = discountPercent.ToString("F2");
+                    }
+                }
+
                 // Cargar los detalles de la venta
                 List<SellDetailModel> details;
                 if (sell.Detail != null && sell.Detail.Any())
@@ -88,40 +104,17 @@ namespace PrimeSystems.Views.Forms.Add
                     details = sellDetailController.GetDetallesByVenta(sell.Id);
                 }
 
-                // Calcular el descuento global a partir de los detalles
-                decimal subtotalGlobal = 0;
-                decimal discountGlobal = 0;
-
-                foreach (var detail in details)
-                {
-                    if (decimal.TryParse(detail.Subtotal, out decimal subtotal))
-                    {
-                        subtotalGlobal += subtotal;
-                    }
-                    if (decimal.TryParse(detail.Discount, out decimal discount))
-                    {
-                        discountGlobal += discount;
-                    }
-                }
-
-                // Calcular el porcentaje de descuento
-                if (subtotalGlobal > 0 && discountGlobal > 0)
-                {
-                    decimal discountPercent = (discountGlobal / subtotalGlobal) * 100;
-                    tbDiscount.Text = discountPercent.ToString("F2");
-                }
-
                 // Cargar los artículos
                 foreach (var detail in details)
                 {
                     var articleItem = new Controls.ArticleItem();
                     articleItem.Dock = DockStyle.Top;
-                    
+
                     // Suscribir eventos
                     articleItem.cbArticleName.SelectedIndexChanged += (s, ev) => CalculateTotals(s, ev);
                     articleItem.tbArticleUnitPrice.TextChanged += (s, ev) => CalculateTotals(s, ev);
                     articleItem.tbArticleQuantity.TextChanged += (s, ev) => CalculateTotals(s, ev);
-                    
+
                     gbArticlesData.Controls.Add(articleItem);
                     gbArticlesData.Controls.SetChildIndex(articleItem, 0);
 
@@ -142,26 +135,15 @@ namespace PrimeSystems.Views.Forms.Add
                             articleItem.cbArticleName.SelectedIndex = articleItem.cbArticleName.Items.Count - 1;
                         }
                     }
-                    else if (!string.IsNullOrWhiteSpace(detail.Description))
-                    {
-                        // Si no hay artículo, usar la descripción
-                        articleItem.cbArticleName.Items.Add(detail.Description);
-                        articleItem.cbArticleName.SelectedIndex = articleItem.cbArticleName.Items.Count - 1;
-                    }
-
-                    // Cargar precio unitario (calculado desde subtotal / cantidad)
-                    if (detail.Quantity.HasValue && detail.Quantity.Value > 0 && 
-                        decimal.TryParse(detail.Subtotal, out decimal subtotal))
-                    {
-                        decimal unitPrice = subtotal / detail.Quantity.Value;
-                        articleItem.tbArticleUnitPrice.Text = unitPrice.ToString("F2");
-                    }
 
                     // Cargar cantidad
                     if (detail.Quantity.HasValue)
                     {
                         articleItem.tbArticleQuantity.Text = detail.Quantity.Value.ToString();
                     }
+
+                    // El precio unitario se cargará automáticamente al seleccionar el artículo
+                    // o se puede calcular desde el subtotal total y las cantidades si es necesario
                 }
 
                 isLoadingData = false; // Habilitar cálculos automáticos
@@ -196,12 +178,12 @@ namespace PrimeSystems.Views.Forms.Add
 
                 cbClient.Items.Clear();
                 cbClient.Items.Add("-- Seleccione un cliente --");
-                
+
                 foreach (var client in clients)
                 {
                     cbClient.Items.Add(client.Name);
                 }
-                
+
                 if (cbClient.Items.Count > 0 && string.IsNullOrWhiteSpace(cbClient.Text))
                     cbClient.SelectedIndex = 0;
             }
@@ -302,7 +284,7 @@ namespace PrimeSystems.Views.Forms.Add
                     errors.Add("Todos los artículos deben tener una cantidad válida mayor a 0");
                     break;
                 }
-                
+
                 // Validar stock disponible
                 var article = articleController.GetByName(cbArticle.Text);
                 if (article != null)
@@ -312,7 +294,7 @@ namespace PrimeSystems.Views.Forms.Add
                     {
                         int availableStock = stock.Stock ?? 0;
                         int requestedQty = int.Parse(tbQuantity.Text);
-                        
+
                         // Si estamos editando, considerar la cantidad original para el cálculo
                         if (isEditMode && currentSell != null)
                         {
@@ -323,7 +305,7 @@ namespace PrimeSystems.Views.Forms.Add
                                 availableStock += originalDetail.Quantity.Value;
                             }
                         }
-                        
+
                         if (requestedQty > availableStock)
                         {
                             errors.Add($"Stock insuficiente para '{cbArticle.Text}'. Disponible: {availableStock}, Solicitado: {requestedQty}");
@@ -361,9 +343,12 @@ namespace PrimeSystems.Views.Forms.Add
 
                 // Crear o actualizar la venta
                 SellModel sell;
+                int originalId = 0;
+
                 if (isEditMode && currentSell != null)
                 {
                     // Modo edición: usar la venta existente
+                    originalId = currentSell.Id;
                     sell = currentSell;
                     sell.UserId = Session.CurrentUser?.Id;
                     sell.ClientId = selectedClient.Id;
@@ -402,24 +387,22 @@ namespace PrimeSystems.Views.Forms.Add
                 decimal discountAmountGlobal = subtotalGlobal * (discountPercent / 100);
                 decimal totalGlobal = subtotalGlobal - discountAmountGlobal;
 
+                // Asignar los totales al modelo de venta
+                sell.Subtotal = subtotalGlobal.ToString("F2");
+                sell.Discount = discountAmountGlobal.ToString("F2");
+                sell.Total = totalGlobal.ToString("F2");
+
                 // Crear los detalles de la venta
                 var details = new List<SellDetailModel>();
 
                 foreach (var item in articleItems)
                 {
                     var cbArticle = item.Controls.Find("cbArticleName", true).FirstOrDefault() as ReaLTaiizor.Controls.HopeComboBox;
-                    var tbUnitPrice = item.Controls.Find("tbArticleUnitPrice", true).FirstOrDefault() as ReaLTaiizor.Controls.MaterialTextBoxEdit;
                     var tbQuantity = item.Controls.Find("tbArticleQuantity", true).FirstOrDefault() as ReaLTaiizor.Controls.MaterialTextBoxEdit;
 
-                    if (cbArticle != null && tbUnitPrice != null && tbQuantity != null)
+                    if (cbArticle != null && tbQuantity != null)
                     {
-                        decimal unitPrice = decimal.Parse(tbUnitPrice.Text);
                         int quantity = int.Parse(tbQuantity.Text);
-                        decimal subtotalItem = unitPrice * quantity;
-                        
-                        // Calcular el descuento proporcional para este artículo
-                        decimal discountItem = subtotalGlobal > 0 ? (subtotalItem / subtotalGlobal) * discountAmountGlobal : 0;
-                        decimal totalItem = subtotalItem - discountItem;
 
                         // Obtener el artículo para conseguir su ID
                         var article = articleController.GetByName(cbArticle.Text);
@@ -427,11 +410,7 @@ namespace PrimeSystems.Views.Forms.Add
                         var detail = new SellDetailModel
                         {
                             ArticleId = article?.Id,
-                            Description = cbArticle.Text,
-                            Quantity = quantity,
-                            Subtotal = subtotalItem.ToString("F2"),
-                            Discount = discountItem.ToString("F2"),
-                            Total = totalItem.ToString("F2")
+                            Quantity = quantity
                         };
 
                         details.Add(detail);
@@ -453,6 +432,13 @@ namespace PrimeSystems.Views.Forms.Add
                 {
                     string message = isEditMode ? "Venta actualizada correctamente." : "Venta registrada correctamente.";
                     MessageBox.Show(message, "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    // Registrar actividad usando el helper con las referencias de la venta
+                    // Obtener el ID de la venta (sea nuevo o actualizado)
+                    int sellId = isEditMode && currentSell != null ? currentSell.Id : sell.Id;
+                    string action = originalId == 0 ? ActivityActions.Create : ActivityActions.Update;
+                    ActivityLogger.LogActivity(action, ActivityModules.Sells, sellId: sellId, clientId: selectedClient.Id);
+
                     ReturnToSellView();
                 }
                 else
@@ -474,9 +460,9 @@ namespace PrimeSystems.Views.Forms.Add
 
         private void ReturnToSellView()
         {
-            if (formMain != null)
+            if (ParentTabPage != null && formMain != null)
             {
-                formMain.RestoreTabPage(formMain.tpSellsList);
+                formMain.RestoreTabPage(ParentTabPage);
             }
         }
 

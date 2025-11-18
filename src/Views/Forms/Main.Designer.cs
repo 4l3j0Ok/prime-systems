@@ -56,7 +56,7 @@ namespace PrimeSystems
             tcMain = new ReaLTaiizor.Controls.MaterialTabControl();
             tpPurchases = new TabPage();
             materialTabControl1 = new ReaLTaiizor.Controls.MaterialTabControl();
-            tpPurchasesHistory = new TabPage();
+            tpPurchasesList = new TabPage();
             btnAddPurchase = new ReaLTaiizor.Controls.MaterialFloatingActionButton();
             tpSuppliers = new TabPage();
             btnAddSupplier = new ReaLTaiizor.Controls.MaterialFloatingActionButton();
@@ -72,11 +72,13 @@ namespace PrimeSystems
             materialTabSelector1 = new ReaLTaiizor.Controls.MaterialTabSelector();
             tpFinancialState = new TabPage();
             tableLayoutPanel2 = new TableLayoutPanel();
+            financialStateTableHeader1 = new PrimeSystems.Views.Controls.FinancialStateTableHeader();
             tableLayoutPanel3 = new TableLayoutPanel();
             financialStateCard4 = new PrimeSystems.Views.Controls.FinancialStateCard();
             financialStateCard3 = new PrimeSystems.Views.Controls.FinancialStateCard();
             financialStateCard1 = new PrimeSystems.Views.Controls.FinancialStateCard();
             financialStateCard2 = new PrimeSystems.Views.Controls.FinancialStateCard();
+            pFinancialStateTableItems = new Panel();
             tpLogout = new TabPage();
             flowLayoutPanel4 = new FlowLayoutPanel();
             statusStrip1 = new StatusStrip();
@@ -91,7 +93,7 @@ namespace PrimeSystems
             tcMain.SuspendLayout();
             tpPurchases.SuspendLayout();
             materialTabControl1.SuspendLayout();
-            tpPurchasesHistory.SuspendLayout();
+            tpPurchasesList.SuspendLayout();
             tpSuppliers.SuspendLayout();
             tpSells.SuspendLayout();
             tcSellsPages.SuspendLayout();
@@ -269,8 +271,8 @@ namespace PrimeSystems
             tcMain.Controls.Add(tpHome);
             tcMain.Controls.Add(tpPurchases);
             tcMain.Controls.Add(tpSells);
-            tcMain.Controls.Add(tpFinancialState);
             tcMain.Controls.Add(tpUsers);
+            tcMain.Controls.Add(tpFinancialState);
             tcMain.Controls.Add(tpLogout);
             tcMain.Depth = 0;
             tcMain.Dock = DockStyle.Fill;
@@ -299,7 +301,7 @@ namespace PrimeSystems
             // 
             // materialTabControl1
             // 
-            materialTabControl1.Controls.Add(tpPurchasesHistory);
+            materialTabControl1.Controls.Add(tpPurchasesList);
             materialTabControl1.Controls.Add(tpSuppliers);
             materialTabControl1.Depth = 0;
             materialTabControl1.Dock = DockStyle.Fill;
@@ -313,14 +315,14 @@ namespace PrimeSystems
             // 
             // tpPurchasesHistory
             // 
-            tpPurchasesHistory.BackColor = Color.Transparent;
-            tpPurchasesHistory.Controls.Add(btnAddPurchase);
-            tpPurchasesHistory.Location = new Point(4, 24);
-            tpPurchasesHistory.Name = "tpPurchasesHistory";
-            tpPurchasesHistory.Padding = new Padding(20);
-            tpPurchasesHistory.Size = new Size(934, 395);
-            tpPurchasesHistory.TabIndex = 0;
-            tpPurchasesHistory.Text = "Histórico";
+            tpPurchasesList.BackColor = Color.Transparent;
+            tpPurchasesList.Controls.Add(btnAddPurchase);
+            tpPurchasesList.Location = new Point(4, 24);
+            tpPurchasesList.Name = "tpPurchasesHistory";
+            tpPurchasesList.Padding = new Padding(20);
+            tpPurchasesList.Size = new Size(934, 395);
+            tpPurchasesList.TabIndex = 0;
+            tpPurchasesList.Text = "Histórico";
             // 
             // btnAddPurchase
             // 
@@ -485,6 +487,7 @@ namespace PrimeSystems
             // 
             // tpFinancialState
             // 
+            tpFinancialState.BackColor = SystemColors.Control;
             tpFinancialState.Controls.Add(tableLayoutPanel2);
             tpFinancialState.ImageKey = "financial-state.png";
             tpFinancialState.Location = new Point(4, 39);
@@ -493,22 +496,36 @@ namespace PrimeSystems
             tpFinancialState.Size = new Size(942, 471);
             tpFinancialState.TabIndex = 12;
             tpFinancialState.Text = "Estado Contable";
-            tpFinancialState.UseVisualStyleBackColor = true;
+            tpFinancialState.Paint += tpFinancialState_Paint;
             // 
             // tableLayoutPanel2
             // 
             tableLayoutPanel2.BackColor = Color.Transparent;
             tableLayoutPanel2.ColumnCount = 1;
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel2.Controls.Add(financialStateTableHeader1, 0, 1);
             tableLayoutPanel2.Controls.Add(tableLayoutPanel3, 0, 0);
+            tableLayoutPanel2.Controls.Add(pFinancialStateTableItems, 0, 2);
             tableLayoutPanel2.Dock = DockStyle.Fill;
             tableLayoutPanel2.Location = new Point(20, 20);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
-            tableLayoutPanel2.RowCount = 2;
+            tableLayoutPanel2.RowCount = 3;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 120F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 30F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel2.Size = new Size(902, 431);
             tableLayoutPanel2.TabIndex = 3;
+            // 
+            // financialStateTableHeader1
+            // 
+            financialStateTableHeader1.Dock = DockStyle.Fill;
+            financialStateTableHeader1.Location = new Point(3, 123);
+            financialStateTableHeader1.MaximumSize = new Size(0, 30);
+            financialStateTableHeader1.MinimumSize = new Size(800, 30);
+            financialStateTableHeader1.Name = "financialStateTableHeader1";
+            financialStateTableHeader1.Size = new Size(896, 30);
+            financialStateTableHeader1.TabIndex = 3;
             // 
             // tableLayoutPanel3
             // 
@@ -533,7 +550,7 @@ namespace PrimeSystems
             // 
             // financialStateCard4
             // 
-            financialStateCard4.BackColor = Color.White;
+            financialStateCard4.BackColor = Color.Transparent;
             financialStateCard4.Dock = DockStyle.Fill;
             financialStateCard4.Location = new Point(685, 10);
             financialStateCard4.Margin = new Padding(10);
@@ -546,7 +563,7 @@ namespace PrimeSystems
             // 
             // financialStateCard3
             // 
-            financialStateCard3.BackColor = Color.White;
+            financialStateCard3.BackColor = Color.Transparent;
             financialStateCard3.Dock = DockStyle.Fill;
             financialStateCard3.Location = new Point(460, 10);
             financialStateCard3.Margin = new Padding(10);
@@ -559,7 +576,7 @@ namespace PrimeSystems
             // 
             // financialStateCard1
             // 
-            financialStateCard1.BackColor = Color.White;
+            financialStateCard1.BackColor = Color.Transparent;
             financialStateCard1.Dock = DockStyle.Fill;
             financialStateCard1.Location = new Point(235, 10);
             financialStateCard1.Margin = new Padding(10);
@@ -572,7 +589,7 @@ namespace PrimeSystems
             // 
             // financialStateCard2
             // 
-            financialStateCard2.BackColor = Color.White;
+            financialStateCard2.BackColor = Color.Transparent;
             financialStateCard2.Dock = DockStyle.Fill;
             financialStateCard2.Location = new Point(10, 10);
             financialStateCard2.Margin = new Padding(10);
@@ -582,6 +599,16 @@ namespace PrimeSystems
             financialStateCard2.TabIndex = 1;
             financialStateCard2.Title = "Total de Ingresos";
             financialStateCard2.Value = "$16.800,00";
+            // 
+            // pFinancialStateTableItems
+            // 
+            pFinancialStateTableItems.AutoScroll = true;
+            pFinancialStateTableItems.AutoSize = true;
+            pFinancialStateTableItems.Dock = DockStyle.Fill;
+            pFinancialStateTableItems.Location = new Point(3, 153);
+            pFinancialStateTableItems.Name = "pFinancialStateTableItems";
+            pFinancialStateTableItems.Size = new Size(896, 275);
+            pFinancialStateTableItems.TabIndex = 4;
             // 
             // tpLogout
             // 
@@ -621,7 +648,7 @@ namespace PrimeSystems
             AutoScaleDimensions = new SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
             AutoScroll = true;
-            BackColor = Color.RosyBrown;
+            BackColor = Color.White;
             ClientSize = new Size(950, 600);
             Controls.Add(tcMain);
             Controls.Add(statusStrip1);
@@ -647,7 +674,7 @@ namespace PrimeSystems
             tcMain.ResumeLayout(false);
             tpPurchases.ResumeLayout(false);
             materialTabControl1.ResumeLayout(false);
-            tpPurchasesHistory.ResumeLayout(false);
+            tpPurchasesList.ResumeLayout(false);
             tpSuppliers.ResumeLayout(false);
             tpSells.ResumeLayout(false);
             tcSellsPages.ResumeLayout(false);
@@ -656,6 +683,7 @@ namespace PrimeSystems
             tpSellsArticles.ResumeLayout(false);
             tpFinancialState.ResumeLayout(false);
             tableLayoutPanel2.ResumeLayout(false);
+            tableLayoutPanel2.PerformLayout();
             tableLayoutPanel3.ResumeLayout(false);
             statusStrip1.ResumeLayout(false);
             statusStrip1.PerformLayout();
@@ -699,7 +727,7 @@ namespace PrimeSystems
         public TabPage tpSuppliers;
         private ReaLTaiizor.Controls.MaterialTabControl tcSellsPages;
         public TabPage tpSellsClients;
-        public TabPage tpPurchasesHistory;
+        public TabPage tpPurchasesList;
         public TabPage tpSellsList;
         public TabPage tpSellsArticles;
         private TableLayoutPanel tableLayoutPanel2;
@@ -708,5 +736,7 @@ namespace PrimeSystems
         private Views.Controls.FinancialStateCard financialStateCard3;
         private Views.Controls.FinancialStateCard financialStateCard1;
         private Views.Controls.FinancialStateCard financialStateCard2;
+        private Views.Controls.FinancialStateTableHeader financialStateTableHeader1;
+        private Panel pFinancialStateTableItems;
     }
 }

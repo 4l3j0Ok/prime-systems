@@ -84,7 +84,6 @@ namespace PrimeSystems.Controllers
                 existingDetalle.Description = detalle.Description;
                 existingDetalle.UnitPrice = detalle.UnitPrice;
                 existingDetalle.Quantity = detalle.Quantity;
-                existingDetalle.Total = detalle.Total;
 
                 _context.SaveChanges();
                 return true;

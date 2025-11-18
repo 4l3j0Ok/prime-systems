@@ -95,6 +95,7 @@ namespace PrimeSystems.Views.Forms.Add
                 return;
 
             // Asignar valores al modelo
+            int originalId = selectedSupplier.Id;
             selectedSupplier.Name = tbSupplierName.Text;
             selectedSupplier.Cuit = int.TryParse(tbSupplierCuit.Text, out int cuit) ? cuit : null;
             selectedSupplier.ContactName = string.IsNullOrWhiteSpace(tbSupplierContactName.Text) ? null : tbSupplierContactName.Text;
@@ -110,6 +111,11 @@ namespace PrimeSystems.Views.Forms.Add
             if (success)
             {
                 MessageBox.Show("Proveedor guardado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                
+                // Registrar actividad usando el helper
+                string action = originalId == 0 ? ActivityActions.Create : ActivityActions.Update;
+                ActivityLogger.LogActivity(action, ActivityModules.Suppliers, supplierId: selectedSupplier.Id);
+                
                 ReturnToSuppliersView();
             }
             else

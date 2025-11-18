@@ -19,7 +19,6 @@ namespace PrimeSystems.Views.Forms.Add
         private ArticleController articleController;
         private CategoryController categoryController;
         private SubcategoryController subcategoryController;
-        private ActivityRecordController activityRecordController;
         private StockController stockController;
         private ArticleModel selectedArticle;
         private StockModel? selectedStock;
@@ -271,6 +270,7 @@ namespace PrimeSystems.Views.Forms.Add
                     subcategoryId = subcategory?.Id;
                 }
 
+                int originalId = selectedArticle.Id;
                 selectedArticle.Code = tbArticleCode.Text.Trim().ToUpper();
                 selectedArticle.Name = cbArticleName.Text.Trim();
                 selectedArticle.Description = string.IsNullOrWhiteSpace(cbArticleDescription.Text)
@@ -324,22 +324,10 @@ namespace PrimeSystems.Views.Forms.Add
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 
-                // Registramos actividad
-                activityRecordController = new ActivityRecordController();
-                bool isCreate = selectedArticle.Id == 0;
-                var activityRecord = new ActivityRecordModel
-                {
-                    UserId = Session.CurrentUser?.Id,
-                    Module = ActivityModules.Articles,
-                    Description = ActivityModules.DescriptionTemplate(
-                        user: Session.CurrentUser?.Name ?? "Desconocido",
-                        action: isCreate ? ActivityActions.Created : ActivityActions.Updated,
-                        module: ActivityModules.Articles
-                    ),
-                    Date = DateTime.Now
-                };
-                activityRecordController.Create(activityRecord);
-                Debug.WriteLine("Actividad registrada: " + activityRecord.Description);
+                // Registrar actividad usando el helper
+                string action = originalId == 0 ? ActivityActions.Create : ActivityActions.Update;
+                ActivityLogger.LogActivity(action, ActivityModules.Articles, articleId: selectedArticle.Id);
+                
                 ReturnToArticlesView();
             }
             catch (Exception ex)
