@@ -88,6 +88,25 @@ namespace PrimeSystems.Controllers
                 .ToList();
         }
 
+        public List<ActivityRecordModel> GetRecordByModulesAndDateRange(List<string> modules, DateTime dateFrom, DateTime dateTo)
+        {
+            return _context.Transaction
+                .Include(t => t.User)
+                .Include(t => t.Sell)
+                    .ThenInclude(s => s.Client)
+                .Include(t => t.Purchase)
+                    .ThenInclude(p => p.Supplier)
+                .Include(t => t.Article)
+                .Include(t => t.Client)
+                .Include(t => t.Supplier)
+                .Where(t => modules.Contains(t.Module ?? string.Empty) 
+                    && t.Date.HasValue 
+                    && t.Date.Value.Date >= dateFrom.Date 
+                    && t.Date.Value.Date <= dateTo.Date)
+                .OrderByDescending(t => t.Date)
+                .ToList();
+        }
+
         public bool Create(ActivityRecordModel movimiento)
         {
             try

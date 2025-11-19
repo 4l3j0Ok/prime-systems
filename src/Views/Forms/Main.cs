@@ -26,6 +26,10 @@ namespace PrimeSystems
             SaveOriginalTabContents();
             ReloadAllTabPages();
             PositionFloatingButtonsInTabControl(tcMain);
+
+            // Setup date picker event handlers for financial state
+            dtpDateFrom.ValueChanged += (s, e) => RefreshFinancialState();
+            dtpDateTo.ValueChanged += (s, e) => RefreshFinancialState();
         }
 
         private void ReloadAllTabPages()
@@ -70,7 +74,7 @@ namespace PrimeSystems
 
             // Artículos
             ReloadTabPage<ArticleModel, int, Article>(
-                tpSellsArticles,
+                tpArticles,
                 () => new ArticleController(),
                 a => a.Name ?? "Sin nombre",
                 a => $"Código: {a.Code} | Categoría: {a.Category?.Name ?? "N/A"}",
@@ -451,10 +455,10 @@ namespace PrimeSystems
                     c => new Client(c)
                 );
             }
-            else if (tabPage == tpSellsArticles)
+            else if (tabPage == tpArticles)
             {
                 ReloadTabPage<ArticleModel, int, Article>(
-                    tpSellsArticles,
+                    tpArticles,
                     () => new ArticleController(),
                     a => a.Name ?? "Sin nombre",
                     a => $"Código: {a.Code} | Categoría: {a.Category?.Name ?? "N/A"}",
@@ -520,7 +524,6 @@ namespace PrimeSystems
             }
         }
 
-        // Event Handlers
         private void tabCerrarSesion_Click(object sender, EventArgs e) => Application.Restart();
 
         private void btnAddUser_Click(object sender, EventArgs e) =>
@@ -542,38 +545,78 @@ namespace PrimeSystems
             ShowControlInTabPage(tpSellsClients, new Client());
 
         private void btnAddArticle_Click(object sender, EventArgs e) =>
-            ShowControlInTabPage(tpSellsArticles, new Article());
+            ShowControlInTabPage(tpArticles, new Article());
 
         private void tpFinancialState_Paint(object sender, PaintEventArgs e)
         {
+            // Initialize dates (one month ago to today)
+            DateTime today = DateTime.Today;
+            DateTime oneMonthAgo = today.AddMonths(-1);
+
+            // Set date pickers if they haven't been set
+            if (dtpDateFrom.Value.Date == DateTime.Today.Date && dtpDateTo.Value.Date == DateTime.Today.Date)
+            {
+                dtpDateFrom.Value = oneMonthAgo;
+                dtpDateTo.Value = today;
+            }
+            RefreshFinancialState();
+        }
+
+        private void RefreshFinancialState()
+        {
             ActivityRecordController activityController = new ActivityRecordController();
             List<string> activityRecordModules = new List<string> { ActivityModules.Sells, ActivityModules.Purchases };
-            List<ActivityRecordModel> activityRecords = activityController.GetRecordByModules(activityRecordModules);
+            DateTime dateFrom = dtpDateFrom.Value.Date;
+            DateTime dateTo = dtpDateTo.Value.Date;
+            List<ActivityRecordModel> activityRecords = activityController.GetRecordByModulesAndDateRange(
+                activityRecordModules,
+                dateFrom,
+                dateTo
+            );
+
             pFinancialStateTableItems.Controls.Clear();
+            int totalSells = 0;
+            int totalPurchases = 0;
+            decimal totalRevenue = 0;
+            decimal totalExpenses = 0;
+
             foreach (var record in activityRecords)
             {
                 FinancialStateTableItem item = new FinancialStateTableItem();
-                item.Date = record.Date?.ToString("g") ?? "N/A";
-                item.UserName = record.User != null ? $"{record.User.Name} {record.User.LastName}" : "N/A";
+                item.Date = record.Date?.ToString("g") ?? "N/A"; // Formato 'g' es general (corto)
+                item.UserName = record.User != null ? $"{record.User.Username}" : "N/A";
                 item.Module = record.Module ?? "N/A";
 
-                // Obtener el monto directamente del modelo relacionado
                 string amount = "N/A";
                 if (record.Module == ActivityModules.Sells && record.Sell != null)
                 {
                     amount = !string.IsNullOrWhiteSpace(record.Sell.Total) ? $"${record.Sell.Total}" : "N/A";
+                    totalSells++;
+                    if (decimal.TryParse(record.Sell.Total, out decimal sellAmount))
+                    {
+                        totalRevenue += sellAmount;
+                    }
                 }
                 else if (record.Module == ActivityModules.Purchases && record.Purchase != null)
                 {
                     amount = !string.IsNullOrWhiteSpace(record.Purchase.Total) ? $"${record.Purchase.Total}" : "N/A";
+                    totalPurchases++;
+                    if (decimal.TryParse(record.Purchase.Total, out decimal purchaseAmount))
+                    {
+                        totalExpenses += purchaseAmount;
+                    }
                 }
 
                 item.Amount = amount;
                 item.Dock = DockStyle.Top;
                 item.Margin = new Padding(0, 0, 0, 0);
+                item.lblUserUsername.Click += (s, e) =>
+                {
+                    if (record.User != null)
+                        ShowControlInTabPage(tpFinancialState, new User(record.User, tpFinancialState));
+                };
                 item.lblShowDetails.Click += (s, e) =>
                 {
-                    Debug.WriteLine($"FinancialStateTableItem: Show details clicked for module {record.Module}");
                     if (record.Module == ActivityModules.Sells && record.Sell != null)
                         ShowControlInTabPage(tpFinancialState, new Sell(record.Sell, tpFinancialState));
                     else if (record.Module == ActivityModules.Purchases && record.Purchase != null)
@@ -581,6 +624,10 @@ namespace PrimeSystems
                 };
                 pFinancialStateTableItems.Controls.Add(item);
             }
+            fscTotalRevenue.Value = totalRevenue.ToString("C2");
+            fscTotalExpenses.Value = totalExpenses.ToString("C2");
+            fscTotalSells.Value = totalSells.ToString();
+            fscTotalPurchases.Value = totalPurchases.ToString();
         }
     }
 }

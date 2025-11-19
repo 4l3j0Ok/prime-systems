@@ -1,6 +1,6 @@
 ﻿namespace PrimeSystems.Views.Controls
 {
-    partial class FinancialStateTableItem
+    partial class ActivityLogTableItem
     {
         /// <summary> 
         /// Variable del diseñador necesaria.
@@ -29,55 +29,31 @@
         private void InitializeComponent()
         {
             tableLayoutPanel1 = new TableLayoutPanel();
-            lblShowDetails = new ReaLTaiizor.Controls.MaterialLabel();
             lblAction = new ReaLTaiizor.Controls.MaterialLabel();
             lblModule = new ReaLTaiizor.Controls.MaterialLabel();
             lblUserUsername = new ReaLTaiizor.Controls.MaterialLabel();
             lblDate = new ReaLTaiizor.Controls.MaterialLabel();
-            lblAmount = new ReaLTaiizor.Controls.MaterialLabel();
             tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
             // 
             // tableLayoutPanel1
             // 
-            tableLayoutPanel1.ColumnCount = 6;
+            tableLayoutPanel1.ColumnCount = 4;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.666666F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.666666F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.666666F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.666666F));
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.666666F));
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.666666F));
-            tableLayoutPanel1.Controls.Add(lblShowDetails, 5, 0);
             tableLayoutPanel1.Controls.Add(lblAction, 3, 0);
             tableLayoutPanel1.Controls.Add(lblModule, 2, 0);
             tableLayoutPanel1.Controls.Add(lblUserUsername, 1, 0);
             tableLayoutPanel1.Controls.Add(lblDate, 0, 0);
-            tableLayoutPanel1.Controls.Add(lblAmount, 4, 0);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 1;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel1.Size = new Size(800, 30);
-            tableLayoutPanel1.TabIndex = 1;
-            // 
-            // lblShowDetails
-            // 
-            lblShowDetails.AutoSize = true;
-            lblShowDetails.Cursor = Cursors.Hand;
-            lblShowDetails.Depth = 0;
-            lblShowDetails.Dock = DockStyle.Fill;
-            lblShowDetails.Font = new Font("Roboto", 14F, FontStyle.Bold, GraphicsUnit.Pixel);
-            lblShowDetails.FontType = ReaLTaiizor.Manager.MaterialSkinManager.FontType.Button;
-            lblShowDetails.HighEmphasis = true;
-            lblShowDetails.Location = new Point(668, 3);
-            lblShowDetails.Margin = new Padding(3);
-            lblShowDetails.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
-            lblShowDetails.Name = "lblShowDetails";
-            lblShowDetails.Size = new Size(129, 24);
-            lblShowDetails.TabIndex = 11;
-            lblShowDetails.Text = "Ver";
-            lblShowDetails.TextAlign = ContentAlignment.MiddleCenter;
+            tableLayoutPanel1.TabIndex = 2;
             // 
             // lblAction
             // 
@@ -86,13 +62,13 @@
             lblAction.Dock = DockStyle.Fill;
             lblAction.Font = new Font("Roboto", 12F, FontStyle.Regular, GraphicsUnit.Pixel);
             lblAction.FontType = ReaLTaiizor.Manager.MaterialSkinManager.FontType.Body2;
-            lblAction.Location = new Point(402, 3);
+            lblAction.Location = new Point(603, 3);
             lblAction.Margin = new Padding(3);
             lblAction.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             lblAction.Name = "lblAction";
-            lblAction.Size = new Size(127, 24);
-            lblAction.TabIndex = 10;
-            lblAction.Text = "Creación";
+            lblAction.Size = new Size(194, 24);
+            lblAction.TabIndex = 3;
+            lblAction.Text = "Acción";
             lblAction.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // lblModule
@@ -102,32 +78,29 @@
             lblModule.Dock = DockStyle.Fill;
             lblModule.Font = new Font("Roboto", 12F, FontStyle.Regular, GraphicsUnit.Pixel);
             lblModule.FontType = ReaLTaiizor.Manager.MaterialSkinManager.FontType.Body2;
-            lblModule.HighEmphasis = true;
-            lblModule.Location = new Point(269, 3);
+            lblModule.Location = new Point(403, 3);
             lblModule.Margin = new Padding(3);
             lblModule.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             lblModule.Name = "lblModule";
-            lblModule.Size = new Size(127, 24);
-            lblModule.TabIndex = 9;
-            lblModule.Text = "Ventas";
+            lblModule.Size = new Size(194, 24);
+            lblModule.TabIndex = 2;
+            lblModule.Text = "Módulo";
             lblModule.TextAlign = ContentAlignment.MiddleCenter;
-            lblModule.UseAccent = true;
             // 
             // lblUserUsername
             // 
-            lblUserUsername.Cursor = Cursors.Hand;
+            lblUserUsername.AutoSize = true;
             lblUserUsername.Depth = 0;
             lblUserUsername.Dock = DockStyle.Fill;
-            lblUserUsername.Font = new Font("Roboto", 14F, FontStyle.Bold, GraphicsUnit.Pixel);
-            lblUserUsername.FontType = ReaLTaiizor.Manager.MaterialSkinManager.FontType.Button;
-            lblUserUsername.HighEmphasis = true;
-            lblUserUsername.Location = new Point(136, 3);
+            lblUserUsername.Font = new Font("Roboto", 12F, FontStyle.Regular, GraphicsUnit.Pixel);
+            lblUserUsername.FontType = ReaLTaiizor.Manager.MaterialSkinManager.FontType.Body2;
+            lblUserUsername.Location = new Point(203, 3);
             lblUserUsername.Margin = new Padding(3);
             lblUserUsername.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             lblUserUsername.Name = "lblUserUsername";
-            lblUserUsername.Size = new Size(127, 24);
+            lblUserUsername.Size = new Size(194, 24);
             lblUserUsername.TabIndex = 1;
-            lblUserUsername.Text = "admin";
+            lblUserUsername.Text = "Usuario";
             lblUserUsername.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // lblDate
@@ -141,35 +114,19 @@
             lblDate.Margin = new Padding(3);
             lblDate.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             lblDate.Name = "lblDate";
-            lblDate.Size = new Size(127, 24);
+            lblDate.Size = new Size(194, 24);
             lblDate.TabIndex = 0;
-            lblDate.Text = "17/11/2025";
+            lblDate.Text = "Fecha";
             lblDate.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // lblAmount
-            // 
-            lblAmount.AutoSize = true;
-            lblAmount.Depth = 0;
-            lblAmount.Dock = DockStyle.Fill;
-            lblAmount.Font = new Font("Roboto", 12F, FontStyle.Regular, GraphicsUnit.Pixel);
-            lblAmount.FontType = ReaLTaiizor.Manager.MaterialSkinManager.FontType.Body2;
-            lblAmount.Location = new Point(535, 3);
-            lblAmount.Margin = new Padding(3);
-            lblAmount.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
-            lblAmount.Name = "lblAmount";
-            lblAmount.Size = new Size(127, 24);
-            lblAmount.TabIndex = 6;
-            lblAmount.Text = "$5000";
-            lblAmount.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // FinancialStateTableItem
+            // ActivityLogTableItem
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(tableLayoutPanel1);
             MaximumSize = new Size(0, 30);
             MinimumSize = new Size(800, 30);
-            Name = "FinancialStateTableItem";
+            Name = "ActivityLogTableItem";
             Size = new Size(800, 30);
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
@@ -179,11 +136,9 @@
         #endregion
 
         private TableLayoutPanel tableLayoutPanel1;
-        private ReaLTaiizor.Controls.MaterialLabel lblDate;
         private ReaLTaiizor.Controls.MaterialLabel lblAction;
         private ReaLTaiizor.Controls.MaterialLabel lblModule;
-        private ReaLTaiizor.Controls.MaterialLabel lblAmount;
-        public ReaLTaiizor.Controls.MaterialLabel lblShowDetails;
-        public ReaLTaiizor.Controls.MaterialLabel lblUserUsername;
+        private ReaLTaiizor.Controls.MaterialLabel lblUserUsername;
+        private ReaLTaiizor.Controls.MaterialLabel lblDate;
     }
 }

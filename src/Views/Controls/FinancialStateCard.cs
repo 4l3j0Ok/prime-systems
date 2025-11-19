@@ -17,7 +17,6 @@ namespace PrimeSystems.Views.Controls
             InitializeComponent();
             this.BackColor = Color.White;
         }
-        // Hacemos que sea modificable desde el designer lblTitle.Text y lblValue.Text
         [Category("Custom Props")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public string Title
@@ -31,6 +30,19 @@ namespace PrimeSystems.Views.Controls
         {
             get { return lblValue.Text; }
             set { lblValue.Text = value; }
+        }
+
+        private void tableLayoutPanel2_ClientSizeChanged(object sender, EventArgs e)
+        {
+            // Hacemos que sea modificable desde el designer lblTitle.Text y lblValue.Text
+            if (this.Width < 1000)
+            {
+                lblValue.FontType = ReaLTaiizor.Manager.MaterialSkinManager.FontType.H5;
+            }
+            else if (this.Width >= 1000)
+            {
+                lblValue.FontType = ReaLTaiizor.Manager.MaterialSkinManager.FontType.H4;
+            }
         }
     }
 }

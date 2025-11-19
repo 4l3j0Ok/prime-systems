@@ -306,7 +306,6 @@ namespace PrimeSystems.Views.Forms.Add
                 selectedStock.Cost = decimal.TryParse(tbStockCost.Text, out decimal cost) ? cost.ToString("F2") : "0.00";
                 selectedStock.Profit = int.TryParse(tbCostProfit.Text, out int profit) ? profit : 0;
 
-                // Guardar stock
                 bool stockSuccess;
                 if (selectedStock.Id == 0)
                     stockSuccess = stockController.Create(selectedStock);
@@ -324,10 +323,9 @@ namespace PrimeSystems.Views.Forms.Add
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 
-                // Registrar actividad usando el helper
                 string action = originalId == 0 ? ActivityActions.Create : ActivityActions.Update;
                 ActivityLogger.LogActivity(action, ActivityModules.Articles, articleId: selectedArticle.Id);
-                
+
                 ReturnToArticlesView();
             }
             catch (Exception ex)
@@ -346,7 +344,7 @@ namespace PrimeSystems.Views.Forms.Add
         {
             if (formMain != null)
             {
-                formMain.RestoreTabPage(formMain.tpSellsArticles);
+                formMain.RestoreTabPage(formMain.tpArticles);
             }
         }
     }

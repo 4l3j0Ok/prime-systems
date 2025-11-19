@@ -50,6 +50,7 @@
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel2.Size = new Size(200, 95);
             tableLayoutPanel2.TabIndex = 2;
+            tableLayoutPanel2.ClientSizeChanged += tableLayoutPanel2_ClientSizeChanged;
             // 
             // lblValue
             // 
@@ -66,22 +67,24 @@
             lblValue.Size = new Size(188, 52);
             lblValue.TabIndex = 1;
             lblValue.Text = "$16.800,00";
-            lblValue.TextAlign = ContentAlignment.MiddleLeft;
+            lblValue.TextAlign = ContentAlignment.MiddleCenter;
             lblValue.UseAccent = true;
             // 
             // lblTitle
             // 
             lblTitle.AutoSize = true;
             lblTitle.Depth = 0;
+            lblTitle.Dock = DockStyle.Fill;
             lblTitle.Font = new Font("Roboto", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
             lblTitle.FontType = ReaLTaiizor.Manager.MaterialSkinManager.FontType.Subtitle1;
             lblTitle.Location = new Point(6, 6);
             lblTitle.Margin = new Padding(6);
             lblTitle.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             lblTitle.Name = "lblTitle";
-            lblTitle.Size = new Size(123, 19);
+            lblTitle.Size = new Size(188, 19);
             lblTitle.TabIndex = 0;
             lblTitle.Text = "Total de Ingresos";
+            lblTitle.TextAlign = ContentAlignment.MiddleCenter;
             lblTitle.UseAccent = true;
             // 
             // FinancialStateCard

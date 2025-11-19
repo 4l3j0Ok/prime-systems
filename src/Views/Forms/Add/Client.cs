@@ -31,12 +31,10 @@ namespace PrimeSystems.Views.Forms.Add
                 return;
             }
 
-            // Modo edición
             mepClientAdd.Title = "Modificar Cliente";
             mepClientAdd.Description = "Edita los datos del cliente seleccionado";
             selectedClient = client;
 
-            // Precargar datos
             tbClientrName.Text = client.Name;
             tbClientCuit.Text = client.Cuit?.ToString() ?? "";
             tbClientEntity.Text = client.Entity;
@@ -46,7 +44,6 @@ namespace PrimeSystems.Views.Forms.Add
 
         private void SetupControls()
         {
-            // Configurar validación de campos
             tbClientCuit.KeyPress += (sender, e) => Utils.HandleTextBoxInput(sender, e, ValidationType.Numbers);
             tbClientCuit.TextChanged += (sender, e) => Utils.HandlePostTextBoxInput(sender, e, ValidationType.Numbers);
 
@@ -56,7 +53,6 @@ namespace PrimeSystems.Views.Forms.Add
             tbClientEmail.KeyPress += (sender, e) => Utils.HandleTextBoxInput(sender, e, ValidationType.Email);
             tbClientEmail.TextChanged += (sender, e) => Utils.HandlePostTextBoxInput(sender, e, ValidationType.Email);
 
-            // Configurar eventos de los botones
             mepClientAdd.SaveClick += mepClientAdd_SaveClick;
             mepClientAdd.CancelClick += mepClientAdd_CancelClick;
         }
@@ -65,7 +61,6 @@ namespace PrimeSystems.Views.Forms.Add
         {
             List<string> emptyFields = new List<string>();
 
-            // Validar campos obligatorios
             if (string.IsNullOrWhiteSpace(tbClientrName.Text))
                 emptyFields.Add("Nombre");
 
@@ -76,7 +71,6 @@ namespace PrimeSystems.Views.Forms.Add
                 return false;
             }
 
-            // Validar formato de email si se proporcionó
             if (!string.IsNullOrWhiteSpace(tbClientEmail.Text))
             {
                 if (!tbClientEmail.Text.Contains("@") || !tbClientEmail.Text.Contains("."))
@@ -94,7 +88,6 @@ namespace PrimeSystems.Views.Forms.Add
             if (!ValidateFields())
                 return;
 
-            // Asignar valores al modelo
             int originalId = selectedClient.Id;
             selectedClient.Name = tbClientrName.Text;
             selectedClient.Cuit = int.TryParse(tbClientCuit.Text, out int cuit) ? cuit : null;
@@ -112,7 +105,6 @@ namespace PrimeSystems.Views.Forms.Add
             {
                 MessageBox.Show("Cliente guardado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 
-                // Registrar actividad usando el helper
                 string action = originalId == 0 ? ActivityActions.Create : ActivityActions.Update;
                 ActivityLogger.LogActivity(action, ActivityModules.Clients, clientId: selectedClient.Id);
 

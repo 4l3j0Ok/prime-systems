@@ -25,7 +25,7 @@ namespace PrimeSystems.Views.Forms.Add
         private TabPage ParentTabPage = null;
         private PurchaseModel? currentPurchase;
         private bool isEditMode = false;
-        private bool isLoadingData = false; // Para evitar cálculos durante la carga inicial
+        private bool isLoadingData = false;
 
         public Purchase(PurchaseModel? purchase = null, TabPage? parentTabPage = null)
         {
@@ -40,7 +40,6 @@ namespace PrimeSystems.Views.Forms.Add
             InitializeComponent();
             SetupControls();
 
-            // Si se recibe una compra, cargar sus datos
             if (purchase != null)
             {
                 currentPurchase = purchase;
@@ -51,7 +50,6 @@ namespace PrimeSystems.Views.Forms.Add
 
         private void SetupControls()
         {
-            // Configurar validación de campos
             tbTotal.KeyPress += (sender, e) => Utils.HandleTextBoxInput(sender, e, ValidationType.Decimal);
             tbTotal.TextChanged += (sender, e) => Utils.HandlePostTextBoxInput(sender, e, ValidationType.Decimal);
         }
@@ -60,9 +58,8 @@ namespace PrimeSystems.Views.Forms.Add
         {
             try
             {
-                isLoadingData = true; // Deshabilitar cálculos automáticos durante la carga
+                isLoadingData = true;
 
-                // Cargar el proveedor
                 if (purchase.Supplier != null)
                 {
                     LoadSuppliers();
@@ -78,7 +75,6 @@ namespace PrimeSystems.Views.Forms.Add
                     }
                 }
 
-                // Cargar los detalles de la compra
                 List<PurchaseDetailModel> details;
                 if (purchase.Detail != null && purchase.Detail.Any())
                 {
@@ -86,17 +82,14 @@ namespace PrimeSystems.Views.Forms.Add
                 }
                 else
                 {
-                    // Si no están cargados los detalles, obtenerlos de la base de datos
                     details = purchaseDetailController.GetDetallesByCompra(purchase.Id);
                 }
 
-                // Cargar los artículos
                 foreach (var detail in details)
                 {
                     var articleItem = new Controls.SupplierArticleItem();
                     articleItem.Dock = DockStyle.Top;
 
-                    // Suscribir eventos
                     articleItem.tbArticleUnitPrice.TextChanged += CalculateTotals;
                     articleItem.tbArticleQuantity.TextChanged += CalculateTotals;
                     articleItem.btnRemove.Click += CalculateTotals;
@@ -104,15 +97,12 @@ namespace PrimeSystems.Views.Forms.Add
                     gbArticlesData.Controls.Add(articleItem);
                     gbArticlesData.Controls.SetChildIndex(articleItem, 1);
 
-                    // Cargar datos del artículo en el SupplierArticleItem
                     if (detail.ArticleId.HasValue)
                     {
-                        // Si tiene ArticleId, seleccionar el artículo en el combo
                         articleItem.SetArticleById(detail.ArticleId.Value);
                     }
                     else if (detail.Article != null)
                     {
-                        // Si el artículo está cargado, buscar por nombre
                         var article = articleController.GetByName(detail.Article.Name);
                         if (article != null)
                         {
@@ -121,7 +111,6 @@ namespace PrimeSystems.Views.Forms.Add
                     }
                     else if (!string.IsNullOrWhiteSpace(detail.Description))
                     {
-                        // Si solo hay descripción, buscar por nombre
                         var article = articleController.GetByName(detail.Description);
                         if (article != null)
                         {
@@ -132,28 +121,23 @@ namespace PrimeSystems.Views.Forms.Add
                     var tbUnitPrice = articleItem.Controls.Find("tbArticleUnitPrice", true).FirstOrDefault() as ReaLTaiizor.Controls.MaterialTextBoxEdit;
                     var tbQuantity = articleItem.Controls.Find("tbArticleQuantity", true).FirstOrDefault() as ReaLTaiizor.Controls.MaterialTextBoxEdit;
 
-                    // Cargar precio unitario
                     if (tbUnitPrice != null && !string.IsNullOrWhiteSpace(detail.UnitPrice))
                     {
                         tbUnitPrice.Text = detail.UnitPrice;
                     }
 
-                    // Cargar cantidad
                     if (tbQuantity != null && !string.IsNullOrWhiteSpace(detail.Quantity))
                     {
                         tbQuantity.Text = detail.Quantity;
                     }
                 }
 
-                // Cargar el total
                 if (!string.IsNullOrWhiteSpace(purchase.Total))
                 {
                     tbTotal.Text = purchase.Total;
                 }
 
-                isLoadingData = false; // Habilitar cálculos automáticos
-
-                // Recalcular totales para verificar los valores
+                isLoadingData = false;
                 CalculateTotals(null, EventArgs.Empty);
             }
             catch (Exception ex)
@@ -201,20 +185,16 @@ namespace PrimeSystems.Views.Forms.Add
 
         private void CalculateTotals(object? sender, EventArgs e)
         {
-            // No recalcular si estamos cargando datos iniciales
             if (isLoadingData)
                 return;
 
             try
             {
                 decimal total = 0;
-
-                // Obtener todos los SupplierArticleItem del contenedor
                 var articleItems = gbArticlesData.Controls.OfType<Controls.SupplierArticleItem>().ToList();
 
                 foreach (var item in articleItems)
                 {
-                    // Buscar los controles dentro de cada SupplierArticleItem
                     var tbUnitPrice = item.Controls.Find("tbArticleUnitPrice", true).FirstOrDefault() as ReaLTaiizor.Controls.MaterialTextBoxEdit;
                     var tbQuantity = item.Controls.Find("tbArticleQuantity", true).FirstOrDefault() as ReaLTaiizor.Controls.MaterialTextBoxEdit;
 
@@ -240,7 +220,6 @@ namespace PrimeSystems.Views.Forms.Add
         {
             List<string> errors = new List<string>();
 
-            // Validar proveedor seleccionado
             if (cbProvider.SelectedIndex <= 0 || string.IsNullOrWhiteSpace(cbProvider.Text) || cbProvider.Text.StartsWith("--"))
             {
                 errors.Add("Debe seleccionar un proveedor");
@@ -277,7 +256,6 @@ namespace PrimeSystems.Views.Forms.Add
                 }
             }
 
-            // Validar total
             if (string.IsNullOrWhiteSpace(tbTotal.Text) || !decimal.TryParse(tbTotal.Text, out decimal total) || total <= 0)
             {
                 errors.Add("El total debe ser mayor a 0");
@@ -300,7 +278,6 @@ namespace PrimeSystems.Views.Forms.Add
 
             try
             {
-                // Obtener el proveedor seleccionado
                 var suppliers = supplierController.GetAll();
                 var selectedSupplier = suppliers.FirstOrDefault(s => s.Name == cbProvider.Text);
 
@@ -310,42 +287,29 @@ namespace PrimeSystems.Views.Forms.Add
                     return;
                 }
 
-                // Calcular subtotal y descuento (si aplica)
-                decimal total = decimal.Parse(tbTotal.Text);
-                decimal subtotal = total; // Por ahora el subtotal es igual al total
-                decimal discount = 0; // Sin descuento por defecto
-
-                // Crear o actualizar la compra
                 PurchaseModel purchase;
-                int originalId = 0;
 
                 if (isEditMode && currentPurchase != null)
                 {
-                    // Modo edición: usar la compra existente
-                    originalId = currentPurchase.Id;
                     purchase = currentPurchase;
                     purchase.UserId = Session.CurrentUser?.Id;
                     purchase.SupplierId = selectedSupplier.Id;
                     purchase.Date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                    purchase.Subtotal = subtotal.ToString("F2");
-                    purchase.Discount = discount.ToString("F2");
-                    purchase.Total = total.ToString("F2");
                 }
                 else
                 {
-                    // Modo creación: crear nueva compra
                     purchase = new PurchaseModel
                     {
                         UserId = Session.CurrentUser?.Id,
                         SupplierId = selectedSupplier.Id,
-                        Date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-                        Subtotal = subtotal.ToString("F2"),
-                        Discount = discount.ToString("F2"),
-                        Total = total.ToString("F2")
+                        Date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
                     };
                 }
 
-                // Crear los detalles de la compra
+                purchase.Subtotal = tbTotal.Text;
+                purchase.Discount = "0.00";
+                purchase.Total = tbTotal.Text;
+
                 var details = new List<PurchaseDetailModel>();
                 var articleItems = gbArticlesData.Controls.OfType<Controls.SupplierArticleItem>().ToList();
 
@@ -357,25 +321,20 @@ namespace PrimeSystems.Views.Forms.Add
 
                     if (articleId.HasValue && tbUnitPrice != null && tbQuantity != null)
                     {
-                        decimal unitPrice = decimal.Parse(tbUnitPrice.Text);
-                        int quantity = int.Parse(tbQuantity.Text);
-
-                        // Obtener el artículo para la descripción
                         var article = articleController.GetById(articleId.Value);
 
                         var detail = new PurchaseDetailModel
                         {
                             ArticleId = articleId.Value,
                             Description = article?.Name ?? "",
-                            UnitPrice = unitPrice.ToString("F2"),
-                            Quantity = quantity.ToString()
+                            UnitPrice = tbUnitPrice.Text,
+                            Quantity = tbQuantity.Text
                         };
 
                         details.Add(detail);
                     }
                 }
 
-                // Guardar o actualizar la compra con sus detalles
                 bool success;
                 if (isEditMode && currentPurchase != null)
                 {
@@ -391,10 +350,8 @@ namespace PrimeSystems.Views.Forms.Add
                     string message = isEditMode ? "Compra actualizada correctamente." : "Compra registrada correctamente.";
                     MessageBox.Show(message, "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     
-                    // Registrar actividad usando el helper con las referencias de la compra
-                    // Obtener el ID de la compra (sea nueva o actualizada)
-                    int purchaseId = isEditMode && currentPurchase != null ? currentPurchase.Id : purchase.Id;
-                    string action = originalId == 0 ? ActivityActions.Create : ActivityActions.Update;
+                    int purchaseId = isEditMode ? currentPurchase.Id : purchase.Id;
+                    string action = isEditMode ? "Actualizó una compra" : "Registró una nueva compra";
                     ActivityLogger.LogActivity(action, ActivityModules.Purchases, purchaseId: purchaseId, supplierId: selectedSupplier.Id);
                     
                     ReturnToPurchaseView();

@@ -31,12 +31,10 @@ namespace PrimeSystems.Views.Forms.Add
                 return;
             }
             
-            // Modo edición
             mepSupplierAdd.Title = "Modificar Proveedor";
             mepSupplierAdd.Description = "Edita los datos del proveedor seleccionado";
             selectedSupplier = supplier;
             
-            // Precargar datos
             tbSupplierName.Text = supplier.Name;
             tbSupplierCuit.Text = supplier.Cuit?.ToString() ?? "";
             tbSupplierContactName.Text = supplier.ContactName;
@@ -46,7 +44,6 @@ namespace PrimeSystems.Views.Forms.Add
 
         private void SetupControls()
         {
-            // Configurar validación de campos
             tbSupplierCuit.KeyPress += (sender, e) => Utils.HandleTextBoxInput(sender, e, ValidationType.Numbers);
             tbSupplierCuit.TextChanged += (sender, e) => Utils.HandlePostTextBoxInput(sender, e, ValidationType.Numbers);
             
@@ -56,7 +53,6 @@ namespace PrimeSystems.Views.Forms.Add
             tbSupplierEmail.KeyPress += (sender, e) => Utils.HandleTextBoxInput(sender, e, ValidationType.Email);
             tbSupplierEmail.TextChanged += (sender, e) => Utils.HandlePostTextBoxInput(sender, e, ValidationType.Email);
             
-            // Configurar eventos de los botones
             mepSupplierAdd.SaveClick += mepSupplierAdd_SaveClick;
             mepSupplierAdd.CancelClick += mepSupplierAdd_CancelClick;
         }
@@ -65,7 +61,6 @@ namespace PrimeSystems.Views.Forms.Add
         {
             List<string> emptyFields = new List<string>();
 
-            // Validar campos obligatorios
             if (string.IsNullOrWhiteSpace(tbSupplierName.Text))
                 emptyFields.Add("Nombre");
 
@@ -76,7 +71,6 @@ namespace PrimeSystems.Views.Forms.Add
                 return false;
             }
 
-            // Validar formato de email si se proporcionó
             if (!string.IsNullOrWhiteSpace(tbSupplierEmail.Text))
             {
                 if (!tbSupplierEmail.Text.Contains("@") || !tbSupplierEmail.Text.Contains("."))
@@ -94,7 +88,6 @@ namespace PrimeSystems.Views.Forms.Add
             if (!ValidateFields())
                 return;
 
-            // Asignar valores al modelo
             int originalId = selectedSupplier.Id;
             selectedSupplier.Name = tbSupplierName.Text;
             selectedSupplier.Cuit = int.TryParse(tbSupplierCuit.Text, out int cuit) ? cuit : null;
@@ -112,7 +105,6 @@ namespace PrimeSystems.Views.Forms.Add
             {
                 MessageBox.Show("Proveedor guardado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 
-                // Registrar actividad usando el helper
                 string action = originalId == 0 ? ActivityActions.Create : ActivityActions.Update;
                 ActivityLogger.LogActivity(action, ActivityModules.Suppliers, supplierId: selectedSupplier.Id);
                 

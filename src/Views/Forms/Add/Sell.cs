@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -25,7 +26,6 @@ namespace PrimeSystems.Views.Forms.Add
         private TabPage ParentTabPage;
         private SellModel? currentSell;
         private bool isEditMode = false;
-        private bool isLoadingData = false; // Para evitar cálculos durante la carga inicial
 
         public Sell(SellModel? sell = null, TabPage? parentTabPage = null)
         {
@@ -41,7 +41,6 @@ namespace PrimeSystems.Views.Forms.Add
             InitializeComponent();
             SetupControls();
 
-            // Si se recibe una venta, cargar sus datos
             if (sell != null)
             {
                 currentSell = sell;
@@ -52,10 +51,8 @@ namespace PrimeSystems.Views.Forms.Add
 
         private void SetupControls()
         {
-            // Configurar validación de campos
             tbDiscount.KeyPress += (sender, e) => Utils.HandleTextBoxInput(sender, e, ValidationType.Decimal);
             tbDiscount.TextChanged += (sender, e) => Utils.HandlePostTextBoxInput(sender, e, ValidationType.Decimal);
-            // Configurar cálculo automático de totales cuando cambia el descuento
             tbDiscount.TextChanged += CalculateTotals;
         }
 
@@ -63,9 +60,6 @@ namespace PrimeSystems.Views.Forms.Add
         {
             try
             {
-                isLoadingData = true; // Deshabilitar cálculos automáticos durante la carga
-
-                // Cargar el cliente
                 if (sell.Client != null)
                 {
                     LoadClients();
@@ -80,54 +74,30 @@ namespace PrimeSystems.Views.Forms.Add
                         cbClient.Text = client.Name;
                     }
                 }
-
-                // Cargar el descuento desde el modelo de venta
                 if (!string.IsNullOrWhiteSpace(sell.Discount) && decimal.TryParse(sell.Discount, out decimal discountAmount))
                 {
-                    // Calcular el porcentaje de descuento basado en el subtotal
                     if (!string.IsNullOrWhiteSpace(sell.Subtotal) && decimal.TryParse(sell.Subtotal, out decimal subtotal) && subtotal > 0)
                     {
                         decimal discountPercent = (discountAmount / subtotal) * 100;
                         tbDiscount.Text = discountPercent.ToString("F2");
                     }
                 }
-
-                // Cargar los detalles de la venta
-                List<SellDetailModel> details;
-                if (sell.Detail != null && sell.Detail.Any())
-                {
-                    details = sell.Detail.ToList();
-                }
-                else
-                {
-                    // Si no están cargados los detalles, obtenerlos de la base de datos
-                    details = sellDetailController.GetDetallesByVenta(sell.Id);
-                }
-
-                // Cargar los artículos
-                foreach (var detail in details)
+                foreach (var detail in sell.Detail)
                 {
                     var articleItem = new Controls.ArticleItem();
                     articleItem.Dock = DockStyle.Top;
-
-                    // Suscribir eventos
                     articleItem.cbArticleName.SelectedIndexChanged += (s, ev) => CalculateTotals(s, ev);
                     articleItem.tbArticleUnitPrice.TextChanged += (s, ev) => CalculateTotals(s, ev);
                     articleItem.tbArticleQuantity.TextChanged += (s, ev) => CalculateTotals(s, ev);
-
                     gbArticlesData.Controls.Add(articleItem);
                     gbArticlesData.Controls.SetChildIndex(articleItem, 0);
-
-                    // Cargar datos del artículo en el ArticleItem
                     if (detail.Article != null)
                     {
-                        // Si el artículo está cargado, usar su nombre
                         articleItem.cbArticleName.Items.Add(detail.Article.Name);
                         articleItem.cbArticleName.SelectedIndex = articleItem.cbArticleName.Items.Count - 1;
                     }
                     else if (detail.ArticleId.HasValue)
                     {
-                        // Si no está cargado, buscarlo por ID
                         var article = articleController.GetById(detail.ArticleId.Value);
                         if (article != null)
                         {
@@ -135,27 +105,20 @@ namespace PrimeSystems.Views.Forms.Add
                             articleItem.cbArticleName.SelectedIndex = articleItem.cbArticleName.Items.Count - 1;
                         }
                     }
-
-                    // Cargar cantidad
                     if (detail.Quantity.HasValue)
-                    {
                         articleItem.tbArticleQuantity.Text = detail.Quantity.Value.ToString();
-                    }
-
-                    // El precio unitario se cargará automáticamente al seleccionar el artículo
-                    // o se puede calcular desde el subtotal total y las cantidades si es necesario
                 }
-
-                isLoadingData = false; // Habilitar cálculos automáticos
-
-                // Recalcular totales para mostrar los valores correctos
                 CalculateTotals(null, EventArgs.Empty);
             }
             catch (Exception ex)
             {
-                isLoadingData = false;
-                MessageBox.Show($"Error al cargar los datos de la venta: {ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Debug.Write(ex.ToString());
+                MessageBox.Show(
+                    $"Error al cargar los datos de la venta:",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
         }
 
@@ -196,18 +159,11 @@ namespace PrimeSystems.Views.Forms.Add
 
         private void CalculateTotals(object? sender, EventArgs e)
         {
-            // No recalcular si estamos cargando datos iniciales
-            if (isLoadingData)
-                return;
-
             try
             {
                 decimal subtotal = 0;
-
-                // Obtener todos los ArticleItem del contenedor
                 var articleItems = gbArticlesData.Controls.OfType<Controls.ArticleItem>().ToList();
 
-                // Calcular el subtotal sumando precio * cantidad de cada artículo
                 foreach (var item in articleItems)
                 {
                     var tbUnitPrice = item.Controls.Find("tbArticleUnitPrice", true).FirstOrDefault() as ReaLTaiizor.Controls.MaterialTextBoxEdit;
@@ -223,17 +179,14 @@ namespace PrimeSystems.Views.Forms.Add
                     }
                 }
 
-                // Mostrar el subtotal
                 tbSubtotal.Text = subtotal.ToString("F2");
 
-                // Calcular el descuento sobre el subtotal total
                 decimal discountAmount = 0;
                 if (decimal.TryParse(tbDiscount.Text, out decimal discountPercent) && discountPercent > 0)
                 {
                     discountAmount = subtotal * (discountPercent / 100);
                 }
 
-                // Calcular el total restando el descuento del subtotal
                 decimal total = subtotal - discountAmount;
                 tbTotal.Text = total.ToString("F2");
             }
@@ -246,21 +199,15 @@ namespace PrimeSystems.Views.Forms.Add
         private bool ValidateFields()
         {
             List<string> errors = new List<string>();
-
-            // Validar cliente seleccionado
             if (cbClient.SelectedIndex <= 0 || string.IsNullOrWhiteSpace(cbClient.Text) || cbClient.Text.StartsWith("--"))
             {
                 errors.Add("Debe seleccionar un cliente");
             }
-
-            // Validar que haya al menos un artículo
             var articleItems = gbArticlesData.Controls.OfType<Controls.ArticleItem>().ToList();
             if (articleItems.Count == 0)
             {
                 errors.Add("Debe agregar al menos un artículo");
             }
-
-            // Validar cada artículo
             foreach (var item in articleItems)
             {
                 var cbArticle = item.Controls.Find("cbArticleName", true).FirstOrDefault() as ReaLTaiizor.Controls.HopeComboBox;
@@ -284,8 +231,6 @@ namespace PrimeSystems.Views.Forms.Add
                     errors.Add("Todos los artículos deben tener una cantidad válida mayor a 0");
                     break;
                 }
-
-                // Validar stock disponible
                 var article = articleController.GetByName(cbArticle.Text);
                 if (article != null)
                 {
@@ -294,18 +239,14 @@ namespace PrimeSystems.Views.Forms.Add
                     {
                         int availableStock = stock.Stock ?? 0;
                         int requestedQty = int.Parse(tbQuantity.Text);
-
-                        // Si estamos editando, considerar la cantidad original para el cálculo
-                        if (isEditMode && currentSell != null)
+                        if (isEditMode)
                         {
                             var originalDetail = currentSell.Detail?.FirstOrDefault(d => d.ArticleId == article.Id);
                             if (originalDetail != null && originalDetail.Quantity.HasValue)
                             {
-                                // Agregar la cantidad original al stock disponible ya que será devuelta
                                 availableStock += originalDetail.Quantity.Value;
                             }
                         }
-
                         if (requestedQty > availableStock)
                         {
                             errors.Add($"Stock insuficiente para '{cbArticle.Text}'. Disponible: {availableStock}, Solicitado: {requestedQty}");
@@ -313,14 +254,12 @@ namespace PrimeSystems.Views.Forms.Add
                     }
                 }
             }
-
             if (errors.Count > 0)
             {
                 string message = "Se encontraron los siguientes errores:\n\n" + string.Join("\n", errors);
                 MessageBox.Show(message, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
-
             return true;
         }
 
@@ -328,10 +267,8 @@ namespace PrimeSystems.Views.Forms.Add
         {
             if (!ValidateFields())
                 return;
-
             try
             {
-                // Obtener el cliente seleccionado
                 var clients = clientController.GetAll();
                 var selectedClient = clients.FirstOrDefault(c => c.Name == cbClient.Text);
 
@@ -340,15 +277,9 @@ namespace PrimeSystems.Views.Forms.Add
                     MessageBox.Show("Cliente no válido", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-
-                // Crear o actualizar la venta
                 SellModel sell;
-                int originalId = 0;
-
-                if (isEditMode && currentSell != null)
+                if (isEditMode)
                 {
-                    // Modo edición: usar la venta existente
-                    originalId = currentSell.Id;
                     sell = currentSell;
                     sell.UserId = Session.CurrentUser?.Id;
                     sell.ClientId = selectedClient.Id;
@@ -356,7 +287,6 @@ namespace PrimeSystems.Views.Forms.Add
                 }
                 else
                 {
-                    // Modo creación: crear nueva venta
                     sell = new SellModel
                     {
                         UserId = Session.CurrentUser?.Id,
@@ -364,36 +294,14 @@ namespace PrimeSystems.Views.Forms.Add
                         Date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
                     };
                 }
+                sell.Subtotal = tbSubtotal.Text;
+                sell.Discount = decimal.TryParse(tbDiscount.Text, out decimal discPercent)
+                    ? (decimal.Parse(tbSubtotal.Text) * (discPercent / 100)).ToString("F2")
+                    : "0.00";
+                sell.Total = tbTotal.Text;
 
-                // Calcular el subtotal total y el descuento global
-                decimal subtotalGlobal = 0;
-                var articleItems = gbArticlesData.Controls.OfType<Controls.ArticleItem>().ToList();
-
-                foreach (var item in articleItems)
-                {
-                    var tbUnitPrice = item.Controls.Find("tbArticleUnitPrice", true).FirstOrDefault() as ReaLTaiizor.Controls.MaterialTextBoxEdit;
-                    var tbQuantity = item.Controls.Find("tbArticleQuantity", true).FirstOrDefault() as ReaLTaiizor.Controls.MaterialTextBoxEdit;
-
-                    if (tbUnitPrice != null && tbQuantity != null)
-                    {
-                        decimal unitPrice = decimal.Parse(tbUnitPrice.Text);
-                        int quantity = int.Parse(tbQuantity.Text);
-                        subtotalGlobal += unitPrice * quantity;
-                    }
-                }
-
-                // Calcular el descuento global
-                decimal discountPercent = decimal.TryParse(tbDiscount.Text, out decimal disc) ? disc : 0;
-                decimal discountAmountGlobal = subtotalGlobal * (discountPercent / 100);
-                decimal totalGlobal = subtotalGlobal - discountAmountGlobal;
-
-                // Asignar los totales al modelo de venta
-                sell.Subtotal = subtotalGlobal.ToString("F2");
-                sell.Discount = discountAmountGlobal.ToString("F2");
-                sell.Total = totalGlobal.ToString("F2");
-
-                // Crear los detalles de la venta
                 var details = new List<SellDetailModel>();
+                var articleItems = gbArticlesData.Controls.OfType<Controls.ArticleItem>().ToList();
 
                 foreach (var item in articleItems)
                 {
@@ -403,42 +311,26 @@ namespace PrimeSystems.Views.Forms.Add
                     if (cbArticle != null && tbQuantity != null)
                     {
                         int quantity = int.Parse(tbQuantity.Text);
-
-                        // Obtener el artículo para conseguir su ID
                         var article = articleController.GetByName(cbArticle.Text);
-
                         var detail = new SellDetailModel
                         {
                             ArticleId = article?.Id,
                             Quantity = quantity
                         };
-
                         details.Add(detail);
                     }
                 }
-
-                // Guardar o actualizar la venta con sus detalles
                 bool success;
-                if (isEditMode && currentSell != null)
-                {
-                    success = sellController.UpdateVentaConDetalles(sell, details);
-                }
-                else
-                {
-                    success = sellController.CreateVentaConDetalles(sell, details);
-                }
+                if (isEditMode) success = sellController.UpdateVentaConDetalles(sell, details);
+                else success = sellController.CreateVentaConDetalles(sell, details);
 
                 if (success)
                 {
                     string message = isEditMode ? "Venta actualizada correctamente." : "Venta registrada correctamente.";
                     MessageBox.Show(message, "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                    // Registrar actividad usando el helper con las referencias de la venta
-                    // Obtener el ID de la venta (sea nuevo o actualizado)
-                    int sellId = isEditMode && currentSell != null ? currentSell.Id : sell.Id;
-                    string action = originalId == 0 ? ActivityActions.Create : ActivityActions.Update;
+                    int sellId = isEditMode ? currentSell.Id : sell.Id;
+                    string action = isEditMode ? "Actualizó una venta" : "Registró una nueva venta";
                     ActivityLogger.LogActivity(action, ActivityModules.Sells, sellId: sellId, clientId: selectedClient.Id);
-
                     ReturnToSellView();
                 }
                 else
@@ -452,12 +344,10 @@ namespace PrimeSystems.Views.Forms.Add
                 MessageBox.Show($"Error al guardar la venta: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void mepSellAdd_CancelClick(object sender, EventArgs e)
         {
             ReturnToSellView();
         }
-
         private void ReturnToSellView()
         {
             if (ParentTabPage != null && formMain != null)
@@ -465,7 +355,6 @@ namespace PrimeSystems.Views.Forms.Add
                 formMain.RestoreTabPage(ParentTabPage);
             }
         }
-
         private void cbClient_DropDown(object sender, EventArgs e)
         {
             LoadClients();

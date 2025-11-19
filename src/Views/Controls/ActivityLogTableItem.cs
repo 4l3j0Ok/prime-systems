@@ -10,12 +10,13 @@ using System.Windows.Forms;
 
 namespace PrimeSystems.Views.Controls
 {
-    public partial class FinancialStateTableItem : UserControl
+    public partial class ActivityLogTableItem : UserControl
     {
-        public FinancialStateTableItem()
+        public ActivityLogTableItem()
         {
             InitializeComponent();
         }
+
         [Category("Custom Props")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public string Date
@@ -43,13 +44,6 @@ namespace PrimeSystems.Views.Controls
         {
             get { return lblAction.Text; }
             set { lblAction.Text = value; }
-        }
-        [Category("Custom Props")]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
-        public string Amount
-        {
-            get { return lblAmount.Text; }
-            set { lblAmount.Text = value; }
         }
     }
 }

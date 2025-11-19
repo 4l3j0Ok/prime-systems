@@ -19,9 +19,14 @@ namespace PrimeSystems.Views.Forms.Add
         private UserTypeController usuarioTipoController;
         private UserModel selectedUser;
         private Main? formMain = Application.OpenForms.OfType<Main>().FirstOrDefault();
+        private TabPage ParentTabPage;
 
-        public User(UserModel? user = null)
+        public User(UserModel? user = null, TabPage? parentTabPage = null)
         {
+            if (parentTabPage != null)
+                ParentTabPage = parentTabPage;
+            else
+                ParentTabPage = formMain?.tpUsersList ?? new TabPage();
             userController = new UserController();
             usuarioTipoController = new UserTypeController();
             InitializeComponent();
@@ -71,7 +76,6 @@ namespace PrimeSystems.Views.Forms.Add
         {
             List<string> emptyFields = new List<string>();
 
-            // Validar campos obligatorios
             if (string.IsNullOrWhiteSpace(tbUserName.Text))
                 emptyFields.Add("Nombre");
 
@@ -156,10 +160,8 @@ namespace PrimeSystems.Views.Forms.Add
             {
                 MessageBox.Show("Usuario guardado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                // Registrar actividad usando el helper
                 string action = originalId == 0 ? ActivityActions.Create : ActivityActions.Update;
                 ActivityLogger.LogActivity(action, ActivityModules.Users);
-
 
                 ReturnToUsersView();
             }
@@ -178,7 +180,7 @@ namespace PrimeSystems.Views.Forms.Add
         {
             if (formMain != null)
             {
-                formMain.RestoreTabPage(formMain.tpUsersList);
+                formMain.RestoreTabPage(ParentTabPage);
             }
         }
     }

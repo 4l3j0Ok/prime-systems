@@ -41,7 +41,6 @@ namespace PrimeSystems.Views.Forms.Add
             tbRoleId.ReadOnly = true;
             tbRoleName.Text = role.Name;
 
-            // Set checkboxes based on permissions
             SetCheckboxesFromPermission(role.SellsPermission, chbSellRead, chbSellWrite);
             SetCheckboxesFromPermission(role.PurchasesPermission, chbPurchaseRead, chbPurchaseWrite);
             SetCheckboxesFromPermission(role.FinancialStatePermission, chbFinancialStateRead, chbFinancialStateWrite);
@@ -67,7 +66,6 @@ namespace PrimeSystems.Views.Forms.Add
         {
             List<string> emptyFields = new List<string>();
 
-            // Validar campos obligatorios
             if (string.IsNullOrWhiteSpace(tbRoleId.Text))
                 emptyFields.Add("Identificador");
 
@@ -81,14 +79,12 @@ namespace PrimeSystems.Views.Forms.Add
                 return false;
             }
 
-            // Validar que el ID no contenga espacios
             if (tbRoleId.Text.Contains(" "))
             {
                 MessageBox.Show("El identificador no puede contener espacios.", "Error de validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
 
-            // Validar que el ID no sea demasiado largo
             if (tbRoleId.Text.Length > 20)
             {
                 MessageBox.Show("El identificador no puede tener más de 20 caracteres.", "Error de validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -107,7 +103,6 @@ namespace PrimeSystems.Views.Forms.Add
             selectedRole.Id = tbRoleId.Text.Trim();
             selectedRole.Name = tbRoleName.Text.Trim();
 
-            // Get permissions from checkboxes
             selectedRole.SellsPermission = GetPermissionFromCheckboxes(chbSellRead, chbSellWrite);
             selectedRole.PurchasesPermission = GetPermissionFromCheckboxes(chbPurchaseRead, chbPurchaseWrite);
             selectedRole.FinancialStatePermission = GetPermissionFromCheckboxes(chbFinancialStateRead, chbFinancialStateWrite);
@@ -123,7 +118,6 @@ namespace PrimeSystems.Views.Forms.Add
             {
                 MessageBox.Show("Rol guardado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                // Registrar actividad usando el helper - para roles string ID, usamos la sobrecarga con action explícito
                 ActivityLogger.LogActivity(
                     isNewRole ? ActivityActions.Create : ActivityActions.Update,
                     ActivityModules.Roles
@@ -152,7 +146,6 @@ namespace PrimeSystems.Views.Forms.Add
 
         private void chbWrite_CheckedChanged(object sender, EventArgs e)
         {
-            // si esta chequeado el write, chequeamos el read y lo bloqueamos
             var checkbox = sender as ReaLTaiizor.Controls.MaterialCheckBox;
             if (checkbox != null)
             {
