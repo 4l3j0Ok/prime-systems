@@ -253,7 +253,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = SystemColors.Control;
+            BackColor = Color.White;
             Controls.Add(tlpArticle0);
             MinimumSize = new Size(0, 70);
             Name = "ArticleItem";

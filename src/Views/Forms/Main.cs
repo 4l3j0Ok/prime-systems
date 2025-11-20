@@ -22,7 +22,6 @@ namespace PrimeSystems
         private readonly Dictionary<TabPage, bool> isLoadingMore = new();
         private readonly Dictionary<TabPage, bool> hasMoreData = new();
         private readonly Dictionary<TabPage, MaterialButton> loadMoreButtons = new();
-        private readonly Dictionary<TabPage, MaterialLabel> allLoadedLabels = new();
         // Config de tabs
         private readonly Dictionary<TabPage, ITabConfiguration> tabConfigurations = new();
         // Config de filtros
@@ -202,20 +201,6 @@ namespace PrimeSystems
                 btnLoadMore.Click += (s, e) => LoadMoreCards(tabPage);
                 loadMoreButtons[tabPage] = btnLoadMore;
             }
-
-            if (!allLoadedLabels.ContainsKey(tabPage))
-            {
-                var lblAllLoaded = new MaterialLabel
-                {
-                    Name = "lblAllLoaded",
-                    Text = "Todos los elementos cargados",
-                    Dock = DockStyle.Top,
-                    Height = 40,
-                    TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
-                    Visible = false
-                };
-                allLoadedLabels[tabPage] = lblAllLoaded;
-            }
         }
 
         private void LoadMoreCards(TabPage tabPage)
@@ -303,14 +288,14 @@ namespace PrimeSystems
         private void UpdateLoadMoreUI(TabPage tabPage, bool hasMore, Panel? targetPanel = null)
         {
             hasMoreData[tabPage] = hasMore;
-            
+
             // Si no se especifica un targetPanel, buscar el panel de cards dentro del TableLayoutPanel
             Panel? container = targetPanel;
             if (container == null)
             {
                 var mainLayout = tabPage.Controls.OfType<TableLayoutPanel>()
                     .FirstOrDefault(tlp => tlp.Name == "tlpMainLayout");
-                
+
                 if (mainLayout != null)
                 {
                     container = mainLayout.Controls.OfType<Panel>()
@@ -328,12 +313,6 @@ namespace PrimeSystems
                     container.Controls.Remove(btn);
             }
 
-            if (allLoadedLabels.ContainsKey(tabPage))
-            {
-                var lbl = allLoadedLabels[tabPage];
-                if (container.Controls.Contains(lbl))
-                    container.Controls.Remove(lbl);
-            }
 
             if (hasMore && loadMoreButtons.ContainsKey(tabPage))
             {
@@ -341,13 +320,6 @@ namespace PrimeSystems
                 btn.Visible = true;
                 container.Controls.Add(btn);
                 container.Controls.SetChildIndex(btn, 0);
-            }
-            else if (!hasMore && allLoadedLabels.ContainsKey(tabPage))
-            {
-                var lbl = allLoadedLabels[tabPage];
-                lbl.Visible = true;
-                container.Controls.Add(lbl);
-                container.Controls.SetChildIndex(lbl, 0);
             }
         }
 
@@ -524,7 +496,7 @@ namespace PrimeSystems
 
                 TableLayoutPanel? mainLayout = tabPage.Controls.OfType<TableLayoutPanel>()
                     .FirstOrDefault(tlp => tlp.Name == "tlpMainLayout");
-                
+
                 Panel? cardsPanel = null;
                 Filters? existingFilter = null;
                 CardHeader? existingHeader = null;
@@ -533,7 +505,7 @@ namespace PrimeSystems
                 {
                     foreach (var card in tabPage.Controls.OfType<Card>())
                         card.pbPicture.Image?.Dispose();
-                    
+
                     var controlsToRemove = tabPage.Controls.Cast<Control>()
                         .Where(c => !(c is MaterialFloatingActionButton))
                         .ToList();
@@ -558,15 +530,15 @@ namespace PrimeSystems
                     mainLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize)); // Filters
                     mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); // Cards Panel
 
-                    existingHeader = new CardHeader 
-                    { 
-                        Dock = DockStyle.Top, 
+                    existingHeader = new CardHeader
+                    {
+                        Dock = DockStyle.Top,
                         Margin = new Padding(0, 0, 0, 8)
                     };
 
-                    existingFilter = new Filters 
-                    { 
-                        Dock = DockStyle.Top, 
+                    existingFilter = new Filters
+                    {
+                        Dock = DockStyle.Top,
                         Margin = new Padding(0, 0, 0, 8)
                     };
                     existingFilter.Initialize<T, TId>(
@@ -639,13 +611,13 @@ namespace PrimeSystems
                     {
                         var card = cardFactory(item);
                         card.Dock = DockStyle.Top;
-                        
+
                         // Apply read-only restrictions to cards
                         if (isReadOnly)
                         {
                             card.SetReadOnlyMode();
                         }
-                        
+
                         cardsPanel.Controls.Add(card);
                         cardsPanel.Controls.SetChildIndex(card, 0);
 
@@ -909,7 +881,7 @@ namespace PrimeSystems
                 item.Amount = amount;
                 item.Dock = DockStyle.Top;
                 item.Margin = new Padding(0, 0, 0, 0);
-                
+
                 if (!isFinancialReadOnly)
                 {
                     item.lblUserUsername.Click += (s, e) =>
@@ -930,7 +902,7 @@ namespace PrimeSystems
                     item.lblUserUsername.Cursor = Cursors.Default;
                     item.lblShowDetails.Cursor = Cursors.Default;
                 }
-                
+
                 itemsToAdd.Add(item);
             }
 
@@ -1001,7 +973,7 @@ namespace PrimeSystems
                 item.Action = record.Action ?? "N/A";
                 item.Dock = DockStyle.Top;
                 item.Margin = new Padding(0, 0, 0, 0);
-                
+
                 if (!isActivityReadOnly)
                 {
                     item.lblUserUsername.Click += (s, e) =>
@@ -1014,7 +986,7 @@ namespace PrimeSystems
                 {
                     item.lblUserUsername.Cursor = Cursors.Default;
                 }
-                
+
                 itemsToAdd.Add(item);
             }
 

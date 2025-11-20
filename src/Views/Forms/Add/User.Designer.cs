@@ -205,7 +205,7 @@ namespace PrimeSystems.Views.Forms.Add
             tbUserPhone.LeadingIcon = null;
             tbUserPhone.Location = new Point(20, 19);
             tbUserPhone.Margin = new Padding(3, 3, 26, 3);
-            tbUserPhone.MaxLength = 32767;
+            tbUserPhone.MaxLength = 15;
             tbUserPhone.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbUserPhone.Name = "tbUserPhone";
             tbUserPhone.Padding = new Padding(9, 8, 9, 8);
@@ -263,7 +263,7 @@ namespace PrimeSystems.Views.Forms.Add
             tbUserEmail.LeadingIcon = null;
             tbUserEmail.Location = new Point(20, 19);
             tbUserEmail.Margin = new Padding(3, 3, 26, 3);
-            tbUserEmail.MaxLength = 32767;
+            tbUserEmail.MaxLength = 40;
             tbUserEmail.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbUserEmail.Name = "tbUserEmail";
             tbUserEmail.Padding = new Padding(9, 8, 9, 8);
@@ -349,7 +349,7 @@ namespace PrimeSystems.Views.Forms.Add
             tbUserPersonId.LeadingIcon = null;
             tbUserPersonId.Location = new Point(20, 19);
             tbUserPersonId.Margin = new Padding(3, 3, 26, 3);
-            tbUserPersonId.MaxLength = 32767;
+            tbUserPersonId.MaxLength = 8;
             tbUserPersonId.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbUserPersonId.Name = "tbUserPersonId";
             tbUserPersonId.Padding = new Padding(9, 8, 9, 8);
@@ -407,7 +407,7 @@ namespace PrimeSystems.Views.Forms.Add
             tbUserName.LeadingIcon = null;
             tbUserName.Location = new Point(20, 19);
             tbUserName.Margin = new Padding(3, 3, 26, 3);
-            tbUserName.MaxLength = 32767;
+            tbUserName.MaxLength = 30;
             tbUserName.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbUserName.Name = "tbUserName";
             tbUserName.Padding = new Padding(9, 8, 9, 8);
@@ -465,7 +465,7 @@ namespace PrimeSystems.Views.Forms.Add
             tbUserSurname.LeadingIcon = null;
             tbUserSurname.Location = new Point(20, 19);
             tbUserSurname.Margin = new Padding(3, 3, 26, 3);
-            tbUserSurname.MaxLength = 32767;
+            tbUserSurname.MaxLength = 30;
             tbUserSurname.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbUserSurname.Name = "tbUserSurname";
             tbUserSurname.Padding = new Padding(9, 8, 9, 8);
@@ -553,7 +553,7 @@ namespace PrimeSystems.Views.Forms.Add
             tbUserUsername.LeadingIcon = null;
             tbUserUsername.Location = new Point(20, 19);
             tbUserUsername.Margin = new Padding(3, 3, 26, 3);
-            tbUserUsername.MaxLength = 32767;
+            tbUserUsername.MaxLength = 50;
             tbUserUsername.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbUserUsername.Name = "tbUserUsername";
             tbUserUsername.Padding = new Padding(9, 8, 9, 8);
@@ -611,7 +611,7 @@ namespace PrimeSystems.Views.Forms.Add
             tbUserPasswordConfirm.LeadingIcon = null;
             tbUserPasswordConfirm.Location = new Point(20, 19);
             tbUserPasswordConfirm.Margin = new Padding(3, 3, 26, 3);
-            tbUserPasswordConfirm.MaxLength = 32767;
+            tbUserPasswordConfirm.MaxLength = 50;
             tbUserPasswordConfirm.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbUserPasswordConfirm.Name = "tbUserPasswordConfirm";
             tbUserPasswordConfirm.Padding = new Padding(9, 8, 9, 8);
@@ -717,7 +717,7 @@ namespace PrimeSystems.Views.Forms.Add
             tbUserPassword.LeadingIcon = null;
             tbUserPassword.Location = new Point(20, 19);
             tbUserPassword.Margin = new Padding(3, 3, 26, 3);
-            tbUserPassword.MaxLength = 32767;
+            tbUserPassword.MaxLength = 50;
             tbUserPassword.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbUserPassword.Name = "tbUserPassword";
             tbUserPassword.Padding = new Padding(9, 8, 9, 8);
