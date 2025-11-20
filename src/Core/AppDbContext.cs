@@ -226,7 +226,7 @@ namespace PrimeSystems.Core
             var user = new UserModel
             {
                 Username = "admin",
-                PasswordHash = Utils.GenerateRandomString(12),
+                Password = Utils.GenerateRandomString(12),
                 Name = "Administrador",
                 LastName = "Sistema",
                 PersonId = 10000000,

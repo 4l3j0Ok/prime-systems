@@ -72,6 +72,7 @@ namespace PrimeSystems
             btnAddArticle = new ReaLTaiizor.Controls.MaterialFloatingActionButton();
             tpFinancialState = new TabPage();
             tableLayoutPanel2 = new TableLayoutPanel();
+            financialStateTableHeader1 = new PrimeSystems.Views.Controls.FinancialStateTableHeader();
             tableLayoutPanel4 = new TableLayoutPanel();
             fscTotalPurchases = new PrimeSystems.Views.Controls.FinancialStateCard();
             fscTotalSells = new PrimeSystems.Views.Controls.FinancialStateCard();
@@ -85,7 +86,6 @@ namespace PrimeSystems
             panel1 = new Panel();
             dtpDateFrom = new ReaLTaiizor.Controls.PoisonDateTime();
             materialLabel1 = new ReaLTaiizor.Controls.MaterialLabel();
-            financialStateTableHeader1 = new PrimeSystems.Views.Controls.FinancialStateTableHeader();
             tpActivityLog = new TabPage();
             tableLayoutPanel5 = new TableLayoutPanel();
             activityLogTableHeader1 = new PrimeSystems.Views.Controls.ActivityLogTableHeader();
@@ -528,10 +528,10 @@ namespace PrimeSystems
             tableLayoutPanel2.BackColor = Color.Transparent;
             tableLayoutPanel2.ColumnCount = 1;
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel2.Controls.Add(financialStateTableHeader1, 0, 2);
             tableLayoutPanel2.Controls.Add(tableLayoutPanel4, 0, 1);
             tableLayoutPanel2.Controls.Add(pFinancialStateTableItems, 0, 3);
             tableLayoutPanel2.Controls.Add(tableLayoutPanel3, 0, 0);
-            tableLayoutPanel2.Controls.Add(financialStateTableHeader1, 0, 2);
             tableLayoutPanel2.Dock = DockStyle.Fill;
             tableLayoutPanel2.Location = new Point(20, 20);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -542,6 +542,17 @@ namespace PrimeSystems
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel2.Size = new Size(902, 431);
             tableLayoutPanel2.TabIndex = 4;
+            // 
+            // financialStateTableHeader1
+            // 
+            financialStateTableHeader1.BackColor = Color.White;
+            financialStateTableHeader1.Dock = DockStyle.Fill;
+            financialStateTableHeader1.Location = new Point(3, 203);
+            financialStateTableHeader1.MaximumSize = new Size(0, 30);
+            financialStateTableHeader1.MinimumSize = new Size(800, 30);
+            financialStateTableHeader1.Name = "financialStateTableHeader1";
+            financialStateTableHeader1.Size = new Size(896, 30);
+            financialStateTableHeader1.TabIndex = 6;
             // 
             // tableLayoutPanel4
             // 
@@ -566,7 +577,7 @@ namespace PrimeSystems
             // 
             // fscTotalPurchases
             // 
-            fscTotalPurchases.BackColor = Color.Transparent;
+            fscTotalPurchases.BackColor = Color.White;
             fscTotalPurchases.Dock = DockStyle.Fill;
             fscTotalPurchases.Location = new Point(685, 10);
             fscTotalPurchases.Margin = new Padding(10);
@@ -579,7 +590,7 @@ namespace PrimeSystems
             // 
             // fscTotalSells
             // 
-            fscTotalSells.BackColor = Color.Transparent;
+            fscTotalSells.BackColor = Color.White;
             fscTotalSells.Dock = DockStyle.Fill;
             fscTotalSells.Location = new Point(460, 10);
             fscTotalSells.Margin = new Padding(10);
@@ -592,7 +603,7 @@ namespace PrimeSystems
             // 
             // fscTotalExpenses
             // 
-            fscTotalExpenses.BackColor = Color.Transparent;
+            fscTotalExpenses.BackColor = Color.White;
             fscTotalExpenses.Dock = DockStyle.Fill;
             fscTotalExpenses.Location = new Point(235, 10);
             fscTotalExpenses.Margin = new Padding(10);
@@ -605,7 +616,7 @@ namespace PrimeSystems
             // 
             // fscTotalRevenue
             // 
-            fscTotalRevenue.BackColor = Color.Transparent;
+            fscTotalRevenue.BackColor = Color.White;
             fscTotalRevenue.Dock = DockStyle.Fill;
             fscTotalRevenue.Location = new Point(10, 10);
             fscTotalRevenue.Margin = new Padding(10);
@@ -711,16 +722,6 @@ namespace PrimeSystems
             materialLabel1.TabIndex = 2;
             materialLabel1.Text = "Fecha desde";
             // 
-            // financialStateTableHeader1
-            // 
-            financialStateTableHeader1.Dock = DockStyle.Fill;
-            financialStateTableHeader1.Location = new Point(3, 203);
-            financialStateTableHeader1.MaximumSize = new Size(0, 30);
-            financialStateTableHeader1.MinimumSize = new Size(800, 30);
-            financialStateTableHeader1.Name = "financialStateTableHeader1";
-            financialStateTableHeader1.Size = new Size(896, 30);
-            financialStateTableHeader1.TabIndex = 6;
-            // 
             // tpActivityLog
             // 
             tpActivityLog.Controls.Add(tableLayoutPanel5);
@@ -752,6 +753,7 @@ namespace PrimeSystems
             // 
             // activityLogTableHeader1
             // 
+            activityLogTableHeader1.BackColor = Color.White;
             activityLogTableHeader1.Dock = DockStyle.Fill;
             activityLogTableHeader1.Location = new Point(3, 3);
             activityLogTableHeader1.MaximumSize = new Size(0, 30);

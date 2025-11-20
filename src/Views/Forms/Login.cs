@@ -30,7 +30,7 @@ namespace PrimeSystems
                 msgBox.Text = "Usuario administrador creado";
                 msgBox.lblMessage.Text = $"Se creó el usuario administrador por defecto con los siguientes datos:\n" +
                     $"Usuario: {user.Username}\n" +
-                    $"Contraseña: {user.PasswordHash}\n" +
+                    $"Contraseña: {user.Password}\n" +
                     $"Por favor, anótalo para poder loguearte por primera vez.\n" +
                     $"Posteriormente podrás eliminarlo si así lo deseas.";
                 msgBox.btnLeft.Text = "Copiar";
@@ -40,7 +40,7 @@ namespace PrimeSystems
                     {
                         msgBox.btnLeft.Type = MaterialButton.MaterialButtonType.Outlined;
                         msgBox.btnLeft.Text = "¡Copiado!";
-                        Clipboard.SetText(user.PasswordHash ?? "");
+                        Clipboard.SetText(user.Password ?? "");
                     }
                     catch (ExternalException)
                     {
@@ -74,7 +74,7 @@ namespace PrimeSystems
             UserController userController = new UserController();
             UserModel? user = userController.GetByUsername(username);
 
-            if (user == null || user.PasswordHash != password)
+            if (user == null || user.Password != password)
             {
                 MessageBox.Show("Usuario o contraseña incorrectos.", "Error de autenticación", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;

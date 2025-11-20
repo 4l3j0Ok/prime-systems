@@ -17,7 +17,7 @@ namespace PrimeSystems.Models
 
         [Required]
         [StringLength(100)]
-        public string? PasswordHash { get; set; }
+        public string? Password { get; set; }
 
         [StringLength(100)]
         public string? Name { get; set; }

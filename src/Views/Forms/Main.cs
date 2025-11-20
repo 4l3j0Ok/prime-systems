@@ -17,7 +17,7 @@ namespace PrimeSystems
     {
         private readonly Dictionary<TabPage, List<Control>> originalTabContents = new();
         // Config de paginación
-        private const int PAGE_SIZE = 3;
+        private const int PAGE_SIZE = 10;
         private readonly Dictionary<TabPage, int> currentPages = new();
         private readonly Dictionary<TabPage, bool> isLoadingMore = new();
         private readonly Dictionary<TabPage, bool> hasMoreData = new();
@@ -69,7 +69,6 @@ namespace PrimeSystems
             if (role == null)
                 return AccessLevel.None;
 
-            // Map tab pages to their permission properties
             if (tabPage == tpSellsList || tabPage == tpSellsClients || tabPage == tpSells)
                 return role.SellsPermission;
             else if (tabPage == tpPurchasesList || tabPage == tpSuppliers || tabPage == tpPurchases)
@@ -82,8 +81,6 @@ namespace PrimeSystems
                 return role.FinancialStatePermission;
             else if (tabPage == tpUsersList || tabPage == tpUsersRoles || tabPage == tpUsers)
                 return role.UserPermission;
-            
-            // Default: allow access to home and logout
             return AccessLevel.Write;
         }
 
@@ -92,8 +89,6 @@ namespace PrimeSystems
             var role = Session.CurrentUser?.Role;
             if (role == null)
                 return;
-
-            // Process all main tabs
             ApplyPermissionsToTabControl(tcMain);
         }
 
@@ -104,8 +99,6 @@ namespace PrimeSystems
             foreach (TabPage tabPage in tabControl.TabPages)
             {
                 var permission = GetTabPagePermission(tabPage);
-
-                // Handle nested tab controls
                 foreach (Control control in tabPage.Controls)
                 {
                     if (control is MaterialTabControl nestedTabControl)
@@ -113,16 +106,12 @@ namespace PrimeSystems
                         ApplyPermissionsToTabControl(nestedTabControl);
                     }
                 }
-
-                // If None permission, hide the tab
                 if (permission == AccessLevel.None)
                 {
                     tabsToRemove.Add(tabPage);
                 }
-                // If Read permission, make controls read-only but keep preview button enabled
                 else if (permission == AccessLevel.Read)
                 {
-                    // Disable add buttons for read-only tabs
                     foreach (Control control in tabPage.Controls)
                     {
                         if (control is MaterialFloatingActionButton fab)
@@ -133,14 +122,11 @@ namespace PrimeSystems
                     }
                 }
             }
-
-            // Remove tabs with None permission
             foreach (var tabPage in tabsToRemove)
             {
                 tabControl.TabPages.Remove(tabPage);
             }
         }
-
         private void InitializeTabConfigurations()
         {
             tabConfigurations[tpUsersList] = new TabConfiguration<UserModel, int, User>(
@@ -290,7 +276,6 @@ namespace PrimeSystems
         {
             foreach (var tabPage in tabConfigurations.Keys)
             {
-                // Only reload if tab is still visible (not removed by permissions)
                 if (tcMain.TabPages.Contains(tabPage) || IsTabInNestedControl(tabPage))
                 {
                     InitializePagination(tabPage);
@@ -318,7 +303,23 @@ namespace PrimeSystems
         private void UpdateLoadMoreUI(TabPage tabPage, bool hasMore, Panel? targetPanel = null)
         {
             hasMoreData[tabPage] = hasMore;
-            var container = targetPanel ?? tabPage;
+            
+            // Si no se especifica un targetPanel, buscar el panel de cards dentro del TableLayoutPanel
+            Panel? container = targetPanel;
+            if (container == null)
+            {
+                var mainLayout = tabPage.Controls.OfType<TableLayoutPanel>()
+                    .FirstOrDefault(tlp => tlp.Name == "tlpMainLayout");
+                
+                if (mainLayout != null)
+                {
+                    container = mainLayout.Controls.OfType<Panel>()
+                        .FirstOrDefault(p => p.Name == "pCardsContainer");
+                }
+            }
+
+            if (container == null)
+                return;
 
             if (loadMoreButtons.ContainsKey(tabPage))
             {
@@ -520,20 +521,19 @@ namespace PrimeSystems
                 tabPage.SuspendLayout();
 
                 var floats = tabPage.Controls.OfType<MaterialFloatingActionButton>().ToList();
+
+                TableLayoutPanel? mainLayout = tabPage.Controls.OfType<TableLayoutPanel>()
+                    .FirstOrDefault(tlp => tlp.Name == "tlpMainLayout");
+                
+                Panel? cardsPanel = null;
                 Filters? existingFilter = null;
-                if (!append)
-                {
-                    existingFilter = tabPage.Controls.OfType<Filters>().FirstOrDefault();
-                    if (existingFilter != null)
-                    {
-                        tabPage.Controls.Remove(existingFilter);
-                    }
-                }
+                CardHeader? existingHeader = null;
 
                 if (!append)
                 {
                     foreach (var card in tabPage.Controls.OfType<Card>())
                         card.pbPicture.Image?.Dispose();
+                    
                     var controlsToRemove = tabPage.Controls.Cast<Control>()
                         .Where(c => !(c is MaterialFloatingActionButton))
                         .ToList();
@@ -543,19 +543,86 @@ namespace PrimeSystems
                         tabPage.Controls.Remove(control);
                     }
 
+                    mainLayout = new TableLayoutPanel
+                    {
+                        Name = "tlpMainLayout",
+                        Dock = DockStyle.Fill,
+                        Padding = new Padding(8),
+                        Margin = new Padding(0),
+                        RowCount = 3,
+                        ColumnCount = 1,
+                        AutoScroll = false
+                    };
+                    mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+                    mainLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize)); // Header
+                    mainLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize)); // Filters
+                    mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); // Cards Panel
+
+                    existingHeader = new CardHeader 
+                    { 
+                        Dock = DockStyle.Top, 
+                        Margin = new Padding(0, 0, 0, 8)
+                    };
+
+                    existingFilter = new Filters 
+                    { 
+                        Dock = DockStyle.Top, 
+                        Margin = new Padding(0, 0, 0, 8)
+                    };
+                    existingFilter.Initialize<T, TId>(
+                        tabPage,
+                        controllerFactory,
+                        () => ApplyFilters(tabPage)
+                    );
+                    filtersControls[tabPage] = existingFilter;
+
+                    cardsPanel = new Panel
+                    {
+                        Name = "pCardsContainer",
+                        Dock = DockStyle.Fill,
+                        Margin = new Padding(0),
+                        AutoScroll = true,
+                        Padding = new Padding(0)
+                    };
+                    // Agregar controles al TableLayoutPanel
+                    mainLayout.Controls.Add(existingHeader, 0, 1);
+                    mainLayout.Controls.Add(existingFilter, 0, 0);
+                    mainLayout.Controls.Add(cardsPanel, 0, 2);
+
+                    tabPage.Controls.Add(mainLayout);
+                    tabPage.Controls.SetChildIndex(mainLayout, 0);
+
+                    // Restaurar los botones flotantes
                     floats.ForEach(f => tabPage.Controls.Add(f));
                 }
                 else
                 {
-                    var emptyLabel = tabPage.Controls.Find("lblEmpty", false).FirstOrDefault();
-                    if (emptyLabel != null)
-                        tabPage.Controls.Remove(emptyLabel);
+                    if (mainLayout != null)
+                    {
+                        cardsPanel = mainLayout.Controls.OfType<Panel>()
+                            .FirstOrDefault(p => p.Name == "pCardsContainer");
+                    }
+
+                    // Remover label de "vacío" si existe
+                    if (cardsPanel != null)
+                    {
+                        var emptyLabel = cardsPanel.Controls.Find("lblEmpty", false).FirstOrDefault();
+                        if (emptyLabel != null)
+                            cardsPanel.Controls.Remove(emptyLabel);
+                    }
                 }
 
-                var cardsToAdd = new List<Control>();
+                if (cardsPanel == null)
+                {
+                    throw new InvalidOperationException("No se pudo encontrar o crear el panel de cards");
+                }
+
+                cardsPanel.SuspendLayout();
+
+                // Crear las cards
                 if (items.Count == 0 && !append)
                 {
-                    cardsToAdd.Add(new MaterialLabel
+                    cardsPanel.Controls.Add(new MaterialLabel
                     {
                         Name = "lblEmpty",
                         Text = "No hay elementos para mostrar.",
@@ -565,7 +632,6 @@ namespace PrimeSystems
                 }
                 else
                 {
-                    // Get permission for this tab
                     var permission = GetTabPagePermission(tabPage);
                     bool isReadOnly = permission == AccessLevel.Read;
 
@@ -580,48 +646,21 @@ namespace PrimeSystems
                             card.SetReadOnlyMode();
                         }
                         
-                        cardsToAdd.Add(card);
+                        cardsPanel.Controls.Add(card);
+                        cardsPanel.Controls.SetChildIndex(card, 0);
 
                         var spacer = new Panel { Height = 5, Dock = DockStyle.Top };
-                        cardsToAdd.Add(spacer);
+                        cardsPanel.Controls.Add(spacer);
+                        cardsPanel.Controls.SetChildIndex(spacer, 0);
                     }
-                }
-
-                if (!append)
-                {
-                    Filters filters;
-                    if (existingFilter != null)
-                    {
-                        filters = existingFilter;
-                    }
-                    else
-                    {
-                        filters = new Filters { Dock = DockStyle.Top };
-                        filters.Initialize<T, TId>(
-                            tabPage,
-                            controllerFactory,
-                            () => ApplyFilters(tabPage)
-                        );
-                        filtersControls[tabPage] = filters;
-                    }
-
-                    var headerSpacer = new Panel { Height = 8, Dock = DockStyle.Top };
-                    var header = new CardHeader { Dock = DockStyle.Top };
-                    cardsToAdd.Add(header);
-                    cardsToAdd.Add(headerSpacer);
-                    cardsToAdd.Add(filters);
-                }
-                for (int i = cardsToAdd.Count - 1; i >= 0; i--)
-                {
-                    tabPage.Controls.Add(cardsToAdd[i]);
-                    tabPage.Controls.SetChildIndex(cardsToAdd[i], 0);
                 }
 
                 UpdateLoadMoreUI(tabPage, hasMore);
 
+                cardsPanel.ResumeLayout();
                 floats.ForEach(f => f.BringToFront());
                 tabPage.ResumeLayout();
-                tabPage.AutoScroll = true;
+                tabPage.AutoScroll = false; // El scroll ahora lo maneja el panel interno
             }
             catch (Exception ex)
             {
@@ -663,18 +702,18 @@ namespace PrimeSystems
         {
             foreach (Control control in parentControl.Controls)
             {
-                // Tipos de controles contenedores que no deben deshabilitarse para mantener el scroll
                 bool isContainer = control is Panel
                     || control is TableLayoutPanel
                     || control is FlowLayoutPanel
                     || control is GroupBox
                     || control is MaterialTabControl
                     || control is TabPage
-                    || control is SplitContainer;
+                    || control is SplitContainer
+                    || control is MaterialExpansionPanelNonCollapsible
+                    || control is MaterialExpansionPanel;
 
                 if (isContainer)
                 {
-                    // Recursivamente procesar los controles hijos del contenedor
                     if (control.HasChildren)
                     {
                         SetControlsReadOnly(control);
@@ -682,7 +721,6 @@ namespace PrimeSystems
                 }
                 else
                 {
-                    // Deshabilitar controles interactivos
                     control.Enabled = false;
                 }
             }
@@ -773,7 +811,6 @@ namespace PrimeSystems
             hasMoreData[tpFinancialState] = true;
             RefreshFinancialState(append: false);
 
-            // Apply read-only restrictions
             var permission = GetTabPagePermission(tpFinancialState);
             if (permission == AccessLevel.Read)
             {
@@ -849,7 +886,6 @@ namespace PrimeSystems
             }
 
             var itemsToAdd = new List<FinancialStateTableItem>();
-            // Get permission for this tab
             var financialPermission = GetTabPagePermission(tpFinancialState);
             bool isFinancialReadOnly = financialPermission == AccessLevel.Read;
 
@@ -874,7 +910,6 @@ namespace PrimeSystems
                 item.Dock = DockStyle.Top;
                 item.Margin = new Padding(0, 0, 0, 0);
                 
-                // Only allow clicks if not read-only
                 if (!isFinancialReadOnly)
                 {
                     item.lblUserUsername.Click += (s, e) =>
@@ -892,7 +927,6 @@ namespace PrimeSystems
                 }
                 else
                 {
-                    // Make labels non-clickable in read-only mode
                     item.lblUserUsername.Cursor = Cursors.Default;
                     item.lblShowDetails.Cursor = Cursors.Default;
                 }
@@ -955,7 +989,6 @@ namespace PrimeSystems
             }
 
             var itemsToAdd = new List<ActivityLogTableItem>();
-            // Get permission for this tab
             var activityPermission = GetTabPagePermission(tpActivityLog);
             bool isActivityReadOnly = activityPermission == AccessLevel.Read;
 
@@ -969,7 +1002,6 @@ namespace PrimeSystems
                 item.Dock = DockStyle.Top;
                 item.Margin = new Padding(0, 0, 0, 0);
                 
-                // Only allow clicks if not read-only
                 if (!isActivityReadOnly)
                 {
                     item.lblUserUsername.Click += (s, e) =>
@@ -980,7 +1012,6 @@ namespace PrimeSystems
                 }
                 else
                 {
-                    // Make label non-clickable in read-only mode
                     item.lblUserUsername.Cursor = Cursors.Default;
                 }
                 

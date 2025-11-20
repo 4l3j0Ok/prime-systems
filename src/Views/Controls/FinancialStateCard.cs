@@ -15,7 +15,6 @@ namespace PrimeSystems.Views.Controls
         public FinancialStateCard()
         {
             InitializeComponent();
-            this.BackColor = Color.White;
         }
         [Category("Custom Props")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]

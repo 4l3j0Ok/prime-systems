@@ -36,7 +36,7 @@ namespace PrimeSystems.Controllers
                 query = query.Where(a => a.Active);
             }
 
-            query = query.OrderBy(a => a.Id);
+            query = query.OrderBy(a => a.Title);
 
             if (pageNumber.HasValue && pageSize.HasValue)
             {
@@ -69,7 +69,7 @@ namespace PrimeSystems.Controllers
                 );
             }
 
-            query = query.OrderBy(a => a.Id);
+            query = query.OrderBy(a => a.Title);
 
             if (pageNumber.HasValue && pageSize.HasValue)
             {

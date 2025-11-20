@@ -56,6 +56,7 @@ namespace PrimeSystems.Controllers
                 .Include(v => v.Detail)
                 .AsQueryable();
 
+
             if (!includeInactive)
             {
                 query = query.Where(v => v.Active);
@@ -250,6 +251,7 @@ namespace PrimeSystems.Controllers
                 .Include(v => v.User)
                 .Include(v => v.Client)
                 .Where(v => v.ClientId == clienteId)
+                .OrderByDescending(v => v.Id)
                 .ToList();
         }
 
@@ -259,6 +261,7 @@ namespace PrimeSystems.Controllers
                 .Include(v => v.User)
                 .Include(v => v.Client)
                 .Where(v => v.UserId == usuarioId)
+                .OrderByDescending(v => v.Id)
                 .ToList();
         }
     }

@@ -72,6 +72,8 @@ namespace PrimeSystems.Core
                     Description = "admin",
                     PurchasesPermission = AccessLevel.Write,
                     SellsPermission = AccessLevel.Write,
+                    ArticlePermissions = AccessLevel.Write,
+                    ActivityLogPermission = AccessLevel.Write,
                     FinancialStatePermission = AccessLevel.Write,
                     UserPermission = AccessLevel.Write
                 },
@@ -83,6 +85,8 @@ namespace PrimeSystems.Core
                     Description = "vendedor",
                     PurchasesPermission = AccessLevel.Read,
                     SellsPermission = AccessLevel.Write,
+                    ArticlePermissions = AccessLevel.Read,
+                    ActivityLogPermission = AccessLevel.Read,
                     FinancialStatePermission = AccessLevel.Read,
                     UserPermission = AccessLevel.None
                 },
@@ -94,6 +98,8 @@ namespace PrimeSystems.Core
                     Description = "gestor_compras",
                     PurchasesPermission = AccessLevel.Write,
                     SellsPermission = AccessLevel.Read,
+                    ArticlePermissions = AccessLevel.Write,
+                    ActivityLogPermission = AccessLevel.Read,
                     FinancialStatePermission = AccessLevel.Read,
                     UserPermission = AccessLevel.None
                 }
@@ -121,7 +127,7 @@ namespace PrimeSystems.Core
                 new UserModel
                 {
                     Username = "admin",
-                    PasswordHash = "admin",
+                    Password = "admin",
                     Name = "Juan",
                     LastName = "Administrador",
                     Title = "admin",
@@ -134,11 +140,11 @@ namespace PrimeSystems.Core
                 },
                 new UserModel
                 {
-                    Username = "vendedor1",
-                    PasswordHash = Utils.GenerateRandomString(12),
+                    Username = "maria.gonzalez",
+                    Password = "maria",
                     Name = "María",
                     LastName = "González",
-                    Title = "vendedor1",
+                    Title = "maria.gonzalez",
                     Description = "María González - Vendedor",
                     PersonId = 27654321,
                     Email = "maria.gonzalez@primesystems.com",
@@ -148,11 +154,11 @@ namespace PrimeSystems.Core
                 },
                 new UserModel
                 {
-                    Username = "comprador1",
-                    PasswordHash = Utils.GenerateRandomString(12),
+                    Username = "carlos.martinez",
+                    Password = "carlos",
                     Name = "Carlos",
                     LastName = "Martínez",
-                    Title = "comprador1",
+                    Title = "carlos.martinez",
                     Description = "Carlos Martínez - Gestor de Compras",
                     PersonId = 33987654,
                     Email = "carlos.martinez@primesystems.com",

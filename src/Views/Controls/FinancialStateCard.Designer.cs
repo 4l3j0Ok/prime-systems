@@ -37,7 +37,6 @@
             // tableLayoutPanel2
             // 
             tableLayoutPanel2.AutoSize = true;
-            tableLayoutPanel2.BackColor = Color.White;
             tableLayoutPanel2.ColumnCount = 1;
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tableLayoutPanel2.Controls.Add(lblValue, 0, 1);
@@ -103,9 +102,8 @@
         }
 
         #endregion
-
-        private TableLayoutPanel tableLayoutPanel2;
         public ReaLTaiizor.Controls.MaterialLabel lblValue;
         public ReaLTaiizor.Controls.MaterialLabel lblTitle;
+        public TableLayoutPanel tableLayoutPanel2;
     }
 }

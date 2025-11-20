@@ -143,7 +143,7 @@ namespace PrimeSystems.Controllers
                     return false;
                     
                 existingUser.Username = user.Username;
-                existingUser.PasswordHash = user.PasswordHash;
+                existingUser.Password = user.Password;
                 existingUser.Name = user.Name;
                 existingUser.LastName = user.LastName;
                 existingUser.Email = user.Email;

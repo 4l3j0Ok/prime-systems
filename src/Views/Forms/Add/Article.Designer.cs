@@ -76,7 +76,6 @@
             // 
             // mepArticleAdd
             // 
-            mepArticleAdd.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             mepArticleAdd.BackColor = Color.FromArgb(255, 255, 255);
             mepArticleAdd.CancelButtonText = "Cancelar";
             mepArticleAdd.Controls.Add(tableLayoutPanel1);

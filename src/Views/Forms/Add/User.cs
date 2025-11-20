@@ -43,8 +43,8 @@ namespace PrimeSystems.Views.Forms.Add
             tbUserUsername.Text = user.Username;
             tbUserPhone.Text = user.Phone;
             tbUserEmail.Text = user.Email;
-            tbUserPassword.Text = user.PasswordHash;
-            tbUserPasswordConfirm.Text = user.PasswordHash;
+            tbUserPassword.Text = user.Password;
+            tbUserPasswordConfirm.Text = user.Password;
             tbUserPersonId.Text = user.PersonId?.ToString() ?? "";
             cmbRole.SelectedItem = user.Role?.Name ?? "Sin tipo";
             if (user.ProfilePicture != null)
@@ -136,7 +136,7 @@ namespace PrimeSystems.Views.Forms.Add
             selectedUser.Username = tbUserUsername.Text;
             selectedUser.Phone = tbUserPhone.Text;
             selectedUser.Email = tbUserEmail.Text;
-            selectedUser.PasswordHash = tbUserPassword.Text;
+            selectedUser.Password = tbUserPassword.Text;
             selectedUser.PersonId = int.TryParse(tbUserPersonId.Text, out int dni) ? dni : null;
             selectedUser.ProfilePicture = Utils.ImageToByteArray(pbUserProfilePicture.Image);
 
