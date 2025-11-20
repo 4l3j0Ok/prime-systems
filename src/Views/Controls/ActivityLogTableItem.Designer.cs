@@ -138,7 +138,7 @@
         private TableLayoutPanel tableLayoutPanel1;
         private ReaLTaiizor.Controls.MaterialLabel lblAction;
         private ReaLTaiizor.Controls.MaterialLabel lblModule;
-        private ReaLTaiizor.Controls.MaterialLabel lblUserUsername;
         private ReaLTaiizor.Controls.MaterialLabel lblDate;
+        public ReaLTaiizor.Controls.MaterialLabel lblUserUsername;
     }
 }

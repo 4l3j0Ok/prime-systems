@@ -25,13 +25,50 @@ namespace PrimeSystems.Controllers
             _stockController = new StockController(context);
         }
 
-        public List<PurchaseModel> GetAll()
+        public List<PurchaseModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
         {
-            return _context.Purchase
+            var query = _context.Purchase
                 .Include(c => c.User)
                 .Include(c => c.Supplier)
                 .Include(c => c.Detail)
-                .ToList();
+                .AsQueryable();
+
+            // Note: PurchaseModel doesn't have Active field based on requirements, so we just order
+            query = query.OrderByDescending(c => c.Id);
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
+            }
+
+            return query.ToList();
+        }
+
+        public List<PurchaseModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        {
+            var query = _context.Purchase
+                .Include(c => c.User)
+                .Include(c => c.Supplier)
+                .Include(c => c.Detail)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower();
+                query = query.Where(c =>
+                    (c.Title != null && c.Title.ToLower().Contains(searchTerm)) ||
+                    (c.Description != null && c.Description.ToLower().Contains(searchTerm))
+                );
+            }
+
+            query = query.OrderByDescending(c => c.Id);
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
+            }
+
+            return query.ToList();
         }
 
         public PurchaseModel? GetById(int id)
@@ -72,6 +109,8 @@ namespace PrimeSystems.Controllers
                 existing.Subtotal = compra.Subtotal;
                 existing.Discount = compra.Discount;
                 existing.Total = compra.Total;
+                existing.Title = compra.Title;
+                existing.Description = compra.Description;
 
                 _context.SaveChanges();
                 return true;
@@ -143,11 +182,13 @@ namespace PrimeSystems.Controllers
                 existing.Subtotal = compra.Subtotal;
                 existing.Discount = compra.Discount;
                 existing.Total = compra.Total;
+                existing.Title = compra.Title;
+                existing.Description = compra.Description;
 
                 // Obtener los detalles anteriores para restaurar el stock
                 var oldDetails = _context.PurchaseDetail.Where(d => d.PurchaseId == compra.Id).ToList();
 
-                // Restaurar el stock de los art�culos comprados anteriormente (restar)
+                // Restaurar el stock de los artículos comprados anteriormente (restar)
                 foreach (var oldDetail in oldDetails)
                 {
                     if (oldDetail.ArticleId.HasValue && int.TryParse(oldDetail.Quantity, out int quantity))
@@ -165,13 +206,13 @@ namespace PrimeSystems.Controllers
                     detalle.PurchaseId = compra.Id;
                     _context.PurchaseDetail.Add(detalle);
 
-                    // Aumentar el stock si el detalle tiene un art�culo asociado
+                    // Aumentar el stock si el detalle tiene un artículo asociado
                     if (detalle.ArticleId.HasValue && int.TryParse(detalle.Quantity, out int quantity))
                     {
                         bool stockAdjusted = _stockController.AdjustStock(detalle.ArticleId.Value, quantity);
                         if (!stockAdjusted)
                         {
-                            Debug.WriteLine($"Advertencia: No se pudo ajustar el stock para el art�culo {detalle.ArticleId.Value}");
+                            Debug.WriteLine($"Advertencia: No se pudo ajustar el stock para el artículo {detalle.ArticleId.Value}");
                         }
                     }
                 }

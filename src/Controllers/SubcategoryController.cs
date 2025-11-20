@@ -22,11 +22,45 @@ namespace PrimeSystems.Controllers
             _context = context;
         }
 
-        public List<SubcategoryModel> GetAll()
+        public List<SubcategoryModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
         {
-            return _context.Subcategory
+            var query = _context.Subcategory
                 .Include(s => s.Category)
-                .ToList();
+                .AsQueryable();
+
+            query = query.OrderBy(s => s.Id);
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
+            }
+
+            return query.ToList();
+        }
+
+        public List<SubcategoryModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        {
+            var query = _context.Subcategory
+                .Include(s => s.Category)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower();
+                query = query.Where(s =>
+                    (s.Name != null && s.Name.ToLower().Contains(searchTerm)) ||
+                    (s.Category != null && s.Category.Name != null && s.Category.Name.ToLower().Contains(searchTerm))
+                );
+            }
+
+            query = query.OrderBy(s => s.Id);
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
+            }
+
+            return query.ToList();
         }
 
         public SubcategoryModel? GetById(int id)

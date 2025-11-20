@@ -87,6 +87,9 @@ namespace PrimeSystems
             materialLabel1 = new ReaLTaiizor.Controls.MaterialLabel();
             financialStateTableHeader1 = new PrimeSystems.Views.Controls.FinancialStateTableHeader();
             tpActivityLog = new TabPage();
+            tableLayoutPanel5 = new TableLayoutPanel();
+            activityLogTableHeader1 = new PrimeSystems.Views.Controls.ActivityLogTableHeader();
+            pActivityLogTableItems = new Panel();
             tpLogout = new TabPage();
             flowLayoutPanel4 = new FlowLayoutPanel();
             statusStrip1 = new StatusStrip();
@@ -114,6 +117,8 @@ namespace PrimeSystems
             tableLayoutPanel3.SuspendLayout();
             panel2.SuspendLayout();
             panel1.SuspendLayout();
+            tpActivityLog.SuspendLayout();
+            tableLayoutPanel5.SuspendLayout();
             statusStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -481,6 +486,7 @@ namespace PrimeSystems
             // 
             // tpArticles
             // 
+            tpArticles.AutoScroll = true;
             tpArticles.Controls.Add(btnAddArticle);
             tpArticles.ImageKey = "article.png";
             tpArticles.Location = new Point(4, 39);
@@ -717,14 +723,52 @@ namespace PrimeSystems
             // 
             // tpActivityLog
             // 
+            tpActivityLog.Controls.Add(tableLayoutPanel5);
             tpActivityLog.ImageKey = "activity-log.png";
             tpActivityLog.Location = new Point(4, 39);
             tpActivityLog.Name = "tpActivityLog";
-            tpActivityLog.Padding = new Padding(3);
+            tpActivityLog.Padding = new Padding(20);
             tpActivityLog.Size = new Size(942, 471);
             tpActivityLog.TabIndex = 13;
             tpActivityLog.Text = "Registro de actividad";
             tpActivityLog.UseVisualStyleBackColor = true;
+            tpActivityLog.Paint += tpActivityLog_Paint;
+            // 
+            // tableLayoutPanel5
+            // 
+            tableLayoutPanel5.ColumnCount = 1;
+            tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel5.Controls.Add(activityLogTableHeader1, 0, 0);
+            tableLayoutPanel5.Controls.Add(pActivityLogTableItems, 0, 1);
+            tableLayoutPanel5.Dock = DockStyle.Fill;
+            tableLayoutPanel5.Location = new Point(20, 20);
+            tableLayoutPanel5.Margin = new Padding(0);
+            tableLayoutPanel5.Name = "tableLayoutPanel5";
+            tableLayoutPanel5.RowCount = 2;
+            tableLayoutPanel5.RowStyles.Add(new RowStyle());
+            tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel5.Size = new Size(902, 431);
+            tableLayoutPanel5.TabIndex = 0;
+            // 
+            // activityLogTableHeader1
+            // 
+            activityLogTableHeader1.Dock = DockStyle.Fill;
+            activityLogTableHeader1.Location = new Point(3, 3);
+            activityLogTableHeader1.MaximumSize = new Size(0, 30);
+            activityLogTableHeader1.MinimumSize = new Size(800, 30);
+            activityLogTableHeader1.Name = "activityLogTableHeader1";
+            activityLogTableHeader1.Size = new Size(896, 30);
+            activityLogTableHeader1.TabIndex = 0;
+            // 
+            // pActivityLogTableItems
+            // 
+            pActivityLogTableItems.AutoScroll = true;
+            pActivityLogTableItems.Dock = DockStyle.Fill;
+            pActivityLogTableItems.Location = new Point(0, 36);
+            pActivityLogTableItems.Margin = new Padding(0);
+            pActivityLogTableItems.Name = "pActivityLogTableItems";
+            pActivityLogTableItems.Size = new Size(902, 395);
+            pActivityLogTableItems.TabIndex = 1;
             // 
             // tpLogout
             // 
@@ -806,6 +850,8 @@ namespace PrimeSystems
             panel2.PerformLayout();
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
+            tpActivityLog.ResumeLayout(false);
+            tableLayoutPanel5.ResumeLayout(false);
             statusStrip1.ResumeLayout(false);
             statusStrip1.PerformLayout();
             ResumeLayout(false);
@@ -867,5 +913,8 @@ namespace PrimeSystems
         private ReaLTaiizor.Controls.MaterialLabel materialLabel1;
         public TabPage tpArticles;
         private ReaLTaiizor.Controls.MaterialFloatingActionButton btnAddArticle;
+        private TableLayoutPanel tableLayoutPanel5;
+        private Views.Controls.ActivityLogTableHeader activityLogTableHeader1;
+        private Panel pActivityLogTableItems;
     }
 }

@@ -22,11 +22,45 @@ namespace PrimeSystems.Controllers
             _context = context;
         }
 
-        public List<StockModel> GetAll()
+        public List<StockModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
         {
-            return _context.Stock
+            var query = _context.Stock
                 .Include(s => s.Article)
-                .ToList();
+                .AsQueryable();
+
+            query = query.OrderBy(s => s.Id);
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
+            }
+
+            return query.ToList();
+        }
+
+        public List<StockModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        {
+            var query = _context.Stock
+                .Include(s => s.Article)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower();
+                query = query.Where(s =>
+                    (s.Article != null && s.Article.Name != null && s.Article.Name.ToLower().Contains(searchTerm)) ||
+                    (s.Article != null && s.Article.Code.ToLower().Contains(searchTerm))
+                );
+            }
+
+            query = query.OrderBy(s => s.Id);
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
+            }
+
+            return query.ToList();
         }
 
         public StockModel? GetById(int id)

@@ -20,6 +20,7 @@ namespace PrimeSystems.Views.Controls
             string? title = "",
             string? description = "",
             Bitmap? picture = null,
+            Action? previewCallBack = null,
             Action? editCallback = null,
             Action? removeCallback = null
         )
@@ -27,34 +28,37 @@ namespace PrimeSystems.Views.Controls
             InitializeComponent();
             lblTitle.Text = title ?? "";
             lblDescription.Text = description ?? "";
-
-            // Set the picture, or use default if null
             if (picture != null)
             {
                 pbPicture.Image = picture;
             }
-            // Note: The default image is already set in the designer
-
+            btnPreview.Click += (s, e) => { previewCallBack?.Invoke(); };
             btnEdit.Click += (s, e) => { editCallback?.Invoke(); };
             btnRemove.Click += (s, e) => { removeCallback?.Invoke(); };
         }
 
-        // Method to update the image if needed
-        public void UpdateImage(Bitmap? newImage)
+        /// <summary>
+        /// Sets the card to read-only mode, hiding edit and remove buttons
+        /// </summary>
+        public void SetReadOnlyMode()
         {
-            if (pbPicture.Image != null && pbPicture.Image != Properties.Resources.user_placeholder)
-            {
-                pbPicture.Image.Dispose();
-            }
+            btnEdit.Visible = false;
+            btnEdit.Enabled = false;
+            btnRemove.Visible = false;
+            btnRemove.Enabled = false;
+        }
 
-            if (newImage != null)
-            {
-                pbPicture.Image = newImage;
-            }
-            else
-            {
-                pbPicture.Image = Properties.Resources.user_placeholder;
-            }
+        /// <summary>
+        /// Enables all buttons (default mode)
+        /// </summary>
+        public void SetWriteMode()
+        {
+            btnEdit.Visible = true;
+            btnEdit.Enabled = true;
+            btnRemove.Visible = true;
+            btnRemove.Enabled = true;
+            btnPreview.Visible = true;
+            btnPreview.Enabled = true;
         }
     }
 }

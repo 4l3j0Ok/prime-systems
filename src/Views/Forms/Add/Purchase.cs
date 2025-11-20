@@ -338,11 +338,23 @@ namespace PrimeSystems.Views.Forms.Add
                 bool success;
                 if (isEditMode && currentPurchase != null)
                 {
+                    // Set Title and Description for update
+                    purchase.Title = $"Compra #{purchase.Id}";
+                    purchase.Description = $"Proveedor: {selectedSupplier.Name} | Total: ${purchase.Total} | Fecha: {DateTime.Now:dd/MM/yyyy}";
                     success = purchaseController.UpdateCompraConDetalles(purchase, details);
                 }
                 else
                 {
+                    // For new purchases, save first to get ID
                     success = purchaseController.CreateCompraConDetalles(purchase, details);
+                    
+                    if (success)
+                    {
+                        // Update with Title and Description
+                        purchase.Title = $"Compra #{purchase.Id}";
+                        purchase.Description = $"Proveedor: {selectedSupplier.Name} | Total: ${purchase.Total} | Fecha: {DateTime.Now:dd/MM/yyyy}";
+                        purchaseController.Update(purchase);
+                    }
                 }
 
                 if (success)
@@ -351,7 +363,7 @@ namespace PrimeSystems.Views.Forms.Add
                     MessageBox.Show(message, "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     
                     int purchaseId = isEditMode ? currentPurchase.Id : purchase.Id;
-                    string action = isEditMode ? "Actualizó una compra" : "Registró una nueva compra";
+                    string action = isEditMode ? ActivityActions.Update : ActivityActions.Create;
                     ActivityLogger.LogActivity(action, ActivityModules.Purchases, purchaseId: purchaseId, supplierId: selectedSupplier.Id);
                     
                     ReturnToPurchaseView();

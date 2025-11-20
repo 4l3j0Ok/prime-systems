@@ -22,14 +22,61 @@ namespace PrimeSystems.Controllers
             _context = context;
         }
 
-        public List<ArticleModel> GetAll()
+        public List<ArticleModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
         {
-            return _context.Article
+            var query = _context.Article
                 .Include(a => a.Category)
                 .Include(a => a.Subcategory)
                 .Include(a => a.Supplier)
                 .Include(a => a.Stock)
-                .ToList();
+                .AsQueryable();
+
+            if (!includeInactive)
+            {
+                query = query.Where(a => a.Active);
+            }
+
+            query = query.OrderBy(a => a.Id);
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
+            }
+
+            return query.ToList();
+        }
+
+        public List<ArticleModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        {
+            var query = _context.Article
+                .Include(a => a.Category)
+                .Include(a => a.Subcategory)
+                .Include(a => a.Supplier)
+                .Include(a => a.Stock)
+                .AsQueryable();
+
+            if (!includeInactive)
+            {
+                query = query.Where(a => a.Active);
+            }
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower();
+                query = query.Where(a =>
+                    (a.Title != null && a.Title.ToLower().Contains(searchTerm)) ||
+                    (a.Description != null && a.Description.ToLower().Contains(searchTerm))
+                );
+            }
+
+            query = query.OrderBy(a => a.Id);
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
+            }
+
+            return query.ToList();
         }
 
         public ArticleModel? GetById(int id)
@@ -70,8 +117,15 @@ namespace PrimeSystems.Controllers
                 if (_context.Article.Any(a => a.Code == articulo.Code))
                     return false;
 
+                articulo.Active = true;
                 _context.Article.Add(articulo);
                 _context.SaveChanges();
+                
+                // Set Title and Description after saving
+                articulo.Title = articulo.Name;
+                articulo.Description = $"Código: {articulo.Code} | Categoría: {articulo.Category?.Name ?? "Sin categoría"}";
+                _context.SaveChanges();
+                
                 return true;
             }
             catch (Exception ex)
@@ -99,6 +153,12 @@ namespace PrimeSystems.Controllers
                 existingArticulo.CategoryId = articulo.CategoryId;
                 existingArticulo.SubcategoryId = articulo.SubcategoryId;
                 existingArticulo.SupplierId = articulo.SupplierId;
+                existingArticulo.Active = articulo.Active;
+                
+                // Update Title and Description
+                existingArticulo.Title = articulo.Name;
+                var category = _context.Category.Find(articulo.CategoryId);
+                existingArticulo.Description = $"Código: {articulo.Code} | Categoría: {category?.Name ?? "Sin categoría"}";
 
                 _context.SaveChanges();
                 return true;
@@ -115,7 +175,9 @@ namespace PrimeSystems.Controllers
             {
                 var articulo = _context.Article.Find(id);
                 if (articulo == null) return false;
-                _context.Article.Remove(articulo);
+                
+                // Baja lógica
+                articulo.Active = false;
                 _context.SaveChanges();
                 return true;
             }

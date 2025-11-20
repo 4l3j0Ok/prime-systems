@@ -22,9 +22,40 @@ namespace PrimeSystems.Controllers
             _context = context;
         }
 
-        public List<CategoryModel> GetAll()
+        public List<CategoryModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
         {
-            return _context.Category.ToList();
+            var query = _context.Category.AsQueryable();
+
+            query = query.OrderBy(c => c.Id);
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
+            }
+
+            return query.ToList();
+        }
+
+        public List<CategoryModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        {
+            var query = _context.Category.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower();
+                query = query.Where(c =>
+                    c.Name != null && c.Name.ToLower().Contains(searchTerm)
+                );
+            }
+
+            query = query.OrderBy(c => c.Id);
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
+            }
+
+            return query.ToList();
         }
 
         public CategoryModel? GetById(int id)

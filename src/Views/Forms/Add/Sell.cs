@@ -299,44 +299,53 @@ namespace PrimeSystems.Views.Forms.Add
                     ? (decimal.Parse(tbSubtotal.Text) * (discPercent / 100)).ToString("F2")
                     : "0.00";
                 sell.Total = tbTotal.Text;
-
-                var details = new List<SellDetailModel>();
-                var articleItems = gbArticlesData.Controls.OfType<Controls.ArticleItem>().ToList();
-
-                foreach (var item in articleItems)
+                
+                // Set Title and Description after getting ID
+                if (!isEditMode)
                 {
-                    var cbArticle = item.Controls.Find("cbArticleName", true).FirstOrDefault() as ReaLTaiizor.Controls.HopeComboBox;
-                    var tbQuantity = item.Controls.Find("tbArticleQuantity", true).FirstOrDefault() as ReaLTaiizor.Controls.MaterialTextBoxEdit;
-
-                    if (cbArticle != null && tbQuantity != null)
+                    // For new sells, save first to get ID
+                    bool success = sellController.CreateVentaConDetalles(sell, GetSellDetails());
+                    
+                    if (success)
                     {
-                        int quantity = int.Parse(tbQuantity.Text);
-                        var article = articleController.GetByName(cbArticle.Text);
-                        var detail = new SellDetailModel
-                        {
-                            ArticleId = article?.Id,
-                            Quantity = quantity
-                        };
-                        details.Add(detail);
+                        // Update with Title and Description
+                        sell.Title = $"Venta #{sell.Id}";
+                        sell.Description = $"Cliente: {selectedClient.Name} | Total: ${sell.Total} | Fecha: {DateTime.Now:dd/MM/yyyy}";
+                        sellController.Update(sell);
+                        
+                        MessageBox.Show("Venta registrada correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        ActivityLogger.LogActivity(ActivityActions.Create, ActivityModules.Sells, sellId: sell.Id, clientId: selectedClient.Id);
+                        ReturnToSellView();
                     }
+                    else
+                    {
+                        MessageBox.Show("Error al registrar la venta.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    return;
                 }
-                bool success;
-                if (isEditMode) success = sellController.UpdateVentaConDetalles(sell, details);
-                else success = sellController.CreateVentaConDetalles(sell, details);
-
-                if (success)
+                else
                 {
-                    string message = isEditMode ? "Venta actualizada correctamente." : "Venta registrada correctamente.";
+                    // For updates, set Title and Description
+                    sell.Title = $"Venta #{sell.Id}";
+                    sell.Description = $"Cliente: {selectedClient.Name} | Total: ${sell.Total} | Fecha: {DateTime.Now:dd/MM/yyyy}";
+                }
+
+                var details = GetSellDetails();
+                
+                bool successUpdate;
+                if (isEditMode) successUpdate = sellController.UpdateVentaConDetalles(sell, details);
+                else successUpdate = sellController.CreateVentaConDetalles(sell, details);
+
+                if (successUpdate)
+                {
+                    string message = "Venta actualizada correctamente.";
                     MessageBox.Show(message, "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    int sellId = isEditMode ? currentSell.Id : sell.Id;
-                    string action = isEditMode ? "Actualizó una venta" : "Registró una nueva venta";
-                    ActivityLogger.LogActivity(action, ActivityModules.Sells, sellId: sellId, clientId: selectedClient.Id);
+                    ActivityLogger.LogActivity(ActivityActions.Update, ActivityModules.Sells, sellId: sell.Id, clientId: selectedClient.Id);
                     ReturnToSellView();
                 }
                 else
                 {
-                    string message = isEditMode ? "Error al actualizar la venta." : "Error al registrar la venta.";
-                    MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Error al actualizar la venta.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
@@ -344,6 +353,32 @@ namespace PrimeSystems.Views.Forms.Add
                 MessageBox.Show($"Error al guardar la venta: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+        
+        private List<SellDetailModel> GetSellDetails()
+        {
+            var details = new List<SellDetailModel>();
+            var articleItems = gbArticlesData.Controls.OfType<Controls.ArticleItem>().ToList();
+
+            foreach (var item in articleItems)
+            {
+                var cbArticle = item.Controls.Find("cbArticleName", true).FirstOrDefault() as ReaLTaiizor.Controls.HopeComboBox;
+                var tbQuantity = item.Controls.Find("tbArticleQuantity", true).FirstOrDefault() as ReaLTaiizor.Controls.MaterialTextBoxEdit;
+
+                if (cbArticle != null && tbQuantity != null)
+                {
+                    int quantity = int.Parse(tbQuantity.Text);
+                    var article = articleController.GetByName(cbArticle.Text);
+                    var detail = new SellDetailModel
+                    {
+                        ArticleId = article?.Id,
+                        Quantity = quantity
+                    };
+                    details.Add(detail);
+                }
+            }
+            return details;
+        }
+
         private void mepSellAdd_CancelClick(object sender, EventArgs e)
         {
             ReturnToSellView();

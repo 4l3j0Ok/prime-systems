@@ -12,24 +12,24 @@ namespace PrimeSystems.Models
         public int? PersonId { get; set; }
 
         [Required]
-        [StringLength(50)]
+        [StringLength(100)]
         public string Username { get; set; } = string.Empty;
 
-        [StringLength(255)]
+        [Required]
+        [StringLength(100)]
+        public string? PasswordHash { get; set; }
+
+        [StringLength(100)]
         public string? Name { get; set; }
 
-        [StringLength(255)]
+        [StringLength(100)]
         public string? LastName { get; set; }
 
-        [StringLength(255)]
-        public string? Phone { get; set; }
-
-        [StringLength(255)]
+        [StringLength(100)]
         public string? Email { get; set; }
 
-        [Required]
-        [StringLength(255)]
-        public string PasswordHash { get; set; } = string.Empty;
+        [StringLength(100)]
+        public string? Phone { get; set; }
 
         public byte[]? ProfilePicture { get; set; }
 
@@ -37,8 +37,15 @@ namespace PrimeSystems.Models
         [ForeignKey("Role")]
         public string? RoleId { get; set; }
 
-        // Navigation properties
-        public virtual RoleModel? Role { get; set; }
+        [StringLength(500)]
+        public string? Title { get; set; }
 
+        [StringLength(1000)]
+        public string? Description { get; set; }
+
+        public bool Active { get; set; } = true;
+
+        // Navigation property
+        public virtual RoleModel? Role { get; set; }
     }
 }

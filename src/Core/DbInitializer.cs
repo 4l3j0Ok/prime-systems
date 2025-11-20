@@ -19,7 +19,7 @@ namespace PrimeSystems.Core
                 context.Database.EnsureDeleted();
                 Console.WriteLine("Base de datos recreada.");
             }
-            
+
             context.Database.EnsureCreated();
 
             // Verificar variable de entorno para poblar DB con datos de prueba
@@ -30,14 +30,14 @@ namespace PrimeSystems.Core
                 Console.WriteLine("Iniciando población de base de datos con datos de prueba...");
                 Tests tests = new Tests(context);
                 bool success = tests.PopulateDB();
-                
+
                 if (success)
                 {
-                    Console.WriteLine("✓ Base de datos poblada exitosamente con datos de prueba!");
+                    Console.WriteLine("Base de datos poblada exitosamente con datos de prueba!");
                 }
                 else
                 {
-                    Console.WriteLine("✗ Error al poblar la base de datos con datos de prueba.");
+                    Console.WriteLine("Error al poblar la base de datos con datos de prueba.");
                 }
             }
         }

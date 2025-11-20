@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             mepArticleAdd = new PrimeSystems.Views.Controls.MaterialExpansionPanelNonCollapsible();
-            tableLayoutPanel3 = new TableLayoutPanel();
+            tableLayoutPanel1 = new TableLayoutPanel();
             gbRegisterData = new GroupBox();
             tableLayoutPanel4 = new TableLayoutPanel();
             panel9 = new Panel();
@@ -60,7 +60,7 @@
             tbSellPrice = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
             materialLabel8 = new ReaLTaiizor.Controls.MaterialLabel();
             mepArticleAdd.SuspendLayout();
-            tableLayoutPanel3.SuspendLayout();
+            tableLayoutPanel1.SuspendLayout();
             gbRegisterData.SuspendLayout();
             tableLayoutPanel4.SuspendLayout();
             panel9.SuspendLayout();
@@ -79,11 +79,11 @@
             mepArticleAdd.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             mepArticleAdd.BackColor = Color.FromArgb(255, 255, 255);
             mepArticleAdd.CancelButtonText = "Cancelar";
-            mepArticleAdd.Controls.Add(tableLayoutPanel3);
+            mepArticleAdd.Controls.Add(tableLayoutPanel1);
             mepArticleAdd.Depth = 0;
             mepArticleAdd.Description = "";
             mepArticleAdd.Dock = DockStyle.Fill;
-            mepArticleAdd.ExpandHeight = 533;
+            mepArticleAdd.ExpandHeight = 575;
             mepArticleAdd.Font = new Font("Microsoft Sans Serif", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
             mepArticleAdd.ForeColor = Color.FromArgb(222, 0, 0, 0);
             mepArticleAdd.Location = new Point(0, 0);
@@ -92,42 +92,41 @@
             mepArticleAdd.Name = "mepArticleAdd";
             mepArticleAdd.Padding = new Padding(24, 64, 24, 70);
             mepArticleAdd.ShowCollapseExpand = false;
-            mepArticleAdd.Size = new Size(811, 533);
+            mepArticleAdd.Size = new Size(885, 575);
             mepArticleAdd.TabIndex = 5;
             mepArticleAdd.Title = "Agregar Artículo";
             mepArticleAdd.ValidationButtonEnable = true;
             mepArticleAdd.ValidationButtonText = "Guardar";
             // 
-            // tableLayoutPanel3
+            // tableLayoutPanel1
             // 
-            tableLayoutPanel3.AutoScroll = true;
-            tableLayoutPanel3.ColumnCount = 1;
-            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel3.Controls.Add(gbRegisterData, 0, 0);
-            tableLayoutPanel3.Dock = DockStyle.Fill;
-            tableLayoutPanel3.Location = new Point(24, 64);
-            tableLayoutPanel3.Name = "tableLayoutPanel3";
-            tableLayoutPanel3.RowCount = 1;
-            tableLayoutPanel3.RowStyles.Add(new RowStyle());
-            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel3.Size = new Size(763, 399);
-            tableLayoutPanel3.TabIndex = 4;
+            tableLayoutPanel1.ColumnCount = 1;
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel1.Controls.Add(gbRegisterData, 0, 0);
+            tableLayoutPanel1.Dock = DockStyle.Fill;
+            tableLayoutPanel1.Location = new Point(24, 64);
+            tableLayoutPanel1.Name = "tableLayoutPanel1";
+            tableLayoutPanel1.RowCount = 1;
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel1.Size = new Size(837, 441);
+            tableLayoutPanel1.TabIndex = 2;
             // 
             // gbRegisterData
             // 
+            gbRegisterData.AutoSize = true;
             gbRegisterData.Controls.Add(tableLayoutPanel4);
             gbRegisterData.Dock = DockStyle.Top;
             gbRegisterData.Location = new Point(3, 3);
             gbRegisterData.Name = "gbRegisterData";
             gbRegisterData.Padding = new Padding(10);
-            gbRegisterData.Size = new Size(757, 525);
-            gbRegisterData.TabIndex = 4;
+            gbRegisterData.Size = new Size(831, 435);
+            gbRegisterData.TabIndex = 7;
             gbRegisterData.TabStop = false;
             gbRegisterData.Text = "Datos de artículo";
             // 
             // tableLayoutPanel4
             // 
+            tableLayoutPanel4.AutoScroll = true;
             tableLayoutPanel4.AutoSize = true;
             tableLayoutPanel4.ColumnCount = 3;
             tableLayoutPanel4.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
@@ -151,7 +150,7 @@
             tableLayoutPanel4.RowStyles.Add(new RowStyle());
             tableLayoutPanel4.RowStyles.Add(new RowStyle());
             tableLayoutPanel4.RowStyles.Add(new RowStyle());
-            tableLayoutPanel4.Size = new Size(737, 489);
+            tableLayoutPanel4.Size = new Size(811, 399);
             tableLayoutPanel4.TabIndex = 0;
             // 
             // panel9
@@ -166,7 +165,7 @@
             panel9.MinimumSize = new Size(0, 120);
             panel9.Name = "panel9";
             panel9.Padding = new Padding(15);
-            panel9.Size = new Size(737, 120);
+            panel9.Size = new Size(794, 120);
             panel9.TabIndex = 16;
             // 
             // tbArticleCode
@@ -177,7 +176,7 @@
             tbArticleCode.BackgroundImageLayout = ImageLayout.None;
             tbArticleCode.CharacterCasing = CharacterCasing.Normal;
             tbArticleCode.Depth = 0;
-            tbArticleCode.Dock = DockStyle.Fill;
+            tbArticleCode.Dock = DockStyle.Top;
             tbArticleCode.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
             tbArticleCode.HideSelection = true;
             tbArticleCode.LeadingIcon = null;
@@ -193,7 +192,7 @@
             tbArticleCode.SelectionLength = 0;
             tbArticleCode.SelectionStart = 0;
             tbArticleCode.ShortcutsEnabled = true;
-            tbArticleCode.Size = new Size(707, 48);
+            tbArticleCode.Size = new Size(764, 48);
             tbArticleCode.TabIndex = 3;
             tbArticleCode.TabStop = false;
             tbArticleCode.TextAlign = HorizontalAlignment.Left;
@@ -220,12 +219,12 @@
             panel1.Controls.Add(cbArticleDescription);
             panel1.Controls.Add(materialLabel1);
             panel1.Dock = DockStyle.Fill;
-            panel1.Location = new Point(245, 0);
+            panel1.Location = new Point(264, 0);
             panel1.Margin = new Padding(0);
             panel1.MinimumSize = new Size(0, 120);
             panel1.Name = "panel1";
             panel1.Padding = new Padding(15);
-            panel1.Size = new Size(492, 120);
+            panel1.Size = new Size(530, 120);
             panel1.TabIndex = 7;
             // 
             // cbArticleDescription
@@ -236,7 +235,7 @@
             cbArticleDescription.BackgroundImageLayout = ImageLayout.None;
             cbArticleDescription.CharacterCasing = CharacterCasing.Normal;
             cbArticleDescription.Depth = 0;
-            cbArticleDescription.Dock = DockStyle.Fill;
+            cbArticleDescription.Dock = DockStyle.Top;
             cbArticleDescription.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
             cbArticleDescription.HideSelection = true;
             cbArticleDescription.LeadingIcon = null;
@@ -252,7 +251,7 @@
             cbArticleDescription.SelectionLength = 0;
             cbArticleDescription.SelectionStart = 0;
             cbArticleDescription.ShortcutsEnabled = true;
-            cbArticleDescription.Size = new Size(462, 48);
+            cbArticleDescription.Size = new Size(500, 48);
             cbArticleDescription.TabIndex = 5;
             cbArticleDescription.TabStop = false;
             cbArticleDescription.TextAlign = HorizontalAlignment.Left;
@@ -283,7 +282,7 @@
             panel5.MinimumSize = new Size(0, 120);
             panel5.Name = "panel5";
             panel5.Padding = new Padding(15);
-            panel5.Size = new Size(245, 120);
+            panel5.Size = new Size(264, 120);
             panel5.TabIndex = 5;
             // 
             // cbArticleName
@@ -294,7 +293,7 @@
             cbArticleName.BackgroundImageLayout = ImageLayout.None;
             cbArticleName.CharacterCasing = CharacterCasing.Normal;
             cbArticleName.Depth = 0;
-            cbArticleName.Dock = DockStyle.Fill;
+            cbArticleName.Dock = DockStyle.Top;
             cbArticleName.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
             cbArticleName.HideSelection = true;
             cbArticleName.LeadingIcon = null;
@@ -310,7 +309,7 @@
             cbArticleName.SelectionLength = 0;
             cbArticleName.SelectionStart = 0;
             cbArticleName.ShortcutsEnabled = true;
-            cbArticleName.Size = new Size(215, 48);
+            cbArticleName.Size = new Size(234, 48);
             cbArticleName.TabIndex = 3;
             cbArticleName.TabStop = false;
             cbArticleName.TextAlign = HorizontalAlignment.Left;
@@ -341,14 +340,14 @@
             panel2.MinimumSize = new Size(0, 120);
             panel2.Name = "panel2";
             panel2.Padding = new Padding(15);
-            panel2.Size = new Size(245, 120);
+            panel2.Size = new Size(264, 120);
             panel2.TabIndex = 8;
             // 
             // cbArticleCategory
             // 
             cbArticleCategory.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
             cbArticleCategory.AutoCompleteSource = AutoCompleteSource.ListItems;
-            cbArticleCategory.Dock = DockStyle.Fill;
+            cbArticleCategory.Dock = DockStyle.Top;
             cbArticleCategory.DrawMode = DrawMode.OwnerDrawFixed;
             cbArticleCategory.FlatStyle = FlatStyle.Flat;
             cbArticleCategory.Font = new Font("Segoe UI", 12F);
@@ -356,7 +355,7 @@
             cbArticleCategory.ItemHeight = 40;
             cbArticleCategory.Location = new Point(15, 34);
             cbArticleCategory.Name = "cbArticleCategory";
-            cbArticleCategory.Size = new Size(215, 46);
+            cbArticleCategory.Size = new Size(234, 46);
             cbArticleCategory.TabIndex = 3;
             // 
             // materialLabel2
@@ -378,19 +377,19 @@
             panel3.Controls.Add(cbArticleSubcategory);
             panel3.Controls.Add(materialLabel3);
             panel3.Dock = DockStyle.Fill;
-            panel3.Location = new Point(245, 240);
+            panel3.Location = new Point(264, 240);
             panel3.Margin = new Padding(0);
             panel3.MinimumSize = new Size(0, 120);
             panel3.Name = "panel3";
             panel3.Padding = new Padding(15);
-            panel3.Size = new Size(245, 120);
+            panel3.Size = new Size(264, 120);
             panel3.TabIndex = 9;
             // 
             // cbArticleSubcategory
             // 
             cbArticleSubcategory.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
             cbArticleSubcategory.AutoCompleteSource = AutoCompleteSource.ListItems;
-            cbArticleSubcategory.Dock = DockStyle.Fill;
+            cbArticleSubcategory.Dock = DockStyle.Top;
             cbArticleSubcategory.DrawMode = DrawMode.OwnerDrawFixed;
             cbArticleSubcategory.FlatStyle = FlatStyle.Flat;
             cbArticleSubcategory.Font = new Font("Segoe UI", 12F);
@@ -398,7 +397,7 @@
             cbArticleSubcategory.ItemHeight = 40;
             cbArticleSubcategory.Location = new Point(15, 34);
             cbArticleSubcategory.Name = "cbArticleSubcategory";
-            cbArticleSubcategory.Size = new Size(215, 46);
+            cbArticleSubcategory.Size = new Size(234, 46);
             cbArticleSubcategory.TabIndex = 3;
             // 
             // materialLabel3
@@ -420,12 +419,12 @@
             panel4.Controls.Add(tbStockQuantity);
             panel4.Controls.Add(materialLabel5);
             panel4.Dock = DockStyle.Fill;
-            panel4.Location = new Point(490, 240);
+            panel4.Location = new Point(528, 240);
             panel4.Margin = new Padding(0);
             panel4.MinimumSize = new Size(0, 120);
             panel4.Name = "panel4";
             panel4.Padding = new Padding(15);
-            panel4.Size = new Size(247, 120);
+            panel4.Size = new Size(266, 120);
             panel4.TabIndex = 10;
             // 
             // tbStockQuantity
@@ -436,7 +435,7 @@
             tbStockQuantity.BackgroundImageLayout = ImageLayout.None;
             tbStockQuantity.CharacterCasing = CharacterCasing.Normal;
             tbStockQuantity.Depth = 0;
-            tbStockQuantity.Dock = DockStyle.Fill;
+            tbStockQuantity.Dock = DockStyle.Top;
             tbStockQuantity.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
             tbStockQuantity.HideSelection = true;
             tbStockQuantity.LeadingIcon = null;
@@ -452,7 +451,7 @@
             tbStockQuantity.SelectionLength = 0;
             tbStockQuantity.SelectionStart = 0;
             tbStockQuantity.ShortcutsEnabled = true;
-            tbStockQuantity.Size = new Size(217, 48);
+            tbStockQuantity.Size = new Size(236, 48);
             tbStockQuantity.TabIndex = 3;
             tbStockQuantity.TabStop = false;
             tbStockQuantity.TextAlign = HorizontalAlignment.Left;
@@ -480,11 +479,10 @@
             panel6.Dock = DockStyle.Fill;
             panel6.Location = new Point(0, 360);
             panel6.Margin = new Padding(0);
-            panel6.MaximumSize = new Size(0, 120);
             panel6.MinimumSize = new Size(0, 120);
             panel6.Name = "panel6";
             panel6.Padding = new Padding(15);
-            panel6.Size = new Size(245, 120);
+            panel6.Size = new Size(264, 120);
             panel6.TabIndex = 11;
             // 
             // tbStockCost
@@ -495,7 +493,7 @@
             tbStockCost.BackgroundImageLayout = ImageLayout.None;
             tbStockCost.CharacterCasing = CharacterCasing.Normal;
             tbStockCost.Depth = 0;
-            tbStockCost.Dock = DockStyle.Fill;
+            tbStockCost.Dock = DockStyle.Top;
             tbStockCost.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
             tbStockCost.HideSelection = true;
             tbStockCost.LeadingIcon = null;
@@ -512,7 +510,7 @@
             tbStockCost.SelectionLength = 0;
             tbStockCost.SelectionStart = 0;
             tbStockCost.ShortcutsEnabled = true;
-            tbStockCost.Size = new Size(215, 48);
+            tbStockCost.Size = new Size(234, 48);
             tbStockCost.TabIndex = 3;
             tbStockCost.TabStop = false;
             tbStockCost.TextAlign = HorizontalAlignment.Left;
@@ -538,13 +536,12 @@
             panel7.Controls.Add(tbCostProfit);
             panel7.Controls.Add(materialLabel7);
             panel7.Dock = DockStyle.Fill;
-            panel7.Location = new Point(245, 360);
+            panel7.Location = new Point(264, 360);
             panel7.Margin = new Padding(0);
-            panel7.MaximumSize = new Size(0, 120);
             panel7.MinimumSize = new Size(0, 120);
             panel7.Name = "panel7";
             panel7.Padding = new Padding(15);
-            panel7.Size = new Size(245, 120);
+            panel7.Size = new Size(264, 120);
             panel7.TabIndex = 13;
             // 
             // tbCostProfit
@@ -555,7 +552,7 @@
             tbCostProfit.BackgroundImageLayout = ImageLayout.None;
             tbCostProfit.CharacterCasing = CharacterCasing.Normal;
             tbCostProfit.Depth = 0;
-            tbCostProfit.Dock = DockStyle.Fill;
+            tbCostProfit.Dock = DockStyle.Top;
             tbCostProfit.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
             tbCostProfit.HideSelection = true;
             tbCostProfit.LeadingIcon = null;
@@ -572,7 +569,7 @@
             tbCostProfit.SelectionLength = 0;
             tbCostProfit.SelectionStart = 0;
             tbCostProfit.ShortcutsEnabled = true;
-            tbCostProfit.Size = new Size(215, 48);
+            tbCostProfit.Size = new Size(234, 48);
             tbCostProfit.TabIndex = 3;
             tbCostProfit.TabStop = false;
             tbCostProfit.TextAlign = HorizontalAlignment.Left;
@@ -598,13 +595,12 @@
             panel8.Controls.Add(tbSellPrice);
             panel8.Controls.Add(materialLabel8);
             panel8.Dock = DockStyle.Fill;
-            panel8.Location = new Point(490, 360);
+            panel8.Location = new Point(528, 360);
             panel8.Margin = new Padding(0);
-            panel8.MaximumSize = new Size(0, 120);
             panel8.MinimumSize = new Size(0, 120);
             panel8.Name = "panel8";
             panel8.Padding = new Padding(15);
-            panel8.Size = new Size(247, 120);
+            panel8.Size = new Size(266, 120);
             panel8.TabIndex = 14;
             // 
             // tbSellPrice
@@ -615,7 +611,7 @@
             tbSellPrice.BackgroundImageLayout = ImageLayout.None;
             tbSellPrice.CharacterCasing = CharacterCasing.Normal;
             tbSellPrice.Depth = 0;
-            tbSellPrice.Dock = DockStyle.Fill;
+            tbSellPrice.Dock = DockStyle.Top;
             tbSellPrice.Enabled = false;
             tbSellPrice.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
             tbSellPrice.HideSelection = true;
@@ -633,7 +629,7 @@
             tbSellPrice.SelectionLength = 0;
             tbSellPrice.SelectionStart = 0;
             tbSellPrice.ShortcutsEnabled = true;
-            tbSellPrice.Size = new Size(217, 48);
+            tbSellPrice.Size = new Size(236, 48);
             tbSellPrice.TabIndex = 3;
             tbSellPrice.TabStop = false;
             tbSellPrice.TextAlign = HorizontalAlignment.Left;
@@ -659,10 +655,11 @@
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(mepArticleAdd);
             Name = "Article";
-            Size = new Size(811, 533);
+            Size = new Size(885, 575);
             mepArticleAdd.ResumeLayout(false);
             mepArticleAdd.PerformLayout();
-            tableLayoutPanel3.ResumeLayout(false);
+            tableLayoutPanel1.ResumeLayout(false);
+            tableLayoutPanel1.PerformLayout();
             gbRegisterData.ResumeLayout(false);
             gbRegisterData.PerformLayout();
             tableLayoutPanel4.ResumeLayout(false);
@@ -691,35 +688,35 @@
         #endregion
 
         private Controls.MaterialExpansionPanelNonCollapsible mepArticleAdd;
-        private TableLayoutPanel tableLayoutPanel3;
+        private TableLayoutPanel tableLayoutPanel1;
         private GroupBox gbRegisterData;
         private TableLayoutPanel tableLayoutPanel4;
-        private Panel panel6;
-        private ReaLTaiizor.Controls.MaterialTextBoxEdit tbStockCost;
-        private ReaLTaiizor.Controls.MaterialLabel materialLabel6;
+        private Panel panel1;
+        private ReaLTaiizor.Controls.MaterialTextBoxEdit cbArticleDescription;
+        private Panel panel5;
+        private ReaLTaiizor.Controls.MaterialTextBoxEdit cbArticleName;
+        private Panel panel2;
+        private ReaLTaiizor.Controls.HopeComboBox cbArticleCategory;
+        private ReaLTaiizor.Controls.MaterialLabel materialLabel2;
+        private Panel panel3;
+        private ReaLTaiizor.Controls.HopeComboBox cbArticleSubcategory;
+        private ReaLTaiizor.Controls.MaterialLabel materialLabel3;
         private Panel panel4;
         private ReaLTaiizor.Controls.MaterialTextBoxEdit tbStockQuantity;
         private ReaLTaiizor.Controls.MaterialLabel materialLabel5;
-        private Panel panel3;
-        private ReaLTaiizor.Controls.MaterialLabel materialLabel3;
-        private Panel panel2;
-        private ReaLTaiizor.Controls.MaterialLabel materialLabel2;
-        private Panel panel1;
-        private ReaLTaiizor.Controls.MaterialTextBoxEdit cbArticleDescription;
-        private ReaLTaiizor.Controls.MaterialLabel materialLabel1;
-        private Panel panel5;
-        private ReaLTaiizor.Controls.MaterialTextBoxEdit cbArticleName;
-        private ReaLTaiizor.Controls.MaterialLabel materialLabel4;
-        private Panel panel8;
-        private ReaLTaiizor.Controls.MaterialTextBoxEdit tbSellPrice;
-        private ReaLTaiizor.Controls.MaterialLabel materialLabel8;
+        private Panel panel6;
+        private ReaLTaiizor.Controls.MaterialTextBoxEdit tbStockCost;
+        private ReaLTaiizor.Controls.MaterialLabel materialLabel6;
         private Panel panel7;
         private ReaLTaiizor.Controls.MaterialTextBoxEdit tbCostProfit;
         private ReaLTaiizor.Controls.MaterialLabel materialLabel7;
-        private ReaLTaiizor.Controls.HopeComboBox cbArticleSubcategory;
-        private ReaLTaiizor.Controls.HopeComboBox cbArticleCategory;
+        private Panel panel8;
+        private ReaLTaiizor.Controls.MaterialTextBoxEdit tbSellPrice;
+        private ReaLTaiizor.Controls.MaterialLabel materialLabel8;
         private Panel panel9;
         private ReaLTaiizor.Controls.MaterialTextBoxEdit tbArticleCode;
         private ReaLTaiizor.Controls.MaterialLabel materialLabel9;
+        private ReaLTaiizor.Controls.MaterialLabel materialLabel1;
+        private ReaLTaiizor.Controls.MaterialLabel materialLabel4;
     }
 }

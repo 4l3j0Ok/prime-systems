@@ -25,14 +25,61 @@ namespace PrimeSystems.Controllers
             _stockController = new StockController(context);
         }
 
-        public List<SellModel> GetAll()
+        public List<SellModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
         {
-            return _context.Sell
+            var query = _context.Sell
                 .Include(v => v.User)
                 .Include(v => v.Client)
                 .Include(v => v.Detail)
-                .ToList();
+                .AsQueryable();
+
+            if (!includeInactive)
+            {
+                query = query.Where(v => v.Active);
+            }
+
+            query = query.OrderByDescending(v => v.Id);
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
+            }
+
+            return query.ToList();
         }
+
+        public List<SellModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        {
+            var query = _context.Sell
+                .Include(v => v.User)
+                .Include(v => v.Client)
+                .Include(v => v.Detail)
+                .AsQueryable();
+
+            if (!includeInactive)
+            {
+                query = query.Where(v => v.Active);
+            }
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower();
+                query = query.Where(v =>
+                    (v.Title != null && v.Title.ToLower().Contains(searchTerm)) ||
+                    (v.Description != null && v.Description.ToLower().Contains(searchTerm))
+                );
+            }
+
+            query = query.OrderByDescending(v => v.Id);
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
+            }
+
+            return query.ToList();
+        }
+
         public SellModel? GetById(int id)
         {
             return _context.Sell
@@ -47,6 +94,7 @@ namespace PrimeSystems.Controllers
         {
             try
             {
+                venta.Active = true;
                 _context.Sell.Add(venta);
                 _context.SaveChanges();
                 return true;
@@ -68,6 +116,12 @@ namespace PrimeSystems.Controllers
                 existing.UserId = venta.UserId;
                 existing.ClientId = venta.ClientId;
                 existing.Date = venta.Date;
+                existing.Active = venta.Active;
+                existing.Subtotal = venta.Subtotal;
+                existing.Discount = venta.Discount;
+                existing.Total = venta.Total;
+                existing.Title = venta.Title;
+                existing.Description = venta.Description;
 
                 _context.SaveChanges();
                 return true;
@@ -84,7 +138,9 @@ namespace PrimeSystems.Controllers
             {
                 var venta = _context.Sell.Find(id);
                 if (venta == null) return false;
-                _context.Sell.Remove(venta);
+                
+                // Baja lógica
+                venta.Active = false;
                 _context.SaveChanges();
                 return true;
             }
@@ -98,6 +154,7 @@ namespace PrimeSystems.Controllers
         {
             try
             {
+                venta.Active = true;
                 _context.Sell.Add(venta);
                 _context.SaveChanges();
 
@@ -138,6 +195,12 @@ namespace PrimeSystems.Controllers
                 existing.UserId = venta.UserId;
                 existing.ClientId = venta.ClientId;
                 existing.Date = venta.Date;
+                existing.Active = venta.Active;
+                existing.Subtotal = venta.Subtotal;
+                existing.Discount = venta.Discount;
+                existing.Total = venta.Total;
+                existing.Title = venta.Title;
+                existing.Description = venta.Description;
 
                 // Obtener los detalles anteriores para restaurar el stock
                 var oldDetails = _context.SellDetail.Where(d => d.SellId == venta.Id).ToList();

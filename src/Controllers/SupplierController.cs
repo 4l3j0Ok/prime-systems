@@ -22,9 +22,51 @@ namespace PrimeSystems.Controllers
             _context = context;
         }
 
-        public List<SupplierModel> GetAll()
+        public List<SupplierModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
         {
-            return _context.Supplier.ToList();
+            var query = _context.Supplier.AsQueryable();
+
+            if (!includeInactive)
+            {
+                query = query.Where(s => s.Active);
+            }
+
+            query = query.OrderBy(s => s.Id);
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
+            }
+
+            return query.ToList();
+        }
+
+        public List<SupplierModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        {
+            var query = _context.Supplier.AsQueryable();
+
+            if (!includeInactive)
+            {
+                query = query.Where(s => s.Active);
+            }
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower();
+                query = query.Where(s =>
+                    (s.Title != null && s.Title.ToLower().Contains(searchTerm)) ||
+                    (s.Description != null && s.Description.ToLower().Contains(searchTerm))
+                );
+            }
+
+            query = query.OrderBy(s => s.Id);
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
+            }
+
+            return query.ToList();
         }
 
         public SupplierModel? GetById(int id)
@@ -36,8 +78,15 @@ namespace PrimeSystems.Controllers
         {
             try
             {
+                proveedor.Active = true;
                 _context.Supplier.Add(proveedor);
                 _context.SaveChanges();
+                
+                // Set Title and Description after saving
+                proveedor.Title = proveedor.Name;
+                proveedor.Description = $"CUIT: {proveedor.Cuit?.ToString() ?? "N/A"} | Contacto: {proveedor.ContactName ?? "N/A"}";
+                _context.SaveChanges();
+                
                 return true;
             }
             catch (Exception ex)
@@ -60,6 +109,11 @@ namespace PrimeSystems.Controllers
                 existingProveedor.ContactName = proveedor.ContactName;
                 existingProveedor.Phone = proveedor.Phone;
                 existingProveedor.Email = proveedor.Email;
+                existingProveedor.Active = proveedor.Active;
+                
+                // Update Title and Description
+                existingProveedor.Title = proveedor.Name;
+                existingProveedor.Description = $"CUIT: {proveedor.Cuit?.ToString() ?? "N/A"} | Contacto: {proveedor.ContactName ?? "N/A"}";
 
                 _context.SaveChanges();
                 return true;
@@ -76,7 +130,9 @@ namespace PrimeSystems.Controllers
             {
                 var proveedor = _context.Supplier.Find(id);
                 if (proveedor == null) return false;
-                _context.Supplier.Remove(proveedor);
+                
+                // Baja lógica
+                proveedor.Active = false;
                 _context.SaveChanges();
                 return true;
             }

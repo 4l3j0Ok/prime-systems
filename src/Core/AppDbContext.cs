@@ -63,8 +63,8 @@ namespace PrimeSystems.Core
             // Configuración de relaciones para Stock
             modelBuilder.Entity<StockModel>()
                 .HasOne(s => s.Article)
-                .WithMany(a => a.Stock)
-                .HasForeignKey(s => s.ArticleId)
+                .WithOne(a => a.Stock)
+                .HasForeignKey<StockModel>(s => s.ArticleId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Configuración de relaciones para H_Movimientos
@@ -170,6 +170,8 @@ namespace PrimeSystems.Core
                         Name = "Administrador",
                         PurchasesPermission = AccessLevel.Write,
                         SellsPermission = AccessLevel.Write,
+                        ArticlePermissions = AccessLevel.Write,
+                        ActivityLogPermission = AccessLevel.Write,
                         FinancialStatePermission = AccessLevel.Write,
                         UserPermission = AccessLevel.Write
                     },
@@ -179,6 +181,8 @@ namespace PrimeSystems.Core
                         Name = "Vendedor",
                         PurchasesPermission = AccessLevel.Read,
                         SellsPermission = AccessLevel.Write,
+                        ArticlePermissions = AccessLevel.Read,
+                        ActivityLogPermission = AccessLevel.Read,
                         FinancialStatePermission = AccessLevel.Read,
                         UserPermission = AccessLevel.None
                     },
@@ -189,6 +193,8 @@ namespace PrimeSystems.Core
                         Name = "Gestor de Compras",
                         PurchasesPermission = AccessLevel.Write,
                         SellsPermission = AccessLevel.Read,
+                        ArticlePermissions = AccessLevel.Read,
+                        ActivityLogPermission = AccessLevel.Read,
                         FinancialStatePermission = AccessLevel.Read,
                         UserPermission = AccessLevel.None
                     }

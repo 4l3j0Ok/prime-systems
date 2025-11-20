@@ -22,12 +22,48 @@ namespace PrimeSystems.Controllers
             _context = context;
         }
 
-        public List<PurchaseDetailModel> GetAll()
+        public List<PurchaseDetailModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
         {
-            return _context.PurchaseDetail
+            var query = _context.PurchaseDetail
                 .Include(d => d.Purchase)
                 .Include(d => d.Article)
-                .ToList();
+                .AsQueryable();
+
+            query = query.OrderBy(d => d.Id);
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
+            }
+
+            return query.ToList();
+        }
+
+        public List<PurchaseDetailModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        {
+            var query = _context.PurchaseDetail
+                .Include(d => d.Purchase)
+                .Include(d => d.Article)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower();
+                query = query.Where(d =>
+                    (d.Description != null && d.Description.ToLower().Contains(searchTerm)) ||
+                    (d.Article != null && d.Article.Name != null && d.Article.Name.ToLower().Contains(searchTerm)) ||
+                    (d.Article != null && d.Article.Code.ToLower().Contains(searchTerm))
+                );
+            }
+
+            query = query.OrderBy(d => d.Id);
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
+            }
+
+            return query.ToList();
         }
 
         public PurchaseDetailModel? GetById(int id)

@@ -22,16 +22,59 @@ namespace PrimeSystems.Controllers
             _context = context;
         }
 
-        public List<ActivityRecordModel> GetAll()
+        public List<ActivityRecordModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
         {
-            return _context.Transaction
+            var query = _context.Transaction
                 .Include(t => t.User)
                 .Include(t => t.Sell)
                 .Include(t => t.Purchase)
                 .Include(t => t.Article)
                 .Include(t => t.Client)
                 .Include(t => t.Supplier)
-                .ToList();
+                .AsQueryable();
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
+            }
+
+            return query.ToList();
+        }
+
+        public List<ActivityRecordModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        {
+            var query = _context.Transaction
+                .Include(t => t.User)
+                .Include(t => t.Sell)
+                .Include(t => t.Purchase)
+                .Include(t => t.Article)
+                .Include(t => t.Client)
+                .Include(t => t.Supplier)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower();
+                query = query.Where(t =>
+                    (t.Module != null && t.Module.ToLower().Contains(searchTerm)) ||
+                    (t.Action != null && t.Action.ToLower().Contains(searchTerm)) ||
+                    (t.User != null && t.User.Username.ToLower().Contains(searchTerm))
+                );
+            }
+
+            query = query.OrderByDescending(t => t.Date);
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
+            }
+
+            return query.ToList();
+        }
+
+        public List<ActivityRecordModel> GetPaged(int pageNumber, int pageSize)
+        {
+            return GetAll(false, pageNumber, pageSize);
         }
 
         public ActivityRecordModel? GetById(int id)
@@ -71,7 +114,6 @@ namespace PrimeSystems.Controllers
                 .Include(t => t.Client)
                 .Include(t => t.Supplier)
                 .Where(t => modules.Contains(t.Module ?? string.Empty))
-                .OrderByDescending(t => t.Date)
                 .ToList();
         }
 
@@ -99,12 +141,41 @@ namespace PrimeSystems.Controllers
                 .Include(t => t.Article)
                 .Include(t => t.Client)
                 .Include(t => t.Supplier)
-                .Where(t => modules.Contains(t.Module ?? string.Empty) 
-                    && t.Date.HasValue 
-                    && t.Date.Value.Date >= dateFrom.Date 
+                .Where(t => modules.Contains(t.Module ?? string.Empty)
+                    && t.Date.HasValue
+                    && t.Date.Value.Date >= dateFrom.Date
                     && t.Date.Value.Date <= dateTo.Date)
-                .OrderByDescending(t => t.Date)
                 .ToList();
+        }
+
+        public List<ActivityRecordModel> GetRecordByModulesAndDateRangePaged(List<string> modules, DateTime dateFrom, DateTime dateTo, int pageNumber, int pageSize)
+        {
+            return _context.Transaction
+                .Include(t => t.User)
+                .Include(t => t.Sell)
+                    .ThenInclude(s => s.Client)
+                .Include(t => t.Purchase)
+                    .ThenInclude(p => p.Supplier)
+                .Include(t => t.Article)
+                .Include(t => t.Client)
+                .Include(t => t.Supplier)
+                .Where(t => modules.Contains(t.Module ?? string.Empty)
+                    && t.Date.HasValue
+                    && t.Date.Value.Date >= dateFrom.Date
+                    && t.Date.Value.Date <= dateTo.Date)
+                .Skip(pageNumber * pageSize)
+                .Take(pageSize)
+                .ToList();
+        }
+
+        public int GetTotalCountByModulesAndDateRange(List<string> modules, DateTime dateFrom, DateTime dateTo)
+        {
+            return _context.Transaction
+                .Where(t => modules.Contains(t.Module ?? string.Empty)
+                    && t.Date.HasValue
+                    && t.Date.Value.Date >= dateFrom.Date
+                    && t.Date.Value.Date <= dateTo.Date)
+                .Count();
         }
 
         public bool Create(ActivityRecordModel movimiento)

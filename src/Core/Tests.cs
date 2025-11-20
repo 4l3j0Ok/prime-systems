@@ -68,6 +68,8 @@ namespace PrimeSystems.Core
                 {
                     Id = "admin",
                     Name = "Administrador",
+                    Title = "Administrador",
+                    Description = "admin",
                     PurchasesPermission = AccessLevel.Write,
                     SellsPermission = AccessLevel.Write,
                     FinancialStatePermission = AccessLevel.Write,
@@ -77,6 +79,8 @@ namespace PrimeSystems.Core
                 {
                     Id = "vendedor",
                     Name = "Vendedor",
+                    Title = "Vendedor",
+                    Description = "vendedor",
                     PurchasesPermission = AccessLevel.Read,
                     SellsPermission = AccessLevel.Write,
                     FinancialStatePermission = AccessLevel.Read,
@@ -86,6 +90,8 @@ namespace PrimeSystems.Core
                 {
                     Id = "gestor_compras",
                     Name = "Gestor de Compras",
+                    Title = "Gestor de Compras",
+                    Description = "gestor_compras",
                     PurchasesPermission = AccessLevel.Write,
                     SellsPermission = AccessLevel.Read,
                     FinancialStatePermission = AccessLevel.Read,
@@ -106,6 +112,10 @@ namespace PrimeSystems.Core
                 return;
             }
 
+            var adminRole = _context.UserType.Find("admin");
+            var vendedorRole = _context.UserType.Find("vendedor");
+            var compradorRole = _context.UserType.Find("gestor_compras");
+
             var users = new List<UserModel>
             {
                 new UserModel
@@ -114,6 +124,8 @@ namespace PrimeSystems.Core
                     PasswordHash = "admin",
                     Name = "Juan",
                     LastName = "Administrador",
+                    Title = "admin",
+                    Description = "Juan Administrador - Administrador",
                     PersonId = 20123456,
                     Email = "admin@primesystems.com",
                     Phone = "2221234567",
@@ -126,6 +138,8 @@ namespace PrimeSystems.Core
                     PasswordHash = Utils.GenerateRandomString(12),
                     Name = "María",
                     LastName = "González",
+                    Title = "vendedor1",
+                    Description = "María González - Vendedor",
                     PersonId = 27654321,
                     Email = "maria.gonzalez@primesystems.com",
                     Phone = "2221234568",
@@ -138,6 +152,8 @@ namespace PrimeSystems.Core
                     PasswordHash = Utils.GenerateRandomString(12),
                     Name = "Carlos",
                     LastName = "Martínez",
+                    Title = "comprador1",
+                    Description = "Carlos Martínez - Gestor de Compras",
                     PersonId = 33987654,
                     Email = "carlos.martinez@primesystems.com",
                     Phone = "2221234569",
@@ -165,6 +181,8 @@ namespace PrimeSystems.Core
                 {
                     Cuit = 34567890,
                     Name = "Rodríguez",
+                    Title = "Rodríguez",
+                    Description = "CUIT: 34567890 | Entidad: Empresa Construcciones S.A.",
                     Entity = "Empresa Construcciones S.A.",
                     Phone = "2211234567",
                     Email = "construcciones@email.com"
@@ -173,6 +191,8 @@ namespace PrimeSystems.Core
                 {
                     Cuit = 45678901,
                     Name = "López",
+                    Title = "López",
+                    Description = "CUIT: 45678901 | Entidad: Comercio El Progreso",
                     Entity = "Comercio El Progreso",
                     Phone = "2211234568",
                     Email = "progreso@email.com"
@@ -181,6 +201,8 @@ namespace PrimeSystems.Core
                 {
                     Cuit = 56789012,
                     Name = "Fernández",
+                    Title = "Fernández",
+                    Description = "CUIT: 56789012 | Entidad: Ferretería Central",
                     Entity = "Ferretería Central",
                     Phone = "2211234569",
                     Email = "ferreteria@email.com"
@@ -189,6 +211,8 @@ namespace PrimeSystems.Core
                 {
                     Cuit = 67890123,
                     Name = "García",
+                    Title = "García",
+                    Description = "CUIT: 67890123 | Entidad: Mayorista Del Sur",
                     Entity = "Mayorista Del Sur",
                     Phone = "2211234570",
                     Email = "mayorista@email.com"
@@ -197,6 +221,8 @@ namespace PrimeSystems.Core
                 {
                     Cuit = 78901234,
                     Name = "Pérez",
+                    Title = "Pérez",
+                    Description = "CUIT: 78901234 | Entidad: N/A",
                     Entity = null,
                     Phone = "2211234571",
                     Email = "perez@email.com"
@@ -222,6 +248,8 @@ namespace PrimeSystems.Core
                 {
                     Cuit = 67890123,
                     Name = "Distribuidora Piola",
+                    Title = "Distribuidora Piola",
+                    Description = "CUIT: 67890123 | Contacto: Roberto Silva",
                     ContactName = "Roberto Silva",
                     Phone = "1145678901",
                     Email = "contacto@distropiola.com"
@@ -230,6 +258,8 @@ namespace PrimeSystems.Core
                 {
                     Cuit = 78901234,
                     Name = "Tecnología Piola",
+                    Title = "Tecnología Piola",
+                    Description = "CUIT: 78901234 | Contacto: Ana Morales",
                     ContactName = "Ana Morales",
                     Phone = "1145678902",
                     Email = "contacto@tecnopiola.com"
@@ -238,6 +268,8 @@ namespace PrimeSystems.Core
                 {
                     Cuit = 89012345,
                     Name = "Mayorista Piola",
+                    Title = "Mayorista Piola",
+                    Description = "CUIT: 89012345 | Contacto: Diego Castro",
                     ContactName = "Diego Castro",
                     Phone = "1145678903",
                     Email = "contacto@mayoristapiola.com"
@@ -246,6 +278,8 @@ namespace PrimeSystems.Core
                 {
                     Cuit = 90123456,
                     Name = "Electronica Piola",
+                    Title = "Electronica Piola",
+                    Description = "CUIT: 90123456 | Contacto: Laura Benítez",
                     ContactName = "Laura Benítez",
                     Phone = "1145678904",
                     Email = "contacto@electropiola.com"
@@ -330,6 +364,7 @@ namespace PrimeSystems.Core
                 {
                     Code = "HM001",
                     Name = "Martillo de Carpintero 16 oz",
+                    Title = "Martillo de Carpintero 16 oz",
                     Description = "Martillo con mango de fibra de vidrio",
                     CategoryId = 1,
                     SubcategoryId = subcategories.First(s => s.Name == "Manuales").Id,
@@ -339,6 +374,7 @@ namespace PrimeSystems.Core
                 {
                     Code = "HM002",
                     Name = "Destornillador Phillips #2",
+                    Title = "Destornillador Phillips #2",
                     Description = "Destornillador punta phillips profesional",
                     CategoryId = 1,
                     SubcategoryId = subcategories.First(s => s.Name == "Manuales").Id,
@@ -348,6 +384,7 @@ namespace PrimeSystems.Core
                 {
                     Code = "HM003",
                     Name = "Alicate Universal 8\"",
+                    Title = "Alicate Universal 8\"",
                     Description = "Alicate con mango ergonómico",
                     CategoryId = 1,
                     SubcategoryId = subcategories.First(s => s.Name == "Manuales").Id,
@@ -358,6 +395,7 @@ namespace PrimeSystems.Core
                 {
                     Code = "HE001",
                     Name = "Taladro Percutor 600W",
+                    Title = "Taladro Percutor 600W",
                     Description = "Taladro eléctrico con velocidad variable",
                     CategoryId = 1,
                     SubcategoryId = subcategories.First(s => s.Name == "Eléctricas").Id,
@@ -367,6 +405,7 @@ namespace PrimeSystems.Core
                 {
                     Code = "HE002",
                     Name = "Amoladora Angular 4.5\" 850W",
+                    Title = "Amoladora Angular 4.5\" 850W",
                     Description = "Amoladora con protector de disco",
                     CategoryId = 1,
                     SubcategoryId = subcategories.First(s => s.Name == "Eléctricas").Id,
@@ -377,6 +416,7 @@ namespace PrimeSystems.Core
                 {
                     Code = "HMD001",
                     Name = "Cinta Métrica 5m",
+                    Title = "Cinta Métrica 5m",
                     Description = "Cinta métrica con freno automático",
                     CategoryId = 1,
                     SubcategoryId = subcategories.First(s => s.Name == "Medición").Id,
@@ -386,6 +426,7 @@ namespace PrimeSystems.Core
                 {
                     Code = "HMD002",
                     Name = "Nivel de Burbuja 60cm",
+                    Title = "Nivel de Burbuja 60cm",
                     Description = "Nivel de aluminio con 3 burbujas",
                     CategoryId = 1,
                     SubcategoryId = subcategories.First(s => s.Name == "Medición").Id,
@@ -396,6 +437,7 @@ namespace PrimeSystems.Core
                 {
                     Code = "EC001",
                     Name = "Resistencias 1/4W Kit x100",
+                    Title = "Resistencias 1/4W Kit x100",
                     Description = "Kit de resistencias valores variados",
                     CategoryId = 2,
                     SubcategoryId = subcategories.First(s => s.Name == "Componentes").Id,
@@ -405,6 +447,7 @@ namespace PrimeSystems.Core
                 {
                     Code = "EC002",
                     Name = "LED 5mm Blanco x10",
+                    Title = "LED 5mm Blanco x10",
                     Description = "Pack de 10 LEDs blancos de alta luminosidad",
                     CategoryId = 2,
                     SubcategoryId = subcategories.First(s => s.Name == "Componentes").Id,
@@ -415,6 +458,7 @@ namespace PrimeSystems.Core
                 {
                     Code = "ECB001",
                     Name = "Cable Unipolar 2.5mm x 100m",
+                    Title = "Cable Unipolar 2.5mm x 100m",
                     Description = "Cable de cobre para instalaciones",
                     CategoryId = 2,
                     SubcategoryId = subcategories.First(s => s.Name == "Cables").Id,
@@ -425,6 +469,7 @@ namespace PrimeSystems.Core
                 {
                     Code = "EI001",
                     Name = "Lámpara LED 9W Luz Fría",
+                    Title = "Lámpara LED 9W Luz Fría",
                     Description = "Lámpara LED bajo consumo",
                     CategoryId = 2,
                     SubcategoryId = subcategories.First(s => s.Name == "Iluminación").Id,
@@ -435,6 +480,7 @@ namespace PrimeSystems.Core
                 {
                     Code = "CC001",
                     Name = "Cemento Portland 50kg",
+                    Title = "Cemento Portland 50kg",
                     Description = "Cemento para construcción general",
                     CategoryId = 3,
                     SubcategoryId = subcategories.First(s => s.Name == "Cemento y Mezclas").Id,
@@ -444,6 +490,7 @@ namespace PrimeSystems.Core
                 {
                     Code = "CC002",
                     Name = "Cal Hidratada 25kg",
+                    Title = "Cal Hidratada 25kg",
                     Description = "Cal para mezclas y revoques",
                     CategoryId = 3,
                     SubcategoryId = subcategories.First(s => s.Name == "Cemento y Mezclas").Id,
@@ -454,6 +501,7 @@ namespace PrimeSystems.Core
                 {
                     Code = "CP001",
                     Name = "Pintura Látex Interior Blanco 20L",
+                    Title = "Pintura Látex Interior Blanco 20L",
                     Description = "Pintura látex lavable",
                     CategoryId = 3,
                     SubcategoryId = subcategories.First(s => s.Name == "Pinturas").Id,
@@ -464,6 +512,7 @@ namespace PrimeSystems.Core
                 {
                     Code = "FT001",
                     Name = "Tornillo Autoperforante 8x1\" x100",
+                    Title = "Tornillo Autoperforante 8x1\" x100",
                     Description = "Tornillos para metal y madera",
                     CategoryId = 5,
                     SubcategoryId = subcategories.First(s => s.Name == "Tornillería").Id,
@@ -473,6 +522,7 @@ namespace PrimeSystems.Core
                 {
                     Code = "FT002",
                     Name = "Tarugos Plásticos 8mm x100",
+                    Title = "Tarugos Plásticos 8mm x100",
                     Description = "Tarugos para pared",
                     CategoryId = 5,
                     SubcategoryId = subcategories.First(s => s.Name == "Tornillería").Id,
@@ -483,6 +533,7 @@ namespace PrimeSystems.Core
                 {
                     Code = "FC001",
                     Name = "Candado Laminado 50mm",
+                    Title = "Candado Laminado 50mm",
                     Description = "Candado con arco de acero templado",
                     CategoryId = 5,
                     SubcategoryId = subcategories.First(s => s.Name == "Candados y Cerraduras").Id,
@@ -493,6 +544,7 @@ namespace PrimeSystems.Core
                 {
                     Code = "OP001",
                     Name = "Resma A4 75gr x500",
+                    Title = "Resma A4 75gr x500",
                     Description = "Resma de papel blanco",
                     CategoryId = 4,
                     SubcategoryId = subcategories.First(s => s.Name == "Papelería").Id,
@@ -502,6 +554,7 @@ namespace PrimeSystems.Core
                 {
                     Code = "OE001",
                     Name = "Lapicera Azul x12",
+                    Title = "Lapicera Azul x12",
                     Description = "Pack de lapiceras de tinta azul",
                     CategoryId = 4,
                     SubcategoryId = subcategories.First(s => s.Name == "Escritura").Id,
@@ -590,6 +643,13 @@ namespace PrimeSystems.Core
             };
 
             _context.Purchase.AddRange(purchases);
+            _context.SaveChanges();
+            foreach (var purchase in purchases)
+            {
+                var supplier = _context.Supplier.Find(purchase.SupplierId);
+                purchase.Title = $"Compra #{purchase.Id}";
+                purchase.Description = $"Proveedor: {supplier?.Name ?? "N/A"} | Total: ${purchase.Total} | Fecha: {DateTime.Parse(purchase.Date):dd/MM/yyyy}";
+            }
             _context.SaveChanges();
 
             var purchaseDetails = new List<PurchaseDetailModel>();
@@ -704,6 +764,14 @@ namespace PrimeSystems.Core
             };
 
             _context.Sell.AddRange(sells);
+            _context.SaveChanges();
+
+            foreach (var sell in sells)
+            {
+                var client = _context.Client.Find(sell.ClientId);
+                sell.Title = $"Venta #{sell.Id}";
+                sell.Description = $"Cliente: {client?.Name ?? "N/A"} | Total: ${sell.Total} | Fecha: {DateTime.Parse(sell.Date):dd/MM/yyyy}";
+            }
             _context.SaveChanges();
 
             var sellDetails = new List<SellDetailModel>();

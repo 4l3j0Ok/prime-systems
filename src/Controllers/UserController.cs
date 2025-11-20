@@ -24,11 +24,55 @@ namespace PrimeSystems.Controllers
             _context = context;
         }
 
-        public List<UserModel> GetAll()
+        public List<UserModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
         {
-            return _context.User
+            var query = _context.User
                 .Include(u => u.Role)
-                .ToList();
+                .AsQueryable();
+
+            if (!includeInactive)
+            {
+                query = query.Where(u => u.Active);
+            }
+
+            query = query.OrderBy(u => u.Id);
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
+            }
+
+            return query.ToList();
+        }
+
+        public List<UserModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        {
+            var query = _context.User
+                .Include(u => u.Role)
+                .AsQueryable();
+
+            if (!includeInactive)
+            {
+                query = query.Where(u => u.Active);
+            }
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower();
+                query = query.Where(u =>
+                    (u.Title != null && u.Title.ToLower().Contains(searchTerm)) ||
+                    (u.Description != null && u.Description.ToLower().Contains(searchTerm))
+                );
+            }
+
+            query = query.OrderBy(u => u.Id);
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
+            }
+
+            return query.ToList();
         }
 
         public UserModel? GetByUsername(string username)
@@ -66,8 +110,15 @@ namespace PrimeSystems.Controllers
                 if (user.PersonId.HasValue && _context.User.Any(u => u.PersonId == user.PersonId))
                     return false;
 
+                user.Active = true;
                 _context.User.Add(user);
                 _context.SaveChanges();
+                
+                // Set Title and Description after saving
+                user.Title = user.Username;
+                user.Description = $"{user.Name} {user.LastName} - {user.Role?.Name ?? "Sin rol"}";
+                _context.SaveChanges();
+                
                 return true;
             }
             catch (Exception ex)
@@ -90,6 +141,7 @@ namespace PrimeSystems.Controllers
                     return false;
                 if (user.PersonId.HasValue && _context.User.Any(u => u.PersonId == user.PersonId && u.Id != user.Id))
                     return false;
+                    
                 existingUser.Username = user.Username;
                 existingUser.PasswordHash = user.PasswordHash;
                 existingUser.Name = user.Name;
@@ -99,6 +151,12 @@ namespace PrimeSystems.Controllers
                 existingUser.PersonId = user.PersonId;
                 existingUser.ProfilePicture = user.ProfilePicture;
                 existingUser.RoleId = user.RoleId;
+                existingUser.Active = user.Active;
+                
+                // Update Title and Description
+                existingUser.Title = user.Username;
+                existingUser.Description = $"{user.Name} {user.LastName} - {user.Role?.Name ?? "Sin rol"}";
+                
                 _context.SaveChanges();
                 return true;
             }
@@ -114,7 +172,9 @@ namespace PrimeSystems.Controllers
             {
                 var user = _context.User.Find(id);
                 if (user == null) return false;
-                _context.User.Remove(user);
+                
+                // Baja lógica
+                user.Active = false;
                 _context.SaveChanges();
                 return true;
             }

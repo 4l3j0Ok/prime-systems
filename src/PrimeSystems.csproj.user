@@ -26,6 +26,9 @@
     <Compile Update="Views\Controls\MaterialExpansionPanelNonCollapsible.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Update="Views\Controls\Filters.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="Views\Controls\SupplierArticleItem.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -64,6 +67,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Update="Views\Forms\Main.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>

@@ -21,9 +21,51 @@ namespace PrimeSystems.Controllers
             _context = context;
         }
 
-        public List<RoleModel> GetAll()
+        public List<RoleModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
         {
-            return _context.UserType.ToList();
+            var query = _context.UserType.AsQueryable();
+
+            if (!includeInactive)
+            {
+                query = query.Where(r => r.Active);
+            }
+
+            query = query.OrderBy(r => r.Id);
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
+            }
+
+            return query.ToList();
+        }
+
+        public List<RoleModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        {
+            var query = _context.UserType.AsQueryable();
+
+            if (!includeInactive)
+            {
+                query = query.Where(r => r.Active);
+            }
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower();
+                query = query.Where(r =>
+                    (r.Title != null && r.Title.ToLower().Contains(searchTerm)) ||
+                    (r.Description != null && r.Description.ToLower().Contains(searchTerm))
+                );
+            }
+
+            query = query.OrderBy(r => r.Id);
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
+            }
+
+            return query.ToList();
         }
 
         public RoleModel? GetById(string id)
@@ -44,8 +86,15 @@ namespace PrimeSystems.Controllers
                 if (_context.UserType.Any(ut => ut.Id == usuarioTipo.Id))
                     return false;
 
+                usuarioTipo.Active = true;
                 _context.UserType.Add(usuarioTipo);
                 _context.SaveChanges();
+
+                // Set Title and Description after saving
+                usuarioTipo.Title = usuarioTipo.Name;
+                usuarioTipo.Description = usuarioTipo.Id;
+                _context.SaveChanges();
+
                 return true;
             }
             catch (Exception ex)
@@ -66,8 +115,15 @@ namespace PrimeSystems.Controllers
                 existingRole.Name = role.Name;
                 existingRole.SellsPermission = role.SellsPermission;
                 existingRole.PurchasesPermission = role.PurchasesPermission;
+                existingRole.ArticlePermissions = role.ArticlePermissions;
+                existingRole.ActivityLogPermission = role.ActivityLogPermission;
                 existingRole.FinancialStatePermission = role.FinancialStatePermission;
                 existingRole.UserPermission = role.UserPermission;
+                existingRole.Active = role.Active;
+
+                // Update Title and Description
+                existingRole.Title = role.Name;
+                existingRole.Description = role.Id;
 
                 _context.SaveChanges();
                 return true;
@@ -84,7 +140,9 @@ namespace PrimeSystems.Controllers
             {
                 var usuarioTipo = _context.UserType.Find(id);
                 if (usuarioTipo == null) return false;
-                _context.UserType.Remove(usuarioTipo);
+
+                // Baja lógica
+                usuarioTipo.Active = false;
                 _context.SaveChanges();
                 return true;
             }

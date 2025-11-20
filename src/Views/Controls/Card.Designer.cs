@@ -47,8 +47,9 @@ namespace PrimeSystems.Views.Controls
             lblTitle = new ReaLTaiizor.Controls.MaterialLabel();
             tableLayoutPanel3 = new TableLayoutPanel();
             btnRemove = new ReaLTaiizor.Controls.MaterialButton();
-            btnEdit = new ReaLTaiizor.Controls.MaterialButton();
             materialCheckBox1 = new ReaLTaiizor.Controls.MaterialCheckBox();
+            btnPreview = new ReaLTaiizor.Controls.MaterialButton();
+            btnEdit = new ReaLTaiizor.Controls.MaterialButton();
             tableLayoutPanel1.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             panel1.SuspendLayout();
@@ -118,7 +119,7 @@ namespace PrimeSystems.Views.Controls
             panel1.Margin = new Padding(0, 4, 0, 5);
             panel1.Name = "panel1";
             panel1.Padding = new Padding(4);
-            panel1.Size = new Size(624, 43);
+            panel1.Size = new Size(492, 43);
             panel1.TabIndex = 3;
             // 
             // lblDescription
@@ -130,7 +131,7 @@ namespace PrimeSystems.Views.Controls
             lblDescription.Location = new Point(4, 23);
             lblDescription.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             lblDescription.Name = "lblDescription";
-            lblDescription.Size = new Size(616, 14);
+            lblDescription.Size = new Size(484, 14);
             lblDescription.TabIndex = 7;
             lblDescription.Text = "Descripcion";
             // 
@@ -143,26 +144,28 @@ namespace PrimeSystems.Views.Controls
             lblTitle.Location = new Point(4, 4);
             lblTitle.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             lblTitle.Name = "lblTitle";
-            lblTitle.Size = new Size(616, 19);
+            lblTitle.Size = new Size(484, 19);
             lblTitle.TabIndex = 0;
             lblTitle.Text = "Título";
             // 
             // tableLayoutPanel3
             // 
-            tableLayoutPanel3.ColumnCount = 2;
-            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tableLayoutPanel3.Controls.Add(btnRemove, 1, 0);
-            tableLayoutPanel3.Controls.Add(btnEdit, 0, 0);
+            tableLayoutPanel3.AutoSize = true;
+            tableLayoutPanel3.ColumnCount = 3;
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanel3.Controls.Add(btnEdit, 1, 0);
+            tableLayoutPanel3.Controls.Add(btnPreview, 0, 0);
+            tableLayoutPanel3.Controls.Add(btnRemove, 2, 0);
             tableLayoutPanel3.Dock = DockStyle.Fill;
-            tableLayoutPanel3.Location = new Point(624, 0);
+            tableLayoutPanel3.Location = new Point(492, 0);
             tableLayoutPanel3.Margin = new Padding(0);
-            tableLayoutPanel3.MaximumSize = new Size(266, 0);
             tableLayoutPanel3.Name = "tableLayoutPanel3";
             tableLayoutPanel3.Padding = new Padding(0, 3, 0, 3);
             tableLayoutPanel3.RowCount = 1;
-            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel3.Size = new Size(266, 52);
+            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel3.Size = new Size(398, 52);
             tableLayoutPanel3.TabIndex = 4;
             // 
             // btnRemove
@@ -171,43 +174,20 @@ namespace PrimeSystems.Views.Controls
             btnRemove.Cursor = Cursors.Hand;
             btnRemove.Density = ReaLTaiizor.Controls.MaterialButton.MaterialButtonDensity.Default;
             btnRemove.Depth = 0;
-            btnRemove.Dock = DockStyle.Fill;
             btnRemove.HighEmphasis = true;
             btnRemove.Icon = Properties.Resources.trash;
             btnRemove.IconType = ReaLTaiizor.Controls.MaterialButton.MaterialIconType.Rebase;
-            btnRemove.Location = new Point(137, 9);
+            btnRemove.Location = new Point(277, 9);
             btnRemove.Margin = new Padding(4, 6, 4, 6);
             btnRemove.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             btnRemove.Name = "btnRemove";
             btnRemove.NoAccentTextColor = Color.Empty;
-            btnRemove.Size = new Size(125, 34);
+            btnRemove.Size = new Size(117, 34);
             btnRemove.TabIndex = 6;
             btnRemove.Text = "Remover";
             btnRemove.Type = ReaLTaiizor.Controls.MaterialButton.MaterialButtonType.Contained;
-            btnRemove.UseAccentColor = true;
+            btnRemove.UseAccentColor = false;
             btnRemove.UseVisualStyleBackColor = true;
-            // 
-            // btnEdit
-            // 
-            btnEdit.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            btnEdit.Cursor = Cursors.Hand;
-            btnEdit.Density = ReaLTaiizor.Controls.MaterialButton.MaterialButtonDensity.Default;
-            btnEdit.Depth = 0;
-            btnEdit.Dock = DockStyle.Fill;
-            btnEdit.HighEmphasis = true;
-            btnEdit.Icon = Properties.Resources.edit;
-            btnEdit.IconType = ReaLTaiizor.Controls.MaterialButton.MaterialIconType.Rebase;
-            btnEdit.Location = new Point(4, 9);
-            btnEdit.Margin = new Padding(4, 6, 4, 6);
-            btnEdit.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
-            btnEdit.Name = "btnEdit";
-            btnEdit.NoAccentTextColor = Color.Empty;
-            btnEdit.Size = new Size(125, 34);
-            btnEdit.TabIndex = 5;
-            btnEdit.Text = "Editar";
-            btnEdit.Type = ReaLTaiizor.Controls.MaterialButton.MaterialButtonType.Contained;
-            btnEdit.UseAccentColor = false;
-            btnEdit.UseVisualStyleBackColor = true;
             // 
             // materialCheckBox1
             // 
@@ -227,6 +207,48 @@ namespace PrimeSystems.Views.Controls
             materialCheckBox1.UseVisualStyleBackColor = true;
             materialCheckBox1.Visible = false;
             // 
+            // btnPreview
+            // 
+            btnPreview.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            btnPreview.Cursor = Cursors.Hand;
+            btnPreview.Density = ReaLTaiizor.Controls.MaterialButton.MaterialButtonDensity.Default;
+            btnPreview.Depth = 0;
+            btnPreview.HighEmphasis = true;
+            btnPreview.Icon = Properties.Resources.preview;
+            btnPreview.IconType = ReaLTaiizor.Controls.MaterialButton.MaterialIconType.Rebase;
+            btnPreview.Location = new Point(4, 9);
+            btnPreview.Margin = new Padding(4, 6, 4, 6);
+            btnPreview.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
+            btnPreview.Name = "btnPreview";
+            btnPreview.NoAccentTextColor = Color.Empty;
+            btnPreview.Size = new Size(158, 34);
+            btnPreview.TabIndex = 7;
+            btnPreview.Text = "Previsualizar";
+            btnPreview.Type = ReaLTaiizor.Controls.MaterialButton.MaterialButtonType.Contained;
+            btnPreview.UseAccentColor = false;
+            btnPreview.UseVisualStyleBackColor = true;
+            // 
+            // btnEdit
+            // 
+            btnEdit.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            btnEdit.Cursor = Cursors.Hand;
+            btnEdit.Density = ReaLTaiizor.Controls.MaterialButton.MaterialButtonDensity.Default;
+            btnEdit.Depth = 0;
+            btnEdit.HighEmphasis = true;
+            btnEdit.Icon = Properties.Resources.edit;
+            btnEdit.IconType = ReaLTaiizor.Controls.MaterialButton.MaterialIconType.Rebase;
+            btnEdit.Location = new Point(170, 9);
+            btnEdit.Margin = new Padding(4, 6, 4, 6);
+            btnEdit.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
+            btnEdit.Name = "btnEdit";
+            btnEdit.NoAccentTextColor = Color.Empty;
+            btnEdit.Size = new Size(99, 34);
+            btnEdit.TabIndex = 8;
+            btnEdit.Text = "Editar";
+            btnEdit.Type = ReaLTaiizor.Controls.MaterialButton.MaterialButtonType.Contained;
+            btnEdit.UseAccentColor = false;
+            btnEdit.UseVisualStyleBackColor = true;
+            // 
             // Card
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -239,6 +261,7 @@ namespace PrimeSystems.Views.Controls
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
             tableLayoutPanel2.ResumeLayout(false);
+            tableLayoutPanel2.PerformLayout();
             panel1.ResumeLayout(false);
             tableLayoutPanel3.ResumeLayout(false);
             tableLayoutPanel3.PerformLayout();
@@ -255,7 +278,8 @@ namespace PrimeSystems.Views.Controls
         public ReaLTaiizor.Controls.MaterialLabel lblTitle;
         private TableLayoutPanel tableLayoutPanel3;
         private ReaLTaiizor.Controls.MaterialButton btnRemove;
-        private ReaLTaiizor.Controls.MaterialButton btnEdit;
         private ReaLTaiizor.Controls.MaterialCheckBox materialCheckBox1;
+        private ReaLTaiizor.Controls.MaterialButton btnEdit;
+        private ReaLTaiizor.Controls.MaterialButton btnPreview;
     }
 }

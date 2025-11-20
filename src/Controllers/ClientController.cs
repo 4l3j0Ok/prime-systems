@@ -22,9 +22,51 @@ namespace PrimeSystems.Controllers
             _context = context;
         }
 
-        public List<ClientModel> GetAll()
+        public List<ClientModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
         {
-            return _context.Client.ToList();
+            var query = _context.Client.AsQueryable();
+
+            if (!includeInactive)
+            {
+                query = query.Where(c => c.Active);
+            }
+
+            query = query.OrderBy(c => c.Id);
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
+            }
+
+            return query.ToList();
+        }
+
+        public List<ClientModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        {
+            var query = _context.Client.AsQueryable();
+
+            if (!includeInactive)
+            {
+                query = query.Where(c => c.Active);
+            }
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower();
+                query = query.Where(c =>
+                    (c.Title != null && c.Title.ToLower().Contains(searchTerm)) ||
+                    (c.Description != null && c.Description.ToLower().Contains(searchTerm))
+                );
+            }
+
+            query = query.OrderBy(c => c.Id);
+
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
+            }
+
+            return query.ToList();
         }
 
         public ClientModel? GetById(int id)
@@ -36,8 +78,15 @@ namespace PrimeSystems.Controllers
         {
             try
             {
+                cliente.Active = true;
                 _context.Client.Add(cliente);
                 _context.SaveChanges();
+                
+                // Set Title and Description after saving
+                cliente.Title = cliente.Name;
+                cliente.Description = $"CUIT: {cliente.Cuit?.ToString() ?? "N/A"} | Entidad: {cliente.Entity ?? "N/A"}";
+                _context.SaveChanges();
+                
                 return true;
             }
             catch (Exception ex)
@@ -60,6 +109,11 @@ namespace PrimeSystems.Controllers
                 existingCliente.Entity = cliente.Entity;
                 existingCliente.Phone = cliente.Phone;
                 existingCliente.Email = cliente.Email;
+                existingCliente.Active = cliente.Active;
+                
+                // Update Title and Description
+                existingCliente.Title = cliente.Name;
+                existingCliente.Description = $"CUIT: {cliente.Cuit?.ToString() ?? "N/A"} | Entidad: {cliente.Entity ?? "N/A"}";
 
                 _context.SaveChanges();
                 return true;
@@ -76,7 +130,9 @@ namespace PrimeSystems.Controllers
             {
                 var cliente = _context.Client.Find(id);
                 if (cliente == null) return false;
-                _context.Client.Remove(cliente);
+                
+                // Baja lógica
+                cliente.Active = false;
                 _context.SaveChanges();
                 return true;
             }
