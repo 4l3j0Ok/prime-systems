@@ -153,6 +153,16 @@ namespace PrimeSystems.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap password {
+            get {
+                object obj = ResourceManager.GetObject("password", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap preview {
             get {
                 object obj = ResourceManager.GetObject("preview", resourceCulture);
@@ -186,6 +196,16 @@ namespace PrimeSystems.Properties {
         internal static System.Drawing.Bitmap sell_placeholder {
             get {
                 object obj = ResourceManager.GetObject("sell-placeholder", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap sql_server {
+            get {
+                object obj = ResourceManager.GetObject("sql-server", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

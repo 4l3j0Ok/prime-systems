@@ -32,12 +32,6 @@ namespace PrimeSystems
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Login));
-            panel1 = new Panel();
-            tbUsuario = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
-            lblUsuario = new ReaLTaiizor.Controls.MaterialLabel();
-            panel2 = new Panel();
-            tbContrasena = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
-            lblContrasenia = new ReaLTaiizor.Controls.MaterialLabel();
             btnLogin = new ReaLTaiizor.Controls.MaterialButton();
             tableLayoutPanel1 = new TableLayoutPanel();
             pictureBox1 = new PictureBox();
@@ -46,132 +40,14 @@ namespace PrimeSystems
             tableLayoutPanel3 = new TableLayoutPanel();
             lblAppName = new ReaLTaiizor.Controls.MaterialLabel();
             materialLabel1 = new ReaLTaiizor.Controls.MaterialLabel();
-            panel1.SuspendLayout();
-            panel2.SuspendLayout();
+            tbUsername = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
+            tbPassword = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
             tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             tableLayoutPanel2.SuspendLayout();
             panel3.SuspendLayout();
             tableLayoutPanel3.SuspendLayout();
             SuspendLayout();
-            // 
-            // panel1
-            // 
-            panel1.Controls.Add(tbUsuario);
-            panel1.Controls.Add(lblUsuario);
-            panel1.Dock = DockStyle.Fill;
-            panel1.Location = new Point(0, 156);
-            panel1.Margin = new Padding(0);
-            panel1.Name = "panel1";
-            panel1.Padding = new Padding(20, 0, 20, 0);
-            panel1.Size = new Size(449, 90);
-            panel1.TabIndex = 6;
-            // 
-            // tbUsuario
-            // 
-            tbUsuario.AnimateReadOnly = false;
-            tbUsuario.AutoCompleteMode = AutoCompleteMode.None;
-            tbUsuario.AutoCompleteSource = AutoCompleteSource.None;
-            tbUsuario.BackgroundImageLayout = ImageLayout.None;
-            tbUsuario.CharacterCasing = CharacterCasing.Normal;
-            tbUsuario.Depth = 0;
-            tbUsuario.Dock = DockStyle.Fill;
-            tbUsuario.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
-            tbUsuario.HideSelection = true;
-            tbUsuario.LeadingIcon = null;
-            tbUsuario.Location = new Point(20, 19);
-            tbUsuario.Margin = new Padding(3, 3, 26, 3);
-            tbUsuario.MaxLength = 20;
-            tbUsuario.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
-            tbUsuario.Name = "tbUsuario";
-            tbUsuario.Padding = new Padding(9, 8, 9, 8);
-            tbUsuario.PasswordChar = '\0';
-            tbUsuario.PrefixSuffixText = null;
-            tbUsuario.ReadOnly = false;
-            tbUsuario.RightToLeft = RightToLeft.No;
-            tbUsuario.SelectedText = "";
-            tbUsuario.SelectionLength = 0;
-            tbUsuario.SelectionStart = 0;
-            tbUsuario.ShortcutsEnabled = true;
-            tbUsuario.Size = new Size(409, 48);
-            tbUsuario.TabIndex = 1;
-            tbUsuario.TabStop = false;
-            tbUsuario.TextAlign = HorizontalAlignment.Left;
-            tbUsuario.TrailingIcon = null;
-            tbUsuario.UseSystemPasswordChar = false;
-            tbUsuario.KeyPress += tbHandleEnter;
-            tbUsuario.TextChanged += tbCredentials_TextChanged;
-            // 
-            // lblUsuario
-            // 
-            lblUsuario.AutoSize = true;
-            lblUsuario.Depth = 0;
-            lblUsuario.Dock = DockStyle.Top;
-            lblUsuario.Font = new Font("Roboto", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
-            lblUsuario.Location = new Point(20, 0);
-            lblUsuario.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
-            lblUsuario.Name = "lblUsuario";
-            lblUsuario.Size = new Size(55, 19);
-            lblUsuario.TabIndex = 4;
-            lblUsuario.Text = "Usuario";
-            // 
-            // panel2
-            // 
-            panel2.Controls.Add(tbContrasena);
-            panel2.Controls.Add(lblContrasenia);
-            panel2.Dock = DockStyle.Fill;
-            panel2.Location = new Point(0, 246);
-            panel2.Margin = new Padding(0);
-            panel2.Name = "panel2";
-            panel2.Padding = new Padding(20, 0, 20, 0);
-            panel2.Size = new Size(449, 90);
-            panel2.TabIndex = 7;
-            // 
-            // tbContrasena
-            // 
-            tbContrasena.AnimateReadOnly = false;
-            tbContrasena.AutoCompleteMode = AutoCompleteMode.None;
-            tbContrasena.AutoCompleteSource = AutoCompleteSource.None;
-            tbContrasena.BackgroundImageLayout = ImageLayout.None;
-            tbContrasena.CharacterCasing = CharacterCasing.Normal;
-            tbContrasena.Depth = 0;
-            tbContrasena.Dock = DockStyle.Top;
-            tbContrasena.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
-            tbContrasena.HideSelection = true;
-            tbContrasena.LeadingIcon = null;
-            tbContrasena.Location = new Point(20, 19);
-            tbContrasena.MaxLength = 40;
-            tbContrasena.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
-            tbContrasena.Name = "tbContrasena";
-            tbContrasena.PasswordChar = '•';
-            tbContrasena.PrefixSuffixText = null;
-            tbContrasena.ReadOnly = false;
-            tbContrasena.RightToLeft = RightToLeft.No;
-            tbContrasena.SelectedText = "";
-            tbContrasena.SelectionLength = 0;
-            tbContrasena.SelectionStart = 0;
-            tbContrasena.ShortcutsEnabled = true;
-            tbContrasena.Size = new Size(409, 48);
-            tbContrasena.TabIndex = 2;
-            tbContrasena.TabStop = false;
-            tbContrasena.TextAlign = HorizontalAlignment.Left;
-            tbContrasena.TrailingIcon = null;
-            tbContrasena.UseSystemPasswordChar = false;
-            tbContrasena.KeyPress += tbHandleEnter;
-            tbContrasena.TextChanged += tbCredentials_TextChanged;
-            // 
-            // lblContrasenia
-            // 
-            lblContrasenia.AutoSize = true;
-            lblContrasenia.Depth = 0;
-            lblContrasenia.Dock = DockStyle.Top;
-            lblContrasenia.Font = new Font("Roboto", 14F, FontStyle.Regular, GraphicsUnit.Pixel);
-            lblContrasenia.Location = new Point(20, 0);
-            lblContrasenia.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
-            lblContrasenia.Name = "lblContrasenia";
-            lblContrasenia.Size = new Size(82, 19);
-            lblContrasenia.TabIndex = 5;
-            lblContrasenia.Text = "Contraseña";
             // 
             // btnLogin
             // 
@@ -183,7 +59,7 @@ namespace PrimeSystems
             btnLogin.HighEmphasis = true;
             btnLogin.Icon = null;
             btnLogin.IconType = ReaLTaiizor.Controls.MaterialButton.MaterialIconType.Rebase;
-            btnLogin.Location = new Point(20, 388);
+            btnLogin.Location = new Point(20, 352);
             btnLogin.Margin = new Padding(20, 52, 20, 20);
             btnLogin.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             btnLogin.Name = "btnLogin";
@@ -229,17 +105,17 @@ namespace PrimeSystems
             tableLayoutPanel2.ColumnCount = 1;
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tableLayoutPanel2.Controls.Add(btnLogin, 0, 3);
-            tableLayoutPanel2.Controls.Add(panel2, 0, 2);
-            tableLayoutPanel2.Controls.Add(panel1, 0, 1);
             tableLayoutPanel2.Controls.Add(panel3, 0, 0);
+            tableLayoutPanel2.Controls.Add(tbUsername, 0, 1);
+            tableLayoutPanel2.Controls.Add(tbPassword, 0, 2);
             tableLayoutPanel2.Dock = DockStyle.Fill;
             tableLayoutPanel2.Location = new Point(458, 2);
             tableLayoutPanel2.Margin = new Padding(3, 2, 3, 2);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 4;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 90F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 90F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle());
+            tableLayoutPanel2.RowStyles.Add(new RowStyle());
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel2.Size = new Size(449, 492);
             tableLayoutPanel2.TabIndex = 0;
@@ -250,13 +126,13 @@ namespace PrimeSystems
             panel3.Dock = DockStyle.Fill;
             panel3.Location = new Point(3, 3);
             panel3.Name = "panel3";
-            panel3.Size = new Size(443, 150);
+            panel3.Size = new Size(443, 186);
             panel3.TabIndex = 8;
             // 
             // tableLayoutPanel3
             // 
             tableLayoutPanel3.ColumnCount = 1;
-            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tableLayoutPanel3.Controls.Add(lblAppName, 0, 0);
             tableLayoutPanel3.Controls.Add(materialLabel1, 0, 1);
             tableLayoutPanel3.Dock = DockStyle.Fill;
@@ -265,23 +141,24 @@ namespace PrimeSystems
             tableLayoutPanel3.RowCount = 2;
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel3.Size = new Size(443, 150);
+            tableLayoutPanel3.Size = new Size(443, 186);
             tableLayoutPanel3.TabIndex = 0;
             // 
             // lblAppName
             // 
-            lblAppName.Anchor = AnchorStyles.Bottom;
             lblAppName.AutoSize = true;
             lblAppName.Depth = 0;
+            lblAppName.Dock = DockStyle.Fill;
             lblAppName.Font = new Font("Roboto", 48F, FontStyle.Bold, GraphicsUnit.Pixel);
             lblAppName.FontType = ReaLTaiizor.Manager.MaterialSkinManager.FontType.H3;
-            lblAppName.Location = new Point(60, 17);
+            lblAppName.HighEmphasis = true;
+            lblAppName.Location = new Point(3, 0);
             lblAppName.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             lblAppName.Name = "lblAppName";
-            lblAppName.Size = new Size(322, 58);
+            lblAppName.Size = new Size(437, 93);
             lblAppName.TabIndex = 12;
             lblAppName.Text = "Prime Systems";
-            lblAppName.TextAlign = ContentAlignment.MiddleCenter;
+            lblAppName.TextAlign = ContentAlignment.BottomCenter;
             // 
             // materialLabel1
             // 
@@ -290,13 +167,85 @@ namespace PrimeSystems
             materialLabel1.Dock = DockStyle.Fill;
             materialLabel1.Font = new Font("Roboto", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
             materialLabel1.FontType = ReaLTaiizor.Manager.MaterialSkinManager.FontType.Subtitle1;
-            materialLabel1.Location = new Point(3, 75);
+            materialLabel1.Location = new Point(3, 93);
             materialLabel1.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             materialLabel1.Name = "materialLabel1";
-            materialLabel1.Size = new Size(437, 75);
+            materialLabel1.Size = new Size(437, 93);
             materialLabel1.TabIndex = 11;
-            materialLabel1.Text = "Gestión del sistema";
-            materialLabel1.TextAlign = ContentAlignment.MiddleCenter;
+            materialLabel1.Text = "Gestiona el sistema, fácil y rápido";
+            materialLabel1.TextAlign = ContentAlignment.TopCenter;
+            // 
+            // tbUsername
+            // 
+            tbUsername.AnimateReadOnly = false;
+            tbUsername.AutoCompleteMode = AutoCompleteMode.None;
+            tbUsername.AutoCompleteSource = AutoCompleteSource.None;
+            tbUsername.BackgroundImageLayout = ImageLayout.None;
+            tbUsername.CharacterCasing = CharacterCasing.Normal;
+            tbUsername.Depth = 0;
+            tbUsername.Dock = DockStyle.Fill;
+            tbUsername.Font = new Font("Roboto", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
+            tbUsername.HelperText = "Usuario inicial, con el que iniciaras sesión y tendrás permisos de administrador";
+            tbUsername.HideSelection = true;
+            tbUsername.Hint = "Usuario inicial";
+            tbUsername.LeadingIcon = Properties.Resources.user;
+            tbUsername.Location = new Point(3, 195);
+            tbUsername.MaxLength = 32767;
+            tbUsername.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
+            tbUsername.Name = "tbUsername";
+            tbUsername.PasswordChar = '\0';
+            tbUsername.PrefixSuffixText = null;
+            tbUsername.ReadOnly = false;
+            tbUsername.RightToLeft = RightToLeft.No;
+            tbUsername.SelectedText = "";
+            tbUsername.SelectionLength = 0;
+            tbUsername.SelectionStart = 0;
+            tbUsername.ShortcutsEnabled = true;
+            tbUsername.Size = new Size(443, 48);
+            tbUsername.TabIndex = 9;
+            tbUsername.TabStop = false;
+            tbUsername.TextAlign = HorizontalAlignment.Left;
+            tbUsername.TrailingIcon = null;
+            tbUsername.UseAccent = false;
+            tbUsername.UseSystemPasswordChar = false;
+            tbUsername.KeyPress += tbHandleEnter;
+            tbUsername.TextChanged += tbCredentials_TextChanged;
+            // 
+            // tbPassword
+            // 
+            tbPassword.AnimateReadOnly = false;
+            tbPassword.AutoCompleteMode = AutoCompleteMode.None;
+            tbPassword.AutoCompleteSource = AutoCompleteSource.None;
+            tbPassword.BackgroundImageLayout = ImageLayout.None;
+            tbPassword.CharacterCasing = CharacterCasing.Normal;
+            tbPassword.Depth = 0;
+            tbPassword.Dock = DockStyle.Fill;
+            tbPassword.Font = new Font("Roboto", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
+            tbPassword.HelperText = "Contraseña del usuario administrador";
+            tbPassword.HideSelection = true;
+            tbPassword.Hint = "Contraseña";
+            tbPassword.LeadingIcon = Properties.Resources.password;
+            tbPassword.Location = new Point(3, 249);
+            tbPassword.MaxLength = 32767;
+            tbPassword.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
+            tbPassword.Name = "tbPassword";
+            tbPassword.PasswordChar = '•';
+            tbPassword.PrefixSuffixText = null;
+            tbPassword.ReadOnly = false;
+            tbPassword.RightToLeft = RightToLeft.No;
+            tbPassword.SelectedText = "";
+            tbPassword.SelectionLength = 0;
+            tbPassword.SelectionStart = 0;
+            tbPassword.ShortcutsEnabled = true;
+            tbPassword.Size = new Size(443, 48);
+            tbPassword.TabIndex = 10;
+            tbPassword.TabStop = false;
+            tbPassword.TextAlign = HorizontalAlignment.Left;
+            tbPassword.TrailingIcon = null;
+            tbPassword.UseAccent = false;
+            tbPassword.UseSystemPasswordChar = false;
+            tbPassword.KeyPress += tbHandleEnter;
+            tbPassword.TextChanged += tbCredentials_TextChanged;
             // 
             // Login
             // 
@@ -310,11 +259,6 @@ namespace PrimeSystems
             Padding = new Padding(20, 84, 20, 20);
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Prime Systems";
-            Load += Login_Load;
-            panel1.ResumeLayout(false);
-            panel1.PerformLayout();
-            panel2.ResumeLayout(false);
-            panel2.PerformLayout();
             tableLayoutPanel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             tableLayoutPanel2.ResumeLayout(false);
@@ -326,12 +270,6 @@ namespace PrimeSystems
         }
 
         #endregion
-        private Panel panel1;
-        private ReaLTaiizor.Controls.MaterialTextBoxEdit tbUsuario;
-        private ReaLTaiizor.Controls.MaterialLabel lblUsuario;
-        private Panel panel2;
-        private ReaLTaiizor.Controls.MaterialTextBoxEdit tbContrasena;
-        private ReaLTaiizor.Controls.MaterialLabel lblContrasenia;
         private ReaLTaiizor.Controls.MaterialButton btnLogin;
         private TableLayoutPanel tableLayoutPanel1;
         private TableLayoutPanel tableLayoutPanel2;
@@ -340,5 +278,7 @@ namespace PrimeSystems
         private ReaLTaiizor.Controls.MaterialLabel lblAppName;
         private PictureBox pictureBox1;
         private ReaLTaiizor.Controls.MaterialLabel materialLabel1;
+        private ReaLTaiizor.Controls.MaterialTextBoxEdit tbUsername;
+        private ReaLTaiizor.Controls.MaterialTextBoxEdit tbPassword;
     }
 }

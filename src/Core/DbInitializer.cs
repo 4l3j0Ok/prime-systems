@@ -1,6 +1,7 @@
 ﻿using PrimeSystems.Core;
 using PrimeSystems.Models;
 using System;
+using Microsoft.EntityFrameworkCore;
 
 namespace PrimeSystems.Core
 {
@@ -42,14 +43,72 @@ namespace PrimeSystems.Core
             }
         }
 
-        public static UserModel? InitializeUser()
+
+        public static UserModel? InitializeUser(string username, string password)
         {
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            {
+                throw new ArgumentException("Username and password cannot be empty.");
+            }
+
             using var context = new AppDbContext();
-            // Sembramos los tipos de usuario por defecto porque
-            // sin ellos no se puede crear el usuario admin
+
             context.SeedDefaultRoles();
-            UserModel? user = context.CreateAdminUserIfNotExists();
+
+            if (context.User.Any())
+            {
+                return null;
+            }
+
+            var adminRole = context.UserType.FirstOrDefault(ut => ut.Id == "admin");
+
+            var user = new UserModel
+            {
+                Username = username,
+                Password = password,
+                Name = "Administrador",
+                LastName = "Sistema",
+                PersonId = 10000000,
+                Email = "admin@primesystems.com",
+                Phone = "2224123456",
+                RoleId = adminRole?.Id,
+                ProfilePicture = Utils.ImageToByteArray(Config.default_profile_picture)
+            };
+
+            context.User.Add(user);
+            context.SaveChanges();
+
             return user;
+        }
+
+        public static (bool success, string? errorMessage) TestConnection(string connectionString)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                return (false, "La cadena de conexión no puede estar vacía.");
+            }
+
+            try
+            {
+                var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+                optionsBuilder.UseSqlServer(connectionString);
+
+                using var context = new AppDbContext(optionsBuilder.Options);
+
+                // Try to open connection and execute a simple query
+                bool canConnect = context.Database.CanConnect();
+
+                if (!canConnect)
+                {
+                    return (false, "No se pudo conectar a la base de datos. Verifique la cadena de conexión.");
+                }
+
+                return (true, null);
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Error al conectar: {ex.Message}");
+            }
         }
     }
 }

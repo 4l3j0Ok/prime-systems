@@ -4,18 +4,89 @@ using ReaLTaiizor.Colors;
 using System.Drawing;
 using ReaLTaiizor.Forms;
 using ReaLTaiizor.Controls;
-
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace PrimeSystems.Core
 {
+    /// <summary>
+    /// Configuration class loaded from YAML file
+    /// </summary>
+    public class UserAppConfiguration
+    {
+        public DatabaseConfig Database { get; set; } = new DatabaseConfig();
+    }
+
+    public class DatabaseConfig
+    {
+        public string ConnectionString { get; set; } = string.Empty;
+    }
+
     internal class Config
     {
+        private const string YamlConfigFile = "config.yaml";
+
         public static string application_name = "Prime Systems";
-        public static string sql_connection_string = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") ?? "Server=127.0.0.1;Database=PrimeSystems;Trusted_Connection=True;TrustServerCertificate=True;";
         public static string sql_database_name = "PrimeSystems";
         public static string random_password_characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;':,.<>?/~`";
         public static Bitmap default_profile_picture = Properties.Resources.user_placeholder;
+
+        private static UserAppConfiguration? _configuration;
+
+        // Simple field for connection string - loaded at startup
+        public static string sql_connection_string = string.Empty;
+
+        public static bool ConfigFileExists()
+        {
+            return File.Exists(YamlConfigFile);
+        }
+
+        public static void LoadConfiguration()
+        {
+            try
+            {
+                if (ConfigFileExists())
+                {
+                    string yamlContent = File.ReadAllText(YamlConfigFile);
+                    var deserializer = new DeserializerBuilder()
+                        .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                        .Build();
+
+                    _configuration = deserializer.Deserialize<UserAppConfiguration>(yamlContent);
+
+                    if (_configuration != null && !string.IsNullOrWhiteSpace(_configuration.Database?.ConnectionString))
+                    {
+                        sql_connection_string = _configuration.Database.ConnectionString;
+                        Console.WriteLine("Configuración YAML cargada exitosamente.");
+                        return;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Archivo de configuración YAML no encontrado.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al cargar configuración YAML: {ex.Message}");
+            }
+
+
+            _configuration = new UserAppConfiguration
+            {
+                Database = new DatabaseConfig
+                {
+                    ConnectionString = sql_connection_string
+                }
+            };
+        }
+
+        public static UserAppConfiguration GetConfiguration()
+        {
+            return _configuration ?? new UserAppConfiguration();
+        }
     }
+
     public enum ValidationType
     {
         Letters,

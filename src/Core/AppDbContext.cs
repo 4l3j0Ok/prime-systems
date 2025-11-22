@@ -21,9 +21,23 @@ namespace PrimeSystems.Core
         public DbSet<SellModel> Sell { get; set; }
         public DbSet<SellDetailModel> SellDetail { get; set; }
 
+        // Default constructor
+        public AppDbContext()
+        {
+        }
+
+        // Constructor with options for testing
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        {
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(Config.sql_connection_string);
+            // Only configure if not already configured (e.g., when using default constructor)
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer(Config.sql_connection_string);
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

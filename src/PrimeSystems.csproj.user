@@ -50,6 +50,9 @@
     <Compile Update="Views\Forms\Add\Supplier.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="Views\Forms\ConfigurationWizard.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Views\Forms\CustomMessageBox.cs">
       <SubType>Form</SubType>
     </Compile>

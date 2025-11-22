@@ -1,5 +1,7 @@
 using System;
 using System.Windows.Forms;
+using PrimeSystems.Core;
+using PrimeSystems.Views.Forms;
 
 namespace PrimeSystems
 {
@@ -14,8 +16,28 @@ namespace PrimeSystems
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
+
             try
             {
+                Config.LoadConfiguration();
+
+                if (!Config.ConfigFileExists())
+                {
+                    using (var wizard = new ConfigurationWizard())
+                    {
+                        var result = wizard.ShowDialog();
+                        if (result != DialogResult.OK)
+                        {
+                            MessageBox.Show(
+                                "La configuración es necesaria para iniciar la aplicación.",
+                                "Configuración requerida",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information);
+                            return;
+                        }
+                    }
+                }
+
                 Application.Run(new Login());
             }
             catch (Exception ex)
