@@ -185,12 +185,11 @@ namespace PrimeSystems
             tbUsername.Depth = 0;
             tbUsername.Dock = DockStyle.Fill;
             tbUsername.Font = new Font("Roboto", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
-            tbUsername.HelperText = "Usuario inicial, con el que iniciaras sesión y tendrás permisos de administrador";
             tbUsername.HideSelection = true;
-            tbUsername.Hint = "Usuario inicial";
+            tbUsername.Hint = "Nombre de usuario / Identificador";
             tbUsername.LeadingIcon = Properties.Resources.user;
             tbUsername.Location = new Point(3, 195);
-            tbUsername.MaxLength = 32767;
+            tbUsername.MaxLength = 30;
             tbUsername.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbUsername.Name = "tbUsername";
             tbUsername.PasswordChar = '\0';
@@ -226,7 +225,7 @@ namespace PrimeSystems
             tbPassword.Hint = "Contraseña";
             tbPassword.LeadingIcon = Properties.Resources.password;
             tbPassword.Location = new Point(3, 249);
-            tbPassword.MaxLength = 32767;
+            tbPassword.MaxLength = 60;
             tbPassword.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbPassword.Name = "tbPassword";
             tbPassword.PasswordChar = '•';

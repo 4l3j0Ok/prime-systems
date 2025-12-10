@@ -612,7 +612,6 @@ namespace PrimeSystems
                         var card = cardFactory(item);
                         card.Dock = DockStyle.Top;
 
-                        // Apply read-only restrictions to cards
                         if (isReadOnly)
                         {
                             card.SetReadOnlyMode();
@@ -632,7 +631,7 @@ namespace PrimeSystems
                 cardsPanel.ResumeLayout();
                 floats.ForEach(f => f.BringToFront());
                 tabPage.ResumeLayout();
-                tabPage.AutoScroll = false; // El scroll ahora lo maneja el panel interno
+                tabPage.AutoScroll = false;
             }
             catch (Exception ex)
             {
@@ -674,26 +673,19 @@ namespace PrimeSystems
         {
             foreach (Control control in parentControl.Controls)
             {
-                bool isContainer = control is Panel
-                    || control is TableLayoutPanel
-                    || control is FlowLayoutPanel
-                    || control is GroupBox
-                    || control is MaterialTabControl
-                    || control is TabPage
-                    || control is SplitContainer
-                    || control is MaterialExpansionPanelNonCollapsible
-                    || control is MaterialExpansionPanel;
-
-                if (isContainer)
-                {
-                    if (control.HasChildren)
-                    {
-                        SetControlsReadOnly(control);
-                    }
-                }
-                else
+                if (
+                    control is TextBox ||
+                    control is ComboBox ||
+                    control is DateTimePicker ||
+                    control is System.Windows.Forms.RadioButton ||
+                    (control is MaterialButton && control.Text.ToLower() != "cancelar")
+                )
                 {
                     control.Enabled = false;
+                }
+                else if (control.HasChildren)
+                {
+                    SetControlsReadOnly(control);
                 }
             }
         }

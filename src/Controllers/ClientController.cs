@@ -81,12 +81,11 @@ namespace PrimeSystems.Controllers
                 cliente.Active = true;
                 _context.Client.Add(cliente);
                 _context.SaveChanges();
-                
-                // Set Title and Description after saving
+
                 cliente.Title = cliente.Name;
                 cliente.Description = $"CUIT: {cliente.Cuit?.ToString() ?? "N/A"} | Entidad: {cliente.Entity ?? "N/A"}";
                 _context.SaveChanges();
-                
+
                 return true;
             }
             catch (Exception ex)
@@ -110,8 +109,7 @@ namespace PrimeSystems.Controllers
                 existingCliente.Phone = cliente.Phone;
                 existingCliente.Email = cliente.Email;
                 existingCliente.Active = cliente.Active;
-                
-                // Update Title and Description
+
                 existingCliente.Title = cliente.Name;
                 existingCliente.Description = $"CUIT: {cliente.Cuit?.ToString() ?? "N/A"} | Entidad: {cliente.Entity ?? "N/A"}";
 
@@ -130,8 +128,7 @@ namespace PrimeSystems.Controllers
             {
                 var cliente = _context.Client.Find(id);
                 if (cliente == null) return false;
-                
-                // Baja lógica
+
                 cliente.Active = false;
                 _context.SaveChanges();
                 return true;

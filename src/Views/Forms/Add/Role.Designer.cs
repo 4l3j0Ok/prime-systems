@@ -169,7 +169,7 @@
             tbRoleName.Hint = "ej.: Administrador";
             tbRoleName.LeadingIcon = null;
             tbRoleName.Location = new Point(15, 34);
-            tbRoleName.MaxLength = 32767;
+            tbRoleName.MaxLength = 60;
             tbRoleName.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbRoleName.Name = "tbRoleName";
             tbRoleName.PasswordChar = '\0';
@@ -228,7 +228,7 @@
             tbRoleId.Hint = "ej: admin";
             tbRoleId.LeadingIcon = null;
             tbRoleId.Location = new Point(15, 34);
-            tbRoleId.MaxLength = 32767;
+            tbRoleId.MaxLength = 60;
             tbRoleId.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbRoleId.Name = "tbRoleId";
             tbRoleId.PasswordChar = '\0';

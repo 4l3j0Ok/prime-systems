@@ -215,7 +215,7 @@
             tbConnectionString.Hint = "Cadena de conexión SQL Server";
             tbConnectionString.LeadingIcon = Properties.Resources.sql_server;
             tbConnectionString.Location = new Point(150, 136);
-            tbConnectionString.MaxLength = 32767;
+            tbConnectionString.MaxLength = 200;
             tbConnectionString.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbConnectionString.Name = "tbConnectionString";
             tbConnectionString.PasswordChar = '\0';
@@ -259,7 +259,7 @@
             tbInitialUserPassword.Hint = "Contraseña";
             tbInitialUserPassword.LeadingIcon = Properties.Resources.password;
             tbInitialUserPassword.Location = new Point(150, 78);
-            tbInitialUserPassword.MaxLength = 32767;
+            tbInitialUserPassword.MaxLength = 60;
             tbInitialUserPassword.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbInitialUserPassword.Name = "tbInitialUserPassword";
             tbInitialUserPassword.PasswordChar = '•';
@@ -302,7 +302,7 @@
             tbInitialUser.Hint = "Usuario inicial";
             tbInitialUser.LeadingIcon = Properties.Resources.user;
             tbInitialUser.Location = new Point(150, 20);
-            tbInitialUser.MaxLength = 32767;
+            tbInitialUser.MaxLength = 30;
             tbInitialUser.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbInitialUser.Name = "tbInitialUser";
             tbInitialUser.PasswordChar = '\0';

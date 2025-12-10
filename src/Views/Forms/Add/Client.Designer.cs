@@ -159,7 +159,7 @@
             tbClientEmail.HideSelection = true;
             tbClientEmail.LeadingIcon = null;
             tbClientEmail.Location = new Point(15, 34);
-            tbClientEmail.MaxLength = 32767;
+            tbClientEmail.MaxLength = 40;
             tbClientEmail.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbClientEmail.Name = "tbClientEmail";
             tbClientEmail.PasswordChar = '\0';
@@ -217,7 +217,7 @@
             tbClientPhone.HideSelection = true;
             tbClientPhone.LeadingIcon = null;
             tbClientPhone.Location = new Point(15, 34);
-            tbClientPhone.MaxLength = 32767;
+            tbClientPhone.MaxLength = 15;
             tbClientPhone.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbClientPhone.Name = "tbClientPhone";
             tbClientPhone.PasswordChar = '\0';
@@ -275,7 +275,7 @@
             tbClientEntity.HideSelection = true;
             tbClientEntity.LeadingIcon = null;
             tbClientEntity.Location = new Point(15, 34);
-            tbClientEntity.MaxLength = 32767;
+            tbClientEntity.MaxLength = 40;
             tbClientEntity.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbClientEntity.Name = "tbClientEntity";
             tbClientEntity.PasswordChar = '\0';
@@ -333,7 +333,7 @@
             tbClientCuit.HideSelection = true;
             tbClientCuit.LeadingIcon = null;
             tbClientCuit.Location = new Point(15, 34);
-            tbClientCuit.MaxLength = 32767;
+            tbClientCuit.MaxLength = 11;
             tbClientCuit.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbClientCuit.Name = "tbClientCuit";
             tbClientCuit.PasswordChar = '\0';

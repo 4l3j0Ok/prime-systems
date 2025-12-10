@@ -159,7 +159,7 @@
             tbSupplierEmail.HideSelection = true;
             tbSupplierEmail.LeadingIcon = null;
             tbSupplierEmail.Location = new Point(15, 34);
-            tbSupplierEmail.MaxLength = 32767;
+            tbSupplierEmail.MaxLength = 60;
             tbSupplierEmail.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbSupplierEmail.Name = "tbSupplierEmail";
             tbSupplierEmail.PasswordChar = '\0';
@@ -217,7 +217,7 @@
             tbSupplierPhone.HideSelection = true;
             tbSupplierPhone.LeadingIcon = null;
             tbSupplierPhone.Location = new Point(15, 34);
-            tbSupplierPhone.MaxLength = 32767;
+            tbSupplierPhone.MaxLength = 15;
             tbSupplierPhone.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbSupplierPhone.Name = "tbSupplierPhone";
             tbSupplierPhone.PasswordChar = '\0';
@@ -275,7 +275,7 @@
             tbSupplierContactName.HideSelection = true;
             tbSupplierContactName.LeadingIcon = null;
             tbSupplierContactName.Location = new Point(15, 34);
-            tbSupplierContactName.MaxLength = 32767;
+            tbSupplierContactName.MaxLength = 60;
             tbSupplierContactName.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbSupplierContactName.Name = "tbSupplierContactName";
             tbSupplierContactName.PasswordChar = '\0';
@@ -333,7 +333,7 @@
             tbSupplierCuit.HideSelection = true;
             tbSupplierCuit.LeadingIcon = null;
             tbSupplierCuit.Location = new Point(15, 34);
-            tbSupplierCuit.MaxLength = 32767;
+            tbSupplierCuit.MaxLength = 11;
             tbSupplierCuit.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbSupplierCuit.Name = "tbSupplierCuit";
             tbSupplierCuit.PasswordChar = '\0';
@@ -392,7 +392,7 @@
             tbSupplierName.HideSelection = true;
             tbSupplierName.LeadingIcon = null;
             tbSupplierName.Location = new Point(15, 34);
-            tbSupplierName.MaxLength = 32767;
+            tbSupplierName.MaxLength = 60;
             tbSupplierName.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbSupplierName.Name = "tbSupplierName";
             tbSupplierName.PasswordChar = '\0';

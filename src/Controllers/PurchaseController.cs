@@ -33,7 +33,6 @@ namespace PrimeSystems.Controllers
                 .Include(c => c.Detail)
                 .AsQueryable();
 
-            // Note: PurchaseModel doesn't have Active field based on requirements, so we just order
             query = query.OrderByDescending(c => c.Id);
 
             if (pageNumber.HasValue && pageSize.HasValue)
@@ -172,7 +171,6 @@ namespace PrimeSystems.Controllers
         {
             try
             {
-                // Actualizar la compra
                 var existing = _context.Purchase.Find(compra.Id);
                 if (existing == null) return false;
 
@@ -185,10 +183,8 @@ namespace PrimeSystems.Controllers
                 existing.Title = compra.Title;
                 existing.Description = compra.Description;
 
-                // Obtener los detalles anteriores para restaurar el stock
                 var oldDetails = _context.PurchaseDetail.Where(d => d.PurchaseId == compra.Id).ToList();
 
-                // Restaurar el stock de los artículos comprados anteriormente (restar)
                 foreach (var oldDetail in oldDetails)
                 {
                     if (oldDetail.ArticleId.HasValue && int.TryParse(oldDetail.Quantity, out int quantity))

@@ -120,12 +120,10 @@ namespace PrimeSystems.Controllers
                 articulo.Active = true;
                 _context.Article.Add(articulo);
                 _context.SaveChanges();
-                
-                // Set Title and Description after saving
                 articulo.Title = articulo.Name;
                 articulo.Description = $"Código: {articulo.Code} | Categoría: {articulo.Category?.Name ?? "Sin categoría"}";
                 _context.SaveChanges();
-                
+
                 return true;
             }
             catch (Exception ex)
@@ -143,7 +141,6 @@ namespace PrimeSystems.Controllers
                 if (existingArticulo == null)
                     return false;
 
-                // Validar que el código no exista (excepto el artículo actual)
                 if (_context.Article.Any(a => a.Code == articulo.Code && a.Id != articulo.Id))
                     return false;
 
@@ -154,8 +151,7 @@ namespace PrimeSystems.Controllers
                 existingArticulo.SubcategoryId = articulo.SubcategoryId;
                 existingArticulo.SupplierId = articulo.SupplierId;
                 existingArticulo.Active = articulo.Active;
-                
-                // Update Title and Description
+
                 existingArticulo.Title = articulo.Name;
                 var category = _context.Category.Find(articulo.CategoryId);
                 existingArticulo.Description = $"Código: {articulo.Code} | Categoría: {category?.Name ?? "Sin categoría"}";
@@ -175,8 +171,7 @@ namespace PrimeSystems.Controllers
             {
                 var articulo = _context.Article.Find(id);
                 if (articulo == null) return false;
-                
-                // Baja lógica
+
                 articulo.Active = false;
                 _context.SaveChanges();
                 return true;

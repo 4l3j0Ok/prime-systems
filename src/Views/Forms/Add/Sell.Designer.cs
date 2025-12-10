@@ -281,7 +281,7 @@
             tbSubtotal.HideSelection = true;
             tbSubtotal.LeadingIcon = null;
             tbSubtotal.Location = new Point(15, 34);
-            tbSubtotal.MaxLength = 32767;
+            tbSubtotal.MaxLength = 20;
             tbSubtotal.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbSubtotal.Name = "tbSubtotal";
             tbSubtotal.PasswordChar = '\0';
@@ -338,7 +338,7 @@
             tbDiscount.HideSelection = true;
             tbDiscount.LeadingIcon = null;
             tbDiscount.Location = new Point(15, 34);
-            tbDiscount.MaxLength = 32767;
+            tbDiscount.MaxLength = 20;
             tbDiscount.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbDiscount.Name = "tbDiscount";
             tbDiscount.PasswordChar = '\0';
@@ -396,7 +396,7 @@
             tbTotal.HideSelection = true;
             tbTotal.LeadingIcon = null;
             tbTotal.Location = new Point(15, 34);
-            tbTotal.MaxLength = 32767;
+            tbTotal.MaxLength = 20;
             tbTotal.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbTotal.Name = "tbTotal";
             tbTotal.PasswordChar = '\0';

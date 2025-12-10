@@ -253,7 +253,7 @@
             tbTotal.HideSelection = true;
             tbTotal.LeadingIcon = null;
             tbTotal.Location = new Point(15, 34);
-            tbTotal.MaxLength = 32767;
+            tbTotal.MaxLength = 20;
             tbTotal.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbTotal.Name = "tbTotal";
             tbTotal.PasswordChar = '\0';

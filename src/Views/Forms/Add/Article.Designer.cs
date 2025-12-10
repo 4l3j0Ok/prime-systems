@@ -180,7 +180,7 @@
             tbArticleCode.HideSelection = true;
             tbArticleCode.LeadingIcon = null;
             tbArticleCode.Location = new Point(15, 34);
-            tbArticleCode.MaxLength = 32767;
+            tbArticleCode.MaxLength = 50;
             tbArticleCode.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbArticleCode.Name = "tbArticleCode";
             tbArticleCode.PasswordChar = '\0';
@@ -239,7 +239,7 @@
             cbArticleDescription.HideSelection = true;
             cbArticleDescription.LeadingIcon = null;
             cbArticleDescription.Location = new Point(15, 34);
-            cbArticleDescription.MaxLength = 32767;
+            cbArticleDescription.MaxLength = 50;
             cbArticleDescription.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             cbArticleDescription.Name = "cbArticleDescription";
             cbArticleDescription.PasswordChar = '\0';
@@ -297,7 +297,7 @@
             cbArticleName.HideSelection = true;
             cbArticleName.LeadingIcon = null;
             cbArticleName.Location = new Point(15, 34);
-            cbArticleName.MaxLength = 32767;
+            cbArticleName.MaxLength = 30;
             cbArticleName.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             cbArticleName.Name = "cbArticleName";
             cbArticleName.PasswordChar = '\0';
@@ -439,7 +439,7 @@
             tbStockQuantity.HideSelection = true;
             tbStockQuantity.LeadingIcon = null;
             tbStockQuantity.Location = new Point(15, 34);
-            tbStockQuantity.MaxLength = 32767;
+            tbStockQuantity.MaxLength = 10;
             tbStockQuantity.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbStockQuantity.Name = "tbStockQuantity";
             tbStockQuantity.PasswordChar = '\0';
@@ -497,7 +497,7 @@
             tbStockCost.HideSelection = true;
             tbStockCost.LeadingIcon = null;
             tbStockCost.Location = new Point(15, 34);
-            tbStockCost.MaxLength = 32767;
+            tbStockCost.MaxLength = 10;
             tbStockCost.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbStockCost.Name = "tbStockCost";
             tbStockCost.PasswordChar = '\0';
@@ -556,7 +556,7 @@
             tbCostProfit.HideSelection = true;
             tbCostProfit.LeadingIcon = null;
             tbCostProfit.Location = new Point(15, 34);
-            tbCostProfit.MaxLength = 32767;
+            tbCostProfit.MaxLength = 10;
             tbCostProfit.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbCostProfit.Name = "tbCostProfit";
             tbCostProfit.PasswordChar = '\0';
@@ -616,7 +616,7 @@
             tbSellPrice.HideSelection = true;
             tbSellPrice.LeadingIcon = null;
             tbSellPrice.Location = new Point(15, 34);
-            tbSellPrice.MaxLength = 32767;
+            tbSellPrice.MaxLength = 10;
             tbSellPrice.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             tbSellPrice.Name = "tbSellPrice";
             tbSellPrice.PasswordChar = '\0';
