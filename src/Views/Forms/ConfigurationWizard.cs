@@ -18,20 +18,30 @@ namespace PrimeSystems.Views.Forms
     public partial class ConfigurationWizard : MaterialForm
     {
         private const string YamlFileName = "config.yaml";
+        private readonly bool _useSqlServer;
 
         public ConfigurationWizard()
         {
+            _useSqlServer = Environment.GetEnvironmentVariable("USE_SQL_SERVER") == "true";
             InitializeComponent();
             UIConfig.GetSkinManager().AddFormToManage(this);
+
+            if (!_useSqlServer)
+            {
+                tbConnectionString.Visible = false;
+                btnTestDBConnection.Visible = false;
+                panel3.Visible = false;
+                panel2.Visible = false;
+            }
         }
 
         private void btnFinish_Click(object sender, EventArgs e)
         {
-            string connectionString = tbConnectionString.Text.Trim();
+            string? connectionString = _useSqlServer ? tbConnectionString.Text.Trim() : null;
             string username = tbInitialUser.Text.Trim();
             string password = tbInitialUserPassword.Text.Trim();
 
-            if (string.IsNullOrWhiteSpace(connectionString))
+            if (_useSqlServer && string.IsNullOrWhiteSpace(connectionString))
             {
                 MessageBox.Show("Por favor, ingrese una cadena de conexión válida.",
                     "Validación",
@@ -71,7 +81,9 @@ namespace PrimeSystems.Views.Forms
             }
 
             this.Cursor = Cursors.WaitCursor;
-            var (success, errorMessage) = DbInitializer.TestConnection(connectionString);
+            var (success, errorMessage) = _useSqlServer
+                ? DbInitializer.TestConnection(connectionString, "sqlserver")
+                : DbInitializer.TestConnection(provider: "sqlite");
             this.Cursor = Cursors.Default;
 
             if (!success)
@@ -90,7 +102,8 @@ namespace PrimeSystems.Views.Forms
                 {
                     Database = new DatabaseConfig
                     {
-                        ConnectionString = connectionString
+                        Provider = _useSqlServer ? "sqlserver" : "sqlite",
+                        ConnectionString = connectionString ?? string.Empty
                     }
                 };
 
@@ -159,7 +172,7 @@ namespace PrimeSystems.Views.Forms
 
             this.Cursor = Cursors.WaitCursor;
 
-            var (success, errorMessage) = DbInitializer.TestConnection(connectionString);
+            var (success, errorMessage) = DbInitializer.TestConnection(connectionString, "sqlserver");
 
             this.Cursor = Cursors.Default;
 

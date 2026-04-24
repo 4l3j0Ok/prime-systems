@@ -81,8 +81,28 @@ namespace PrimeSystems.Core
             return user;
         }
 
-        public static (bool success, string? errorMessage) TestConnection(string connectionString)
+        public static (bool success, string? errorMessage) TestConnection(string? connectionString = null, string? provider = null)
         {
+            string effectiveProvider = provider ?? Config.sql_provider;
+
+            if (effectiveProvider == "sqlite")
+            {
+                try
+                {
+                    string dbPath = "data/primesystems.db";
+                    string? dir = Path.GetDirectoryName(dbPath);
+                    if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                    {
+                        Directory.CreateDirectory(dir);
+                    }
+                    return (true, null);
+                }
+                catch (Exception ex)
+                {
+                    return (false, $"Error al crear directorio de datos: {ex.Message}");
+                }
+            }
+
             if (string.IsNullOrWhiteSpace(connectionString))
             {
                 return (false, "La cadena de conexión no puede estar vacía.");
@@ -94,8 +114,6 @@ namespace PrimeSystems.Core
                 optionsBuilder.UseSqlServer(connectionString);
 
                 using var context = new AppDbContext(optionsBuilder.Options);
-
-                // Try to open connection and execute a simple query
                 bool canConnect = context.Database.CanConnect();
 
                 if (!canConnect)

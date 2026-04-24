@@ -19,6 +19,7 @@ namespace PrimeSystems.Core
 
     public class DatabaseConfig
     {
+        public string Provider { get; set; } = "sqlite";
         public string ConnectionString { get; set; } = string.Empty;
     }
 
@@ -33,8 +34,17 @@ namespace PrimeSystems.Core
 
         private static UserAppConfiguration? _configuration;
 
-        // Simple field for connection string - loaded at startup
         public static string sql_connection_string = string.Empty;
+        public static string sql_provider = "sqlite";
+
+        public static string GetConnectionString()
+        {
+            if (sql_provider == "sqlite")
+            {
+                return "Data Source=data/primesystems.db";
+            }
+            return sql_connection_string;
+        }
 
         public static bool ConfigFileExists()
         {
@@ -57,9 +67,13 @@ namespace PrimeSystems.Core
                     if (_configuration != null && !string.IsNullOrWhiteSpace(_configuration.Database?.ConnectionString))
                     {
                         sql_connection_string = _configuration.Database.ConnectionString;
-                        Console.WriteLine("Configuración YAML cargada exitosamente.");
-                        return;
                     }
+                    if (_configuration != null && !string.IsNullOrWhiteSpace(_configuration.Database?.Provider))
+                    {
+                        sql_provider = _configuration.Database.Provider;
+                    }
+                    Console.WriteLine("Configuración YAML cargada exitosamente.");
+                    return;
                 }
                 else
                 {

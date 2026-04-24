@@ -33,10 +33,16 @@ namespace PrimeSystems.Core
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            // Only configure if not already configured (e.g., when using default constructor)
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(Config.sql_connection_string);
+                if (Config.sql_provider == "sqlserver")
+                {
+                    optionsBuilder.UseSqlServer(Config.sql_connection_string);
+                }
+                else
+                {
+                    optionsBuilder.UseSqlite(Config.GetConnectionString());
+                }
             }
         }
 
