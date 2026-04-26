@@ -616,40 +616,56 @@ namespace PrimeSystems.Core
             var suppliers = _context.Supplier.ToList();
             var articles = _context.Article.ToList();
             var comprador = users.FirstOrDefault(u => u.RoleId == "gestor_compras") ?? users.First();
+            var random = new Random(42);
 
-            var purchases = new List<PurchaseModel>
+            var purchases = new List<PurchaseModel>();
+            int daysBack = 30;
+            int purchasesPerDay = 3;
+
+            for (int day = daysBack; day >= 0; day--)
             {
-                new PurchaseModel
+                for (int p = 0; p < purchasesPerDay; p++)
                 {
-                    UserId = comprador.Id,
-                    Date = DateTime.Now.AddDays(-30).ToString("yyyy-MM-dd HH:mm:ss"),
-                    SupplierId = suppliers[0].Id,
-                    Subtotal = "45000.00",
-                    Discount = "2250.00",
-                    Total = "42750.00"
-                },
-                new PurchaseModel
-                {
-                    UserId = comprador.Id,
-                    Date = DateTime.Now.AddDays(-25).ToString("yyyy-MM-dd HH:mm:ss"),
-                    SupplierId = suppliers[1].Id,
-                    Subtotal = "89000.00",
-                    Discount = "4450.00",
-                    Total = "84550.00"
-                },
-                new PurchaseModel
-                {
-                    UserId = comprador.Id,
-                    Date = DateTime.Now.AddDays(-15).ToString("yyyy-MM-dd HH:mm:ss"),
-                    SupplierId = suppliers[2].Id,
-                    Subtotal = "32500.00",
-                    Discount = "0.00",
-                    Total = "32500.00"
+                    var supplier = suppliers[random.Next(suppliers.Count)];
+                    var supplierArticles = articles.Where(a => a.SupplierId == supplier.Id).ToList();
+                    if (!supplierArticles.Any()) supplierArticles = articles.Take(5).ToList();
+
+                    decimal subtotal = 0;
+                    var details = new List<(ArticleModel article, int qty, decimal price)>();
+                    int numArticles = random.Next(2, 6);
+                    var selectedArticles = supplierArticles.OrderBy(x => random.Next()).Take(numArticles).ToList();
+
+                    foreach (var article in selectedArticles)
+                    {
+                        var stock = _context.Stock.FirstOrDefault(s => s.ArticleId == article.Id);
+                        if (stock != null && decimal.TryParse(stock.Cost, out decimal cost))
+                        {
+                            int qty = random.Next(5, 30);
+                            subtotal += cost * qty;
+                            details.Add((article, qty, cost));
+                        }
+                    }
+
+                    decimal discount = random.NextDouble() > 0.7 ? subtotal * random.Next(5, 15) / 100 : 0;
+                    decimal total = subtotal - discount;
+
+                    var purchase = new PurchaseModel
+                    {
+                        UserId = comprador.Id,
+                        Date = DateTime.Now.AddDays(-day).AddHours(random.Next(8, 18)).AddMinutes(random.Next(0, 59)).ToString("yyyy-MM-dd HH:mm:ss"),
+                        SupplierId = supplier.Id,
+                        Subtotal = subtotal.ToString("F2"),
+                        Discount = discount.ToString("F2"),
+                        Total = total.ToString("F2")
+                    };
+                    purchases.Add(purchase);
                 }
-            };
+            }
 
             _context.Purchase.AddRange(purchases);
             _context.SaveChanges();
+
+            var purchaseDetails = new List<PurchaseDetailModel>();
             foreach (var purchase in purchases)
             {
                 var supplier = _context.Supplier.Find(purchase.SupplierId);
@@ -658,57 +674,33 @@ namespace PrimeSystems.Core
             }
             _context.SaveChanges();
 
-            var purchaseDetails = new List<PurchaseDetailModel>();
-
-            var purchase1Articles = articles.Where(a => a.SupplierId == suppliers[0].Id).Take(3).ToList();
-            foreach (var article in purchase1Articles)
+            int purchaseIdx = 0;
+            foreach (var purchase in purchases)
             {
-                var stock = _context.Stock.FirstOrDefault(s => s.ArticleId == article.Id);
-                if (stock != null)
-                {
-                    purchaseDetails.Add(new PurchaseDetailModel
-                    {
-                        PurchaseId = purchases[0].Id,
-                        ArticleId = article.Id,
-                        Description = article.Description,
-                        UnitPrice = stock.Cost,
-                        Quantity = "20"
-                    });
-                }
-            }
+                var supplier = _context.Supplier.Find(purchase.SupplierId);
+                var supplierArticles = articles.Where(a => a.SupplierId == supplier.Id).ToList();
+                if (!supplierArticles.Any()) supplierArticles = articles.Take(5).ToList();
 
-            var purchase2Articles = articles.Where(a => a.SupplierId == suppliers[1].Id).Take(4).ToList();
-            foreach (var article in purchase2Articles)
-            {
-                var stock = _context.Stock.FirstOrDefault(s => s.ArticleId == article.Id);
-                if (stock != null)
-                {
-                    purchaseDetails.Add(new PurchaseDetailModel
-                    {
-                        PurchaseId = purchases[1].Id,
-                        ArticleId = article.Id,
-                        Description = article.Description,
-                        UnitPrice = stock.Cost,
-                        Quantity = "15"
-                    });
-                }
-            }
+                int numArticles = random.Next(2, 6);
+                var selectedArticles = supplierArticles.OrderBy(x => random.Next()).Take(numArticles).ToList();
 
-            var purchase3Articles = articles.Where(a => a.SupplierId == suppliers[2].Id).Take(5).ToList();
-            foreach (var article in purchase3Articles)
-            {
-                var stock = _context.Stock.FirstOrDefault(s => s.ArticleId == article.Id);
-                if (stock != null)
+                foreach (var article in selectedArticles)
                 {
-                    purchaseDetails.Add(new PurchaseDetailModel
+                    var stock = _context.Stock.FirstOrDefault(s => s.ArticleId == article.Id);
+                    if (stock != null && decimal.TryParse(stock.Cost, out decimal cost))
                     {
-                        PurchaseId = purchases[2].Id,
-                        ArticleId = article.Id,
-                        Description = article.Description,
-                        UnitPrice = stock.Cost,
-                        Quantity = "10"
-                    });
+                        int qty = random.Next(5, 30);
+                        purchaseDetails.Add(new PurchaseDetailModel
+                        {
+                            PurchaseId = purchase.Id,
+                            ArticleId = article.Id,
+                            Description = article.Description,
+                            UnitPrice = cost.ToString("F2"),
+                            Quantity = qty.ToString()
+                        });
+                    }
                 }
+                purchaseIdx++;
             }
 
             _context.PurchaseDetail.AddRange(purchaseDetails);
@@ -728,46 +720,47 @@ namespace PrimeSystems.Core
             var clients = _context.Client.ToList();
             var articles = _context.Article.ToList();
             var vendedor = users.FirstOrDefault(u => u.RoleId == "vendedor") ?? users.First();
+            var random = new Random(42);
 
-            var sells = new List<SellModel>
+            var sells = new List<SellModel>();
+            int daysBack = 30;
+            int sellsPerDay = 4;
+
+            for (int day = daysBack; day >= 0; day--)
             {
-                new SellModel
+                for (int s = 0; s < sellsPerDay; s++)
                 {
-                    UserId = vendedor.Id,
-                    Date = DateTime.Now.AddDays(-20).ToString("yyyy-MM-dd HH:mm:ss"),
-                    ClientId = clients[0].Id,
-                    Subtotal = "28500.00",
-                    Discount = "1425.00",
-                    Total = "27075.00"
-                },
-                new SellModel
-                {
-                    UserId = vendedor.Id,
-                    Date = DateTime.Now.AddDays(-18).ToString("yyyy-MM-dd HH:mm:ss"),
-                    ClientId = clients[1].Id,
-                    Subtotal = "15200.00",
-                    Discount = "0.00",
-                    Total = "15200.00"
-                },
-                new SellModel
-                {
-                    UserId = vendedor.Id,
-                    Date = DateTime.Now.AddDays(-10).ToString("yyyy-MM-dd HH:mm:ss"),
-                    ClientId = clients[2].Id,
-                    Subtotal = "42800.00",
-                    Discount = "2140.00",
-                    Total = "40660.00"
-                },
-                new SellModel
-                {
-                    UserId = vendedor.Id,
-                    Date = DateTime.Now.AddDays(-5).ToString("yyyy-MM-dd HH:mm:ss"),
-                    ClientId = clients[3].Id,
-                    Subtotal = "19500.00",
-                    Discount = "975.00",
-                    Total = "18525.00"
+                    var client = clients[random.Next(clients.Count)];
+
+                    decimal subtotal = 0;
+                    int numArticles = random.Next(2, 6);
+                    var selectedArticles = articles.OrderBy(x => random.Next()).Take(numArticles).ToList();
+
+                    foreach (var article in selectedArticles)
+                    {
+                        var stock = _context.Stock.FirstOrDefault(st => st.ArticleId == article.Id);
+                        if (stock != null && decimal.TryParse(stock.Cost, out decimal cost))
+                        {
+                            decimal sellPrice = cost * (1 + (stock.Profit ?? 30) / 100m);
+                            subtotal += sellPrice * random.Next(1, 5);
+                        }
+                    }
+
+                    decimal discount = random.NextDouble() > 0.6 ? subtotal * random.Next(5, 20) / 100 : 0;
+                    decimal total = subtotal - discount;
+
+                    var sell = new SellModel
+                    {
+                        UserId = vendedor.Id,
+                        Date = DateTime.Now.AddDays(-day).AddHours(random.Next(8, 20)).AddMinutes(random.Next(0, 59)).ToString("yyyy-MM-dd HH:mm:ss"),
+                        ClientId = client.Id,
+                        Subtotal = subtotal.ToString("F2"),
+                        Discount = discount.ToString("F2"),
+                        Total = total.ToString("F2")
+                    };
+                    sells.Add(sell);
                 }
-            };
+            }
 
             _context.Sell.AddRange(sells);
             _context.SaveChanges();
@@ -781,7 +774,6 @@ namespace PrimeSystems.Core
             _context.SaveChanges();
 
             var sellDetails = new List<SellDetailModel>();
-            var random = new Random();
 
             foreach (var sell in sells)
             {
@@ -794,7 +786,7 @@ namespace PrimeSystems.Core
                     {
                         SellId = sell.Id,
                         ArticleId = article.Id,
-                        Quantity = random.Next(1, 10)
+                        Quantity = random.Next(1, 8)
                     });
                 }
             }
@@ -818,90 +810,78 @@ namespace PrimeSystems.Core
             var articles = _context.Article.Take(5).ToList();
             var clients = _context.Client.Take(3).ToList();
             var suppliers = _context.Supplier.Take(2).ToList();
+            var random = new Random(42);
 
-            var activities = new List<ActivityRecordModel>
+            var activities = new List<ActivityRecordModel>();
+
+            foreach (var purchase in purchases)
             {
-                new ActivityRecordModel
+                activities.Add(new ActivityRecordModel
                 {
-                    UserId = users.First().Id,
+                    UserId = purchase.UserId,
                     Module = ActivityModules.Purchases,
                     Action = ActivityActions.Create,
-                    Date = DateTime.Now.AddDays(-30),
-                    PurchaseId = purchases[0].Id,
-                    SupplierId = purchases[0].SupplierId
-                },
-                new ActivityRecordModel
-                {
-                    UserId = users.First().Id,
-                    Module = ActivityModules.Purchases,
-                    Action = ActivityActions.Create,
-                    Date = DateTime.Now.AddDays(-25),
-                    PurchaseId = purchases[1].Id,
-                    SupplierId = purchases[1].SupplierId
-                },
+                    Date = DateTime.Parse(purchase.Date),
+                    PurchaseId = purchase.Id,
+                    SupplierId = purchase.SupplierId
+                });
+            }
 
-                new ActivityRecordModel
+            foreach (var sell in sells)
+            {
+                activities.Add(new ActivityRecordModel
                 {
-                    UserId = users.First().Id,
+                    UserId = sell.UserId,
                     Module = ActivityModules.Sells,
                     Action = ActivityActions.Create,
-                    Date = DateTime.Now.AddDays(-20),
-                    SellId = sells[0].Id,
-                    ClientId = sells[0].ClientId
-                },
-                new ActivityRecordModel
-                {
-                    UserId = users.First().Id,
-                    Module = ActivityModules.Sells,
-                    Action = ActivityActions.Create,
-                    Date = DateTime.Now.AddDays(-18),
-                    SellId = sells[1].Id,
-                    ClientId = sells[1].ClientId
-                },
+                    Date = DateTime.Parse(sell.Date),
+                    SellId = sell.Id,
+                    ClientId = sell.ClientId
+                });
+            }
 
-                new ActivityRecordModel
-                {
-                    UserId = users.First().Id,
-                    Module = ActivityModules.Articles,
-                    Action = ActivityActions.Create,
-                    Date = DateTime.Now.AddDays(-35),
-                    ArticleId = articles[0].Id
-                },
-                new ActivityRecordModel
-                {
-                    UserId = users.First().Id,
-                    Module = ActivityModules.Articles,
-                    Action = ActivityActions.Update,
-                    Date = DateTime.Now.AddDays(-22),
-                    ArticleId = articles[1].Id
-                },
+            activities.Add(new ActivityRecordModel
+            {
+                UserId = users.First().Id,
+                Module = ActivityModules.Articles,
+                Action = ActivityActions.Create,
+                Date = DateTime.Now.AddDays(-35),
+                ArticleId = articles[0].Id
+            });
+            activities.Add(new ActivityRecordModel
+            {
+                UserId = users.First().Id,
+                Module = ActivityModules.Articles,
+                Action = ActivityActions.Update,
+                Date = DateTime.Now.AddDays(-22),
+                ArticleId = articles[1].Id
+            });
 
-                new ActivityRecordModel
-                {
-                    UserId = users.First().Id,
-                    Module = ActivityModules.Clients,
-                    Action = ActivityActions.Create,
-                    Date = DateTime.Now.AddDays(-40),
-                    ClientId = clients[0].Id
-                },
+            activities.Add(new ActivityRecordModel
+            {
+                UserId = users.First().Id,
+                Module = ActivityModules.Clients,
+                Action = ActivityActions.Create,
+                Date = DateTime.Now.AddDays(-40),
+                ClientId = clients[0].Id
+            });
 
-                new ActivityRecordModel
-                {
-                    UserId = users.First().Id,
-                    Module = ActivityModules.Suppliers,
-                    Action = ActivityActions.Create,
-                    Date = DateTime.Now.AddDays(-45),
-                    SupplierId = suppliers[0].Id
-                },
+            activities.Add(new ActivityRecordModel
+            {
+                UserId = users.First().Id,
+                Module = ActivityModules.Suppliers,
+                Action = ActivityActions.Create,
+                Date = DateTime.Now.AddDays(-45),
+                SupplierId = suppliers[0].Id
+            });
 
-                new ActivityRecordModel
-                {
-                    UserId = users.First().Id,
-                    Module = ActivityModules.Users,
-                    Action = ActivityActions.Create,
-                    Date = DateTime.Now.AddDays(-50)
-                }
-            };
+            activities.Add(new ActivityRecordModel
+            {
+                UserId = users.First().Id,
+                Module = ActivityModules.Users,
+                Action = ActivityActions.Create,
+                Date = DateTime.Now.AddDays(-50)
+            });
 
             _context.Transaction.AddRange(activities);
             _context.SaveChanges();

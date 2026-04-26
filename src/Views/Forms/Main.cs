@@ -6,6 +6,8 @@ using PrimeSystems.Views.Forms.Add;
 using ReaLTaiizor.Controls;
 using ReaLTaiizor.Forms;
 using System.Diagnostics;
+using System.Collections.Generic;
+using System.Linq;
 using Panel = System.Windows.Forms.Panel;
 using TabPage = System.Windows.Forms.TabPage;
 using GroupBox = System.Windows.Forms.GroupBox;
@@ -176,6 +178,13 @@ namespace PrimeSystems
                 p => p.Description ?? $"Proveedor: {p.Supplier?.Name ?? "N/A"} | Total: ${p.Total ?? "0.00"} | Fecha: {p.Date ?? "N/A"}",
                 p => Properties.Resources.purchase_placeholder,
                 p => new Purchase(p)
+            );
+            tabConfigurations[tpCurrentAccounts] = new TabConfiguration<CurrentAccountModel, int, CurrentAccount>(
+                () => new CurrentAccountController(),
+                ca => ca.Title ?? $"Cuenta #{ca.Id}",
+                ca => ca.Description ?? $"Saldo: ${ca.Balance:N2} | Tipo: {ca.EntityType}",
+                null,
+                ca => new CurrentAccount(ca)
             );
         }
 
@@ -654,7 +663,7 @@ namespace PrimeSystems
             ReloadTabPage(tabPage, append: false);
         }
 
-        private void ShowControlInTabPage(TabPage tabPage, Control control, bool readOnly = false)
+        public void ShowControlInTabPage(TabPage tabPage, Control control, bool readOnly = false)
         {
             Debug.WriteLine($"ShowControlInTabPage: Showing control {control.GetType().Name} in tab {tabPage.Name}");
             if (!originalTabContents.ContainsKey(tabPage))
@@ -760,6 +769,9 @@ namespace PrimeSystems
         private void btnAddArticle_Click(object sender, EventArgs e) =>
             ShowControlInTabPage(tpArticles, new Article());
 
+        private void btnAddCurrentAccount_Click(object sender, EventArgs e) =>
+            ShowControlInTabPage(tpCurrentAccounts, new Views.Forms.Add.CurrentAccount());
+
         private void tpFinancialState_Paint(object sender, PaintEventArgs e)
         {
             DateTime today = DateTime.Today;
@@ -829,6 +841,15 @@ namespace PrimeSystems
             decimal totalRevenue = 0;
             decimal totalExpenses = 0;
 
+            var sellDataByDate = new Dictionary<DateTime, decimal>();
+            var purchaseDataByDate = new Dictionary<DateTime, decimal>();
+
+            for (var date = dateFrom.Date; date <= dateTo.Date; date = date.AddDays(1))
+            {
+                sellDataByDate[date] = 0;
+                purchaseDataByDate[date] = 0;
+            }
+
             foreach (var record in allRecordsForTotals)
             {
                 if (record.Module == ActivityModules.Sells && record.Sell != null)
@@ -837,6 +858,14 @@ namespace PrimeSystems
                     if (decimal.TryParse(record.Sell.Total, out decimal sellAmount))
                     {
                         totalRevenue += sellAmount;
+                        if (record.Date.HasValue)
+                        {
+                            var dateKey = record.Date.Value.Date;
+                            if (sellDataByDate.ContainsKey(dateKey))
+                                sellDataByDate[dateKey] += sellAmount;
+                            else
+                                sellDataByDate[dateKey] = sellAmount;
+                        }
                     }
                 }
                 else if (record.Module == ActivityModules.Purchases && record.Purchase != null)
@@ -845,9 +874,29 @@ namespace PrimeSystems
                     if (decimal.TryParse(record.Purchase.Total, out decimal purchaseAmount))
                     {
                         totalExpenses += purchaseAmount;
+                        if (record.Date.HasValue)
+                        {
+                            var dateKey = record.Date.Value.Date;
+                            if (purchaseDataByDate.ContainsKey(dateKey))
+                                purchaseDataByDate[dateKey] += purchaseAmount;
+                            else
+                                purchaseDataByDate[dateKey] = purchaseAmount;
+                        }
                     }
                 }
             }
+
+            var sellDataPoints = sellDataByDate
+                .OrderBy(x => x.Key)
+                .Select(x => new FinancialDataPoint(x.Key, x.Value))
+                .ToList();
+
+            var purchaseDataPoints = purchaseDataByDate
+                .OrderBy(x => x.Key)
+                .Select(x => new FinancialDataPoint(x.Key, x.Value))
+                .ToList();
+
+            financialStateChart1.UpdateData(sellDataPoints, purchaseDataPoints);
 
             var itemsToAdd = new List<FinancialStateTableItem>();
             var financialPermission = GetTabPagePermission(tpFinancialState);

@@ -20,6 +20,8 @@ namespace PrimeSystems.Core
         public DbSet<PurchaseDetailModel> PurchaseDetail { get; set; }
         public DbSet<SellModel> Sell { get; set; }
         public DbSet<SellDetailModel> SellDetail { get; set; }
+        public DbSet<CurrentAccountModel> CurrentAccount { get; set; }
+        public DbSet<CurrentAccountMovementModel> CurrentAccountMovement { get; set; }
 
         // Default constructor
         public AppDbContext()
@@ -174,6 +176,30 @@ namespace PrimeSystems.Core
                 .HasOne(d => d.Article)
                 .WithMany()
                 .HasForeignKey(d => d.ArticleId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CurrentAccountMovementModel>()
+                .HasOne(m => m.CurrentAccount)
+                .WithMany(ca => ca.Movements)
+                .HasForeignKey(m => m.CurrentAccountId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CurrentAccountMovementModel>()
+                .HasOne(m => m.User)
+                .WithMany()
+                .HasForeignKey(m => m.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CurrentAccountMovementModel>()
+                .HasOne(m => m.RelatedSell)
+                .WithMany()
+                .HasForeignKey(m => m.RelatedSellId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CurrentAccountMovementModel>()
+                .HasOne(m => m.RelatedPurchase)
+                .WithMany()
+                .HasForeignKey(m => m.RelatedPurchaseId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
