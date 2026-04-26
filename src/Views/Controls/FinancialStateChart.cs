@@ -97,21 +97,8 @@ namespace PrimeSystems.Views.Controls
             var sellPoints = sellData.Select(d => new DateTimePoint(d.Date, (double)d.Amount)).ToList();
             var purchasePoints = purchaseData.Select(d => new DateTimePoint(d.Date, (double)d.Amount)).ToList();
 
-            if (_sellSeries[0] is LineSeries<DateTimePoint> sellLine)
-            {
-                sellLine.Values = sellPoints;
-            }
-
-            if (_purchaseSeries[0] is LineSeries<DateTimePoint> purchaseLine)
-            {
-                purchaseLine.Values = purchasePoints;
-            }
-
-            chart.Series = new ISeries[]
-            {
-                _sellSeries[0],
-                _purchaseSeries[0]
-            };
+            ((LineSeries<DateTimePoint>)_sellSeries[0]).Values = sellPoints;
+            ((LineSeries<DateTimePoint>)_purchaseSeries[0]).Values = purchasePoints;
         }
     }
 

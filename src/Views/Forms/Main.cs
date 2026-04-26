@@ -774,6 +774,12 @@ namespace PrimeSystems
 
         private void tpFinancialState_Paint(object sender, PaintEventArgs e)
         {
+            if (financialStateChart1 == null)
+                return;
+
+            if (!hasMoreData.ContainsKey(tpFinancialState))
+                hasMoreData[tpFinancialState] = true;
+
             DateTime today = DateTime.Today;
             DateTime oneMonthAgo = today.AddMonths(-1);
 
@@ -896,7 +902,7 @@ namespace PrimeSystems
                 .Select(x => new FinancialDataPoint(x.Key, x.Value))
                 .ToList();
 
-            financialStateChart1.UpdateData(sellDataPoints, purchaseDataPoints);
+            financialStateChart1?.UpdateData(sellDataPoints, purchaseDataPoints);
 
             var itemsToAdd = new List<FinancialStateTableItem>();
             var financialPermission = GetTabPagePermission(tpFinancialState);
@@ -1041,6 +1047,11 @@ namespace PrimeSystems
             UpdateLoadMoreUI(tpActivityLog, hasMore, pActivityLogTableItems);
 
             pActivityLogTableItems.ResumeLayout();
+        }
+
+        private void materialTabSelector1_Click(object sender, EventArgs e)
+        {
+
         }
 
         private interface ITabConfiguration
