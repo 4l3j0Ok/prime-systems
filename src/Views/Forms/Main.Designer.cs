@@ -406,7 +406,7 @@ namespace PrimeSystems
             tpSells.Location = new Point(4, 39);
             tpSells.Margin = new Padding(0);
             tpSells.Name = "tpSells";
-            tpSells.Size = new Size(942, 471);
+            tpSells.Size = new Size(975, 645);
             tpSells.TabIndex = 9;
             tpSells.Text = "Ventas";
             tpSells.UseVisualStyleBackColor = true;
@@ -423,7 +423,7 @@ namespace PrimeSystems
             tcSellsPages.Multiline = true;
             tcSellsPages.Name = "tcSellsPages";
             tcSellsPages.SelectedIndex = 0;
-            tcSellsPages.Size = new Size(942, 423);
+            tcSellsPages.Size = new Size(975, 597);
             tcSellsPages.TabIndex = 2;
             // 
             // tpSellsList
@@ -433,7 +433,7 @@ namespace PrimeSystems
             tpSellsList.Location = new Point(4, 24);
             tpSellsList.Name = "tpSellsList";
             tpSellsList.Padding = new Padding(20);
-            tpSellsList.Size = new Size(934, 395);
+            tpSellsList.Size = new Size(967, 569);
             tpSellsList.TabIndex = 0;
             tpSellsList.Text = "Listado";
             // 
@@ -507,7 +507,7 @@ namespace PrimeSystems
             materialTabSelector1.Margin = new Padding(0);
             materialTabSelector1.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             materialTabSelector1.Name = "materialTabSelector1";
-            materialTabSelector1.Size = new Size(942, 48);
+            materialTabSelector1.Size = new Size(975, 48);
             materialTabSelector1.TabIndex = 1;
             materialTabSelector1.Text = "materialTabSelector1";
             materialTabSelector1.Click += materialTabSelector1_Click;
