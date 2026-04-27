@@ -71,6 +71,28 @@ namespace PrimeSystems
                 {
                     Debug.WriteLine($"Tab changed to: {selectedTab.Name}");
                     LoadTabOnDemand(selectedTab);
+
+                    // Also check if this tab has a nested MaterialTabControl
+                    var nestedTabControl = selectedTab.Controls.OfType<MaterialTabControl>().FirstOrDefault();
+                    if (nestedTabControl != null)
+                    {
+                        // Load the currently selected nested tab
+                        if (nestedTabControl.SelectedTab != null)
+                        {
+                            Debug.WriteLine($"Loading nested tab: {nestedTabControl.SelectedTab.Name}");
+                            LoadTabOnDemand(nestedTabControl.SelectedTab);
+                        }
+
+                        // Listen for nested tab changes too
+                        nestedTabControl.SelectedIndexChanged += (ns, ne) =>
+                        {
+                            if (nestedTabControl.SelectedTab != null)
+                            {
+                                Debug.WriteLine($"Nested tab changed to: {nestedTabControl.SelectedTab.Name}");
+                                LoadTabOnDemand(nestedTabControl.SelectedTab);
+                            }
+                        };
+                    }
                 }
             };
 
