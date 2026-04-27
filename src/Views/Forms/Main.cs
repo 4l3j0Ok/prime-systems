@@ -46,13 +46,26 @@ namespace PrimeSystems
 
         private void Main_Load(object sender, EventArgs e)
         {
+            System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+            Debug.WriteLine($"Main_Load START");
+
             SaveOriginalTabContents();
+            Debug.WriteLine($"SaveOriginalTabContents: {sw.ElapsedMilliseconds}ms");
+
             InitializeTabConfigurations();
+            Debug.WriteLine($"InitializeTabConfigurations: {sw.ElapsedMilliseconds}ms");
+
             ApplyRolePermissions();
+            Debug.WriteLine($"ApplyRolePermissions: {sw.ElapsedMilliseconds}ms");
+
             ReloadAllTabPages();
+            Debug.WriteLine($"ReloadAllTabPages: {sw.ElapsedMilliseconds}ms");
+
             InitializePagination(tpFinancialState, pFinancialStateTableItems);
             InitializePagination(tpActivityLog, pActivityLogTableItems);
             PositionFloatingButtonsInTabControl(tcMain);
+            Debug.WriteLine($"PositionFloatingButtonsInTabControl: {sw.ElapsedMilliseconds}ms");
+
             dtpDateFrom.ValueChanged += (s, e) =>
             {
                 currentPages[tpFinancialState] = 0;
@@ -65,6 +78,9 @@ namespace PrimeSystems
                 hasMoreData[tpFinancialState] = true;
                 RefreshFinancialState(append: false);
             };
+
+            Debug.WriteLine($"Main_Load END: {sw.ElapsedMilliseconds}ms total");
+            sw.Stop();
         }
 
         private AccessLevel GetTabPagePermission(TabPage tabPage)
@@ -251,7 +267,7 @@ namespace PrimeSystems
             return null;
         }
 
-        private void ReloadTabPage(TabPage tabPage, bool append = false)
+        private void ReloadTabPage(TabPage tabPage, bool append = false, bool skipIfNotActive = false)
         {
             if (!tabConfigurations.TryGetValue(tabPage, out var config))
                 return;
@@ -262,7 +278,15 @@ namespace PrimeSystems
                 hasMoreData[tabPage] = true;
             }
 
+            if (skipIfNotActive && !IsTabPageVisible(tabPage))
+            {
+                Debug.WriteLine($"Skipping load for non-visible tab: {tabPage.Name}");
+                return;
+            }
+
+            var sw = Stopwatch.StartNew();
             config.LoadCards(this, tabPage, append);
+            Debug.WriteLine($"LoadCards for {tabPage.Name}: {sw.ElapsedMilliseconds}ms");
 
             if (!append)
             {
@@ -271,14 +295,25 @@ namespace PrimeSystems
         }
         private void ReloadAllTabPages()
         {
+            var sw = Stopwatch.StartNew();
+            Debug.WriteLine($"ReloadAllTabPages START");
+
+            var activeTab = tcMain.SelectedTab;
+            int loaded = 0;
+
             foreach (var tabPage in tabConfigurations.Keys)
             {
                 if (tcMain.TabPages.Contains(tabPage) || IsTabInNestedControl(tabPage))
                 {
                     InitializePagination(tabPage);
-                    ReloadTabPage(tabPage);
+                    bool isActive = tabPage == activeTab;
+                    ReloadTabPage(tabPage, append: false, skipIfNotActive: !isActive);
+                    loaded++;
+                    Debug.WriteLine($"Loaded tab {tabPage.Name}, active={isActive}, elapsed={sw.ElapsedMilliseconds}ms");
                 }
             }
+
+            Debug.WriteLine($"ReloadAllTabPages END: {loaded} tabs loaded in {sw.ElapsedMilliseconds}ms");
         }
 
         private bool IsTabInNestedControl(TabPage tabPage)
@@ -290,6 +325,25 @@ namespace PrimeSystems
                     if (control is MaterialTabControl nestedTabControl)
                     {
                         if (nestedTabControl.TabPages.Contains(tabPage))
+                            return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private bool IsTabPageVisible(TabPage tabPage)
+        {
+            if (tcMain.SelectedTab == tabPage)
+                return true;
+
+            foreach (TabPage mainTab in tcMain.TabPages)
+            {
+                foreach (Control control in mainTab.Controls)
+                {
+                    if (control is MaterialTabControl nestedTabControl)
+                    {
+                        if (nestedTabControl.SelectedTab == tabPage)
                             return true;
                     }
                 }
@@ -468,7 +522,6 @@ namespace PrimeSystems
             {
                 if (control is MaterialTabControl nestedTabControl)
                 {
-                    Debug.WriteLine($"SaveTabPageContents: Found nested TabControl in {tabPage.Name}");
                     foreach (TabPage nestedTab in nestedTabControl.TabPages)
                     {
                         SaveTabPageContents(nestedTab);
