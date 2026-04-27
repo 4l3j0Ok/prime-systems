@@ -19,6 +19,8 @@ namespace PrimeSystems
         {
             InitializeComponent();
             UIConfig.GetSkinManager().AddFormToManage(this);
+            pictureBox1.Image = Config.GetBusinessLogo();
+            lblAppName.Text = Config.GetBusinessName();
         }
 
         private void tbHandleEnter(object sender, KeyPressEventArgs e)

@@ -40,6 +40,8 @@ namespace PrimeSystems.Views.Forms
             string? connectionString = _useSqlServer ? tbConnectionString.Text.Trim() : null;
             string username = tbInitialUser.Text.Trim();
             string password = tbInitialUserPassword.Text.Trim();
+            string businessName = tbBusinessName.Text.Trim();
+            string logoPath = lblLogoPath.Text == "Sin logo seleccionado" ? string.Empty : lblLogoPath.Text;
 
             if (_useSqlServer && string.IsNullOrWhiteSpace(connectionString))
             {
@@ -104,6 +106,11 @@ namespace PrimeSystems.Views.Forms
                     {
                         Provider = _useSqlServer ? "sqlserver" : "sqlite",
                         ConnectionString = connectionString ?? string.Empty
+                    },
+                    Business = new BusinessConfig
+                    {
+                        Name = string.IsNullOrWhiteSpace(businessName) ? "Prime Systems" : businessName,
+                        LogoPath = logoPath
                     }
                 };
 
@@ -154,6 +161,46 @@ namespace PrimeSystems.Views.Forms
                     "Error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnSelectLogo_Click(object sender, EventArgs e)
+        {
+            using (var openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Title = "Seleccionar logo del negocio";
+                openFileDialog.Filter = "Archivos de imagen|*.jpg;*.jpeg;*.png;*.bmp;*.gif|Todos los archivos|*.*";
+                openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        string selectedPath = openFileDialog.FileName;
+                        string logosDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", "logos");
+
+                        if (!Directory.Exists(logosDir))
+                        {
+                            Directory.CreateDirectory(logosDir);
+                        }
+
+                        string fileName = $"business_logo{Path.GetExtension(selectedPath)}";
+                        string destPath = Path.Combine(logosDir, fileName);
+
+                        File.Copy(selectedPath, destPath, true);
+
+                        lblLogoPath.Text = destPath;
+                        lblLogoPath.ForeColor = Color.FromArgb(0, 165, 80);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(
+                            $"Error al copiar la imagen: {ex.Message}",
+                            "Error",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                    }
+                }
             }
         }
 

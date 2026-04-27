@@ -42,6 +42,8 @@ namespace PrimeSystems
             }
             UIConfig.GetSkinManager().AddFormToManage(this);
             InitializeComponent();
+            pictureBox1.Image = Config.GetBusinessLogo();
+            lblWelcome.Text = $"Bienvenido a {Config.GetBusinessName()}";
         }
 
         private void Main_Load(object sender, EventArgs e)
