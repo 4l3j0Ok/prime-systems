@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using PrimeSystems.Core;
 
 namespace PrimeSystems.Services
@@ -25,9 +27,10 @@ namespace PrimeSystems.Services
             _stockService = new StockService(context);
         }
 
-        public List<PurchaseModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<PurchaseModel>> GetAllAsync(bool includeInactive = false, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
             var query = _context.Purchase
+                .AsNoTracking()
                 .Include(c => c.User)
                 .Include(c => c.Supplier)
                 .Include(c => c.Detail)
@@ -40,12 +43,13 @@ namespace PrimeSystems.Services
                 query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
             }
 
-            return query.ToList();
+            return await query.ToListAsync(ct);
         }
 
-        public List<PurchaseModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<PurchaseModel>> SearchAsync(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
             var query = _context.Purchase
+                .AsNoTracking()
                 .Include(c => c.User)
                 .Include(c => c.Supplier)
                 .Include(c => c.Detail)
@@ -53,10 +57,10 @@ namespace PrimeSystems.Services
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                searchTerm = searchTerm.ToLower();
+                var searchLower = searchTerm.ToLowerInvariant();
                 query = query.Where(c =>
-                    (c.Title != null && c.Title.ToLower().Contains(searchTerm)) ||
-                    (c.Description != null && c.Description.ToLower().Contains(searchTerm))
+                    (c.Title != null && c.Title.ToLowerInvariant().Contains(searchLower)) ||
+                    (c.Description != null && c.Description.ToLowerInvariant().Contains(searchLower))
                 );
             }
 
@@ -67,25 +71,26 @@ namespace PrimeSystems.Services
                 query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
             }
 
-            return query.ToList();
+            return await query.ToListAsync(ct);
         }
 
-        public PurchaseModel? GetById(int id)
+        public async Task<PurchaseModel?> GetByIdAsync(int id, CancellationToken ct = default)
         {
-            return _context.Purchase
+            return await _context.Purchase
+                .AsNoTracking()
                 .Include(c => c.User)
                 .Include(c => c.Supplier)
                 .Include(c => c.Detail)
                     .ThenInclude(d => d.Article)
-                .FirstOrDefault(c => c.Id == id);
+                .FirstOrDefaultAsync(c => c.Id == id, ct);
         }
 
-        public bool Create(PurchaseModel compra)
+        public async Task<bool> CreateAsync(PurchaseModel compra, CancellationToken ct = default)
         {
             try
             {
                 _context.Purchase.Add(compra);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch (Exception ex)
@@ -95,11 +100,11 @@ namespace PrimeSystems.Services
             }
         }
 
-        public bool Update(PurchaseModel compra)
+        public async Task<bool> UpdateAsync(PurchaseModel compra, CancellationToken ct = default)
         {
             try
             {
-                var existing = _context.Purchase.Find(compra.Id);
+                var existing = await _context.Purchase.FindAsync(new object[] { compra.Id }, ct);
                 if (existing == null) return false;
 
                 existing.UserId = compra.UserId;
@@ -111,7 +116,7 @@ namespace PrimeSystems.Services
                 existing.Title = compra.Title;
                 existing.Description = compra.Description;
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch
@@ -120,14 +125,14 @@ namespace PrimeSystems.Services
             }
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)
         {
             try
             {
-                var entity = _context.Purchase.Find(id);
+                var entity = await _context.Purchase.FindAsync(new object[] { id }, ct);
                 if (entity == null) return false;
                 _context.Purchase.Remove(entity);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch
@@ -136,12 +141,12 @@ namespace PrimeSystems.Services
             }
         }
 
-        public bool CreateCompraConDetalles(PurchaseModel compra, List<PurchaseDetailModel> detalles)
+        public async Task<bool> CreateCompraConDetallesAsync(PurchaseModel compra, List<PurchaseDetailModel> detalles, CancellationToken ct = default)
         {
             try
             {
                 _context.Purchase.Add(compra);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
 
                 foreach (var detalle in detalles)
                 {
@@ -149,14 +154,14 @@ namespace PrimeSystems.Services
                     _context.PurchaseDetail.Add(detalle);
                     if (detalle.ArticleId.HasValue && int.TryParse(detalle.Quantity, out int quantity))
                     {
-                        bool stockAdjusted = _stockService.AdjustStock(detalle.ArticleId.Value, quantity);
+                        bool stockAdjusted = await _stockService.AdjustStockAsync(detalle.ArticleId.Value, quantity, ct);
                         if (!stockAdjusted)
                         {
                             Debug.WriteLine($"Advertencia: No se pudo ajustar el stock para el artículo {detalle.ArticleId.Value}");
                         }
                     }
                 }
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
 
                 return true;
             }
@@ -167,11 +172,11 @@ namespace PrimeSystems.Services
             }
         }
 
-        public bool UpdateCompraConDetalles(PurchaseModel compra, List<PurchaseDetailModel> detalles)
+        public async Task<bool> UpdateCompraConDetallesAsync(PurchaseModel compra, List<PurchaseDetailModel> detalles, CancellationToken ct = default)
         {
             try
             {
-                var existing = _context.Purchase.Find(compra.Id);
+                var existing = await _context.Purchase.FindAsync(new object[] { compra.Id }, ct);
                 if (existing == null) return false;
 
                 existing.UserId = compra.UserId;
@@ -183,29 +188,26 @@ namespace PrimeSystems.Services
                 existing.Title = compra.Title;
                 existing.Description = compra.Description;
 
-                var oldDetails = _context.PurchaseDetail.Where(d => d.PurchaseId == compra.Id).ToList();
+                var oldDetails = await _context.PurchaseDetail.Where(d => d.PurchaseId == compra.Id).ToListAsync(ct);
 
                 foreach (var oldDetail in oldDetails)
                 {
                     if (oldDetail.ArticleId.HasValue && int.TryParse(oldDetail.Quantity, out int quantity))
                     {
-                        _stockService.AdjustStock(oldDetail.ArticleId.Value, -quantity);
+                        await _stockService.AdjustStockAsync(oldDetail.ArticleId.Value, -quantity, ct);
                     }
                 }
 
-                // Eliminar los detalles anteriores
                 _context.PurchaseDetail.RemoveRange(oldDetails);
 
-                // Agregar los nuevos detalles y aumentar el stock
                 foreach (var detalle in detalles)
                 {
                     detalle.PurchaseId = compra.Id;
                     _context.PurchaseDetail.Add(detalle);
 
-                    // Aumentar el stock si el detalle tiene un artículo asociado
                     if (detalle.ArticleId.HasValue && int.TryParse(detalle.Quantity, out int quantity))
                     {
-                        bool stockAdjusted = _stockService.AdjustStock(detalle.ArticleId.Value, quantity);
+                        bool stockAdjusted = await _stockService.AdjustStockAsync(detalle.ArticleId.Value, quantity, ct);
                         if (!stockAdjusted)
                         {
                             Debug.WriteLine($"Advertencia: No se pudo ajustar el stock para el artículo {detalle.ArticleId.Value}");
@@ -213,7 +215,7 @@ namespace PrimeSystems.Services
                     }
                 }
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch (Exception ex)
@@ -223,40 +225,42 @@ namespace PrimeSystems.Services
             }
         }
 
-        public List<PurchaseModel> GetComprasByProveedor(int proveedorId)
+        public async Task<List<PurchaseModel>> GetComprasByProveedorAsync(int proveedorId, CancellationToken ct = default)
         {
-            return _context.Purchase
+            return await _context.Purchase
+                .AsNoTracking()
                 .Include(c => c.User)
                 .Include(c => c.Supplier)
                 .Where(c => c.SupplierId == proveedorId)
-                .ToList();
+                .ToListAsync(ct);
         }
 
-        public List<PurchaseModel> GetComprasByUsuario(int usuarioId)
+        public async Task<List<PurchaseModel>> GetComprasByUsuarioAsync(int usuarioId, CancellationToken ct = default)
         {
-            return _context.Purchase
+            return await _context.Purchase
+                .AsNoTracking()
                 .Include(c => c.User)
                 .Include(c => c.Supplier)
                 .Where(c => c.UserId == usuarioId)
-                .ToList();
+                .ToListAsync(ct);
         }
 
-        public List<SupplierModel> GetAllSuppliers()
+        public async Task<List<SupplierModel>> GetAllSuppliersAsync(CancellationToken ct = default)
         {
             var supplierService = new SupplierService(_context);
-            return supplierService.GetAll();
+            return await supplierService.GetAllAsync(ct: ct);
         }
 
-        public SupplierModel? GetSupplierByName(string name)
+        public async Task<SupplierModel?> GetSupplierByNameAsync(string name, CancellationToken ct = default)
         {
-            var supplierService = new SupplierService(_context);
-            return supplierService.GetAll().FirstOrDefault(s => s.Name == name);
+            var allSuppliers = await GetAllSuppliersAsync(ct);
+            return allSuppliers.FirstOrDefault(s => s.Name == name);
         }
 
-        public ArticleModel? GetArticleById(int id)
+        public async Task<ArticleModel?> GetArticleByIdAsync(int id, CancellationToken ct = default)
         {
             var articleService = new ArticleService(_context);
-            return articleService.GetById(id);
+            return await articleService.GetByIdAsync(id, ct);
         }
 
         public decimal CalculateTotal(List<(decimal UnitPrice, int Quantity)> items)
@@ -269,10 +273,11 @@ namespace PrimeSystems.Services
             return total;
         }
 
-        public PurchaseValidationResult ValidatePurchase(
+        public async Task<PurchaseValidationResult> ValidatePurchaseAsync(
             int? supplierId,
             List<(int? ArticleId, string Description, string UnitPrice, string Quantity)> items,
-            decimal total)
+            decimal total,
+            CancellationToken ct = default)
         {
             var errors = new List<string>();
 
@@ -330,16 +335,17 @@ namespace PrimeSystems.Services
             }).ToList();
         }
 
-        public PurchaseSaveResult SavePurchase(
+        public async Task<PurchaseSaveResult> SavePurchaseAsync(
             int supplierId,
             decimal total,
             List<(int? ArticleId, string Description, string UnitPrice, string Quantity)> details,
             bool isEditMode,
-            PurchaseModel? existingPurchase)
+            PurchaseModel? existingPurchase,
+            CancellationToken ct = default)
         {
             var result = new PurchaseSaveResult { Success = false };
 
-            var supplier = GetSupplierByName(GetAllSuppliers().FirstOrDefault(s => s.Id == supplierId)?.Name ?? "");
+            var supplier = await GetSupplierByNameAsync(GetAllSuppliersAsync(ct).Result.FirstOrDefault(s => s.Id == supplierId)?.Name ?? "", ct);
             if (supplier == null)
             {
                 result.ErrorMessage = "Proveedor no válido";
@@ -364,16 +370,16 @@ namespace PrimeSystems.Services
             {
                 purchase.Title = $"Compra #{purchase.Id}";
                 purchase.Description = $"Proveedor: {supplier.Name} | Total: ${purchase.Total} | Fecha: {DateTime.Now:dd/MM/yyyy}";
-                success = UpdateCompraConDetalles(purchase, purchaseDetails);
+                success = await UpdateCompraConDetallesAsync(purchase, purchaseDetails, ct);
             }
             else
             {
-                success = CreateCompraConDetalles(purchase, purchaseDetails);
+                success = await CreateCompraConDetallesAsync(purchase, purchaseDetails, ct);
                 if (success)
                 {
                     purchase.Title = $"Compra #{purchase.Id}";
                     purchase.Description = $"Proveedor: {supplier.Name} | Total: ${purchase.Total} | Fecha: {DateTime.Now:dd/MM/yyyy}";
-                    Update(purchase);
+                    await UpdateAsync(purchase, ct);
                 }
             }
 
@@ -384,6 +390,47 @@ namespace PrimeSystems.Services
 
             return result;
         }
+
+        public List<PurchaseModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+            => GetAllAsync(includeInactive, pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public List<PurchaseModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+            => SearchAsync(searchTerm, includeInactive, pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public PurchaseModel? GetById(int id)
+            => GetByIdAsync(id).GetAwaiter().GetResult();
+
+        public bool Create(PurchaseModel item)
+            => CreateAsync(item).GetAwaiter().GetResult();
+
+        public bool Update(PurchaseModel item)
+            => UpdateAsync(item).GetAwaiter().GetResult();
+
+        public bool Delete(int id)
+            => DeleteAsync(id).GetAwaiter().GetResult();
+
+        public List<SupplierModel> GetAllSuppliers()
+            => GetAllSuppliersAsync().GetAwaiter().GetResult();
+
+        public SupplierModel? GetSupplierByName(string name)
+            => GetSupplierByNameAsync(name).GetAwaiter().GetResult();
+
+        public ArticleModel? GetArticleById(int id)
+            => GetArticleByIdAsync(id).GetAwaiter().GetResult();
+
+        public PurchaseValidationResult ValidatePurchase(
+            int? supplierId,
+            List<(int? ArticleId, string Description, string UnitPrice, string Quantity)> items,
+            decimal total)
+            => ValidatePurchaseAsync(supplierId, items, total).GetAwaiter().GetResult();
+
+        public PurchaseSaveResult SavePurchase(
+            int supplierId,
+            decimal total,
+            List<(int? ArticleId, string Description, string UnitPrice, string Quantity)> details,
+            bool isEditMode,
+            PurchaseModel? existingPurchase)
+            => SavePurchaseAsync(supplierId, total, details, isEditMode, existingPurchase).GetAwaiter().GetResult();
     }
 
     public class PurchaseValidationResult

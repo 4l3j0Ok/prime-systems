@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using PrimeSystems.Core;
 
 namespace PrimeSystems.Services
@@ -22,9 +24,10 @@ namespace PrimeSystems.Services
             _context = context;
         }
 
-        public List<StockModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<StockModel>> GetAllAsync(bool includeInactive = false, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
             var query = _context.Stock
+                .AsNoTracking()
                 .Include(s => s.Article)
                 .AsQueryable();
 
@@ -35,21 +38,22 @@ namespace PrimeSystems.Services
                 query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
             }
 
-            return query.ToList();
+            return await query.ToListAsync(ct);
         }
 
-        public List<StockModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<StockModel>> SearchAsync(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
             var query = _context.Stock
+                .AsNoTracking()
                 .Include(s => s.Article)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                searchTerm = searchTerm.ToLower();
+                var searchLower = searchTerm.ToLowerInvariant();
                 query = query.Where(s =>
-                    (s.Article != null && s.Article.Name != null && s.Article.Name.ToLower().Contains(searchTerm)) ||
-                    (s.Article != null && s.Article.Code.ToLower().Contains(searchTerm))
+                    (s.Article != null && s.Article.Name != null && s.Article.Name.ToLowerInvariant().Contains(searchLower)) ||
+                    (s.Article != null && s.Article.Code.ToLowerInvariant().Contains(searchLower))
                 );
             }
 
@@ -60,29 +64,34 @@ namespace PrimeSystems.Services
                 query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
             }
 
-            return query.ToList();
+            return await query.ToListAsync(ct);
         }
 
-        public StockModel? GetById(int id)
+        public async Task<StockModel?> GetByIdAsync(int id, CancellationToken ct = default)
         {
-            return _context.Stock
+            return await _context.Stock
+                .AsNoTracking()
                 .Include(s => s.Article)
-                .FirstOrDefault(s => s.Id == id);
+                .FirstOrDefaultAsync(s => s.Id == id, ct);
+        }
+
+        public async Task<StockModel?> GetStockByArticuloIdAsync(int articuloId, CancellationToken ct = default)
+        {
+            return await _context.Stock
+                .AsNoTracking()
+                .Include(s => s.Article)
+                .FirstOrDefaultAsync(s => s.ArticleId == articuloId, ct);
         }
 
         public StockModel? GetStockByArticuloId(int articuloId)
-        {
-            return _context.Stock
-                .Include(s => s.Article)
-                .FirstOrDefault(s => s.ArticleId == articuloId);
-        }
+            => GetStockByArticuloIdAsync(articuloId).GetAwaiter().GetResult();
 
-        public bool Create(StockModel stock)
+        public async Task<bool> CreateAsync(StockModel stock, CancellationToken ct = default)
         {
             try
             {
                 _context.Stock.Add(stock);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch (Exception ex)
@@ -92,11 +101,11 @@ namespace PrimeSystems.Services
             }
         }
 
-        public bool Update(StockModel stock)
+        public async Task<bool> UpdateAsync(StockModel stock, CancellationToken ct = default)
         {
             try
             {
-                var existingStock = _context.Stock.Find(stock.Id);
+                var existingStock = await _context.Stock.FindAsync(new object[] { stock.Id }, ct);
                 if (existingStock == null)
                     return false;
 
@@ -105,7 +114,7 @@ namespace PrimeSystems.Services
                 existingStock.Cost = stock.Cost;
                 existingStock.Profit = stock.Profit;
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch
@@ -114,14 +123,32 @@ namespace PrimeSystems.Services
             }
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)
         {
             try
             {
-                var stock = _context.Stock.Find(id);
+                var stock = await _context.Stock.FindAsync(new object[] { id }, ct);
                 if (stock == null) return false;
                 _context.Stock.Remove(stock);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> AdjustStockAsync(int articuloId, int cantidad, CancellationToken ct = default)
+        {
+            try
+            {
+                var stock = await GetStockByArticuloIdAsync(articuloId, ct);
+                if (stock == null)
+                    return false;
+
+                stock.Stock = (stock.Stock ?? 0) + cantidad;
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch
@@ -131,21 +158,24 @@ namespace PrimeSystems.Services
         }
 
         public bool AdjustStock(int articuloId, int cantidad)
-        {
-            try
-            {
-                var stock = GetStockByArticuloId(articuloId);
-                if (stock == null)
-                    return false;
+            => AdjustStockAsync(articuloId, cantidad).GetAwaiter().GetResult();
 
-                stock.Stock = (stock.Stock ?? 0) + cantidad;
-                _context.SaveChanges();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+        public List<StockModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+            => GetAllAsync(includeInactive, pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public List<StockModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+            => SearchAsync(searchTerm, includeInactive, pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public StockModel? GetById(int id)
+            => GetByIdAsync(id).GetAwaiter().GetResult();
+
+        public bool Create(StockModel item)
+            => CreateAsync(item).GetAwaiter().GetResult();
+
+        public bool Update(StockModel item)
+            => UpdateAsync(item).GetAwaiter().GetResult();
+
+        public bool Delete(int id)
+            => DeleteAsync(id).GetAwaiter().GetResult();
     }
 }

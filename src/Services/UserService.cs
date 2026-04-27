@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using PrimeSystems.Core;
 
@@ -24,9 +24,10 @@ namespace PrimeSystems.Services
             _context = context;
         }
 
-        public List<UserModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<UserModel>> GetAllAsync(bool includeInactive = false, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
             var query = _context.User
+                .AsNoTracking()
                 .Include(u => u.Role)
                 .AsQueryable();
 
@@ -42,12 +43,13 @@ namespace PrimeSystems.Services
                 query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
             }
 
-            return query.ToList();
+            return await query.ToListAsync(ct);
         }
 
-        public List<UserModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<UserModel>> SearchAsync(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
             var query = _context.User
+                .AsNoTracking()
                 .Include(u => u.Role)
                 .AsQueryable();
 
@@ -58,10 +60,10 @@ namespace PrimeSystems.Services
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                searchTerm = searchTerm.ToLower();
+                var searchLower = searchTerm.ToLowerInvariant();
                 query = query.Where(u =>
-                    (u.Title != null && u.Title.ToLower().Contains(searchTerm)) ||
-                    (u.Description != null && u.Description.ToLower().Contains(searchTerm))
+                    (u.Title != null && u.Title.ToLowerInvariant().Contains(searchLower)) ||
+                    (u.Description != null && u.Description.ToLowerInvariant().Contains(searchLower))
                 );
             }
 
@@ -72,52 +74,43 @@ namespace PrimeSystems.Services
                 query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
             }
 
-            return query.ToList();
+            return await query.ToListAsync(ct);
         }
 
-        public UserModel? GetByUsername(string username)
+        public async Task<UserModel?> GetByUsernameAsync(string username, CancellationToken ct = default)
         {
-            return _context.User
+            return await _context.User
+                .AsNoTracking()
                 .Include(u => u.Role)
-                .FirstOrDefault(u => u.Username == username);
+                .FirstOrDefaultAsync(u => u.Username == username, ct);
         }
 
-        public UserModel? GetById(int id)
+        public async Task<UserModel?> GetByIdAsync(int id, CancellationToken ct = default)
         {
-            return _context.User
+            return await _context.User
+                .AsNoTracking()
                 .Include(u => u.Role)
-                .FirstOrDefault(u => u.Id == id);
+                .FirstOrDefaultAsync(u => u.Id == id, ct);
         }
 
-        // Interface implementation that accepts object id
-        public UserModel? GetById(object id)
-        {
-            if (id is int intId)
-                return GetById(intId);
-            if (int.TryParse(id?.ToString(), out int parsed))
-                return GetById(parsed);
-            return null;
-        }
-
-        public bool Create(UserModel user)
+        public async Task<bool> CreateAsync(UserModel user, CancellationToken ct = default)
         {
             try
             {
-                if (_context.User.Any(u => u.Username == user.Username))
+                if (await _context.User.AnyAsync(u => u.Username == user.Username, ct))
                     return false;
-                if (!string.IsNullOrEmpty(user.Email) && _context.User.Any(u => u.Email == user.Email))
+                if (!string.IsNullOrEmpty(user.Email) && await _context.User.AnyAsync(u => u.Email == user.Email, ct))
                     return false;
-                if (user.PersonId.HasValue && _context.User.Any(u => u.PersonId == user.PersonId))
+                if (user.PersonId.HasValue && await _context.User.AnyAsync(u => u.PersonId == user.PersonId, ct))
                     return false;
 
                 user.Active = true;
                 _context.User.Add(user);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 
-                // Set Title and Description after saving
                 user.Title = user.Username;
                 user.Description = $"{user.Name} {user.LastName} - {user.Role?.Name ?? "Sin rol"}";
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 
                 return true;
             }
@@ -128,18 +121,18 @@ namespace PrimeSystems.Services
             }
         }
 
-        public bool Update(UserModel user)
+        public async Task<bool> UpdateAsync(UserModel user, CancellationToken ct = default)
         {
             try
             {
-                var existingUser = _context.User.Find(user.Id);
+                var existingUser = await _context.User.FindAsync(new object[] { user.Id }, ct);
                 if (existingUser == null)
                     return false;
-                if (_context.User.Any(u => u.Username == user.Username && u.Id != user.Id))
+                if (await _context.User.AnyAsync(u => u.Username == user.Username && u.Id != user.Id, ct))
                     return false;
-                if (!string.IsNullOrEmpty(user.Email) && _context.User.Any(u => u.Email == user.Email && u.Id != user.Id))
+                if (!string.IsNullOrEmpty(user.Email) && await _context.User.AnyAsync(u => u.Email == user.Email && u.Id != user.Id, ct))
                     return false;
-                if (user.PersonId.HasValue && _context.User.Any(u => u.PersonId == user.PersonId && u.Id != user.Id))
+                if (user.PersonId.HasValue && await _context.User.AnyAsync(u => u.PersonId == user.PersonId && u.Id != user.Id, ct))
                     return false;
                     
                 existingUser.Username = user.Username;
@@ -153,11 +146,10 @@ namespace PrimeSystems.Services
                 existingUser.RoleId = user.RoleId;
                 existingUser.Active = user.Active;
                 
-                // Update Title and Description
                 existingUser.Title = user.Username;
                 existingUser.Description = $"{user.Name} {user.LastName} - {user.Role?.Name ?? "Sin rol"}";
                 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch
@@ -166,16 +158,15 @@ namespace PrimeSystems.Services
             }
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)
         {
             try
             {
-                var user = _context.User.Find(id);
+                var user = await _context.User.FindAsync(new object[] { id }, ct);
                 if (user == null) return false;
                 
-                // Baja lógica
                 user.Active = false;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch
@@ -183,5 +174,26 @@ namespace PrimeSystems.Services
                 return false;
             }
         }
+
+        public List<UserModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+            => GetAllAsync(includeInactive, pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public List<UserModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+            => SearchAsync(searchTerm, includeInactive, pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public UserModel? GetById(int id)
+            => GetByIdAsync(id).GetAwaiter().GetResult();
+
+        public bool Create(UserModel item)
+            => CreateAsync(item).GetAwaiter().GetResult();
+
+        public bool Update(UserModel item)
+            => UpdateAsync(item).GetAwaiter().GetResult();
+
+        public bool Delete(int id)
+            => DeleteAsync(id).GetAwaiter().GetResult();
+
+        public UserModel? GetByUsername(string username)
+            => GetByUsernameAsync(username).GetAwaiter().GetResult();
     }
 }

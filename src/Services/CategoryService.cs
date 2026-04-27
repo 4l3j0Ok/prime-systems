@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using PrimeSystems.Core;
 
 namespace PrimeSystems.Services
@@ -22,9 +24,11 @@ namespace PrimeSystems.Services
             _context = context;
         }
 
-        public List<CategoryModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<CategoryModel>> GetAllAsync(bool includeInactive = false, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
-            var query = _context.Category.AsQueryable();
+            var query = _context.Category
+                .AsNoTracking()
+                .AsQueryable();
 
             query = query.OrderBy(c => c.Id);
 
@@ -33,18 +37,20 @@ namespace PrimeSystems.Services
                 query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
             }
 
-            return query.ToList();
+            return await query.ToListAsync(ct);
         }
 
-        public List<CategoryModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<CategoryModel>> SearchAsync(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
-            var query = _context.Category.AsQueryable();
+            var query = _context.Category
+                .AsNoTracking()
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                searchTerm = searchTerm.ToLower();
+                var searchLower = searchTerm.ToLowerInvariant();
                 query = query.Where(c =>
-                    c.Name != null && c.Name.ToLower().Contains(searchTerm)
+                    c.Name != null && c.Name.ToLowerInvariant().Contains(searchLower)
                 );
             }
 
@@ -55,22 +61,23 @@ namespace PrimeSystems.Services
                 query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
             }
 
-            return query.ToList();
+            return await query.ToListAsync(ct);
         }
 
-        public CategoryModel? GetById(int id)
+        public async Task<CategoryModel?> GetByIdAsync(int id, CancellationToken ct = default)
         {
-            return _context.Category
+            return await _context.Category
+                .AsNoTracking()
                 .Include(c => c.Subcategory)
-                .FirstOrDefault(c => c.Id == id);
+                .FirstOrDefaultAsync(c => c.Id == id, ct);
         }
 
-        public bool Create(CategoryModel category)
+        public async Task<bool> CreateAsync(CategoryModel category, CancellationToken ct = default)
         {
             try
             {
                 _context.Category.Add(category);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch (Exception ex)
@@ -79,17 +86,18 @@ namespace PrimeSystems.Services
                 return false;
             }
         }
-        public bool Update(CategoryModel category)
+
+        public async Task<bool> UpdateAsync(CategoryModel category, CancellationToken ct = default)
         {
             try
             {
-                var existingCategoria = _context.Category.Find(category.Id);
+                var existingCategoria = await _context.Category.FindAsync(new object[] { category.Id }, ct);
                 if (existingCategoria == null)
                     return false;
 
                 existingCategoria.Name = category.Name;
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch
@@ -97,14 +105,15 @@ namespace PrimeSystems.Services
                 return false;
             }
         }
-        public bool Delete(int id)
+
+        public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)
         {
             try
             {
-                var category = _context.Category.Find(id);
+                var category = await _context.Category.FindAsync(new object[] { id }, ct);
                 if (category == null) return false;
                 _context.Category.Remove(category);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch
@@ -112,5 +121,23 @@ namespace PrimeSystems.Services
                 return false;
             }
         }
+
+        public List<CategoryModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+            => GetAllAsync(includeInactive, pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public List<CategoryModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+            => SearchAsync(searchTerm, includeInactive, pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public CategoryModel? GetById(int id)
+            => GetByIdAsync(id).GetAwaiter().GetResult();
+
+        public bool Create(CategoryModel item)
+            => CreateAsync(item).GetAwaiter().GetResult();
+
+        public bool Update(CategoryModel item)
+            => UpdateAsync(item).GetAwaiter().GetResult();
+
+        public bool Delete(int id)
+            => DeleteAsync(id).GetAwaiter().GetResult();
     }
 }

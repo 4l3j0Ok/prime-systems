@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using PrimeSystems.Core;
 
 namespace PrimeSystems.Services
@@ -22,9 +24,10 @@ namespace PrimeSystems.Services
             _context = context;
         }
 
-        public List<ActivityRecordModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<ActivityRecordModel>> GetAllAsync(bool includeInactive = false, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
             var query = _context.Transaction
+                .AsNoTracking()
                 .Include(t => t.User)
                 .Include(t => t.Sell)
                 .Include(t => t.Purchase)
@@ -38,12 +41,13 @@ namespace PrimeSystems.Services
                 query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
             }
 
-            return query.ToList();
+            return await query.ToListAsync(ct);
         }
 
-        public List<ActivityRecordModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<ActivityRecordModel>> SearchAsync(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
             var query = _context.Transaction
+                .AsNoTracking()
                 .Include(t => t.User)
                 .Include(t => t.Sell)
                 .Include(t => t.Purchase)
@@ -54,11 +58,11 @@ namespace PrimeSystems.Services
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                searchTerm = searchTerm.ToLower();
+                var searchLower = searchTerm.ToLowerInvariant();
                 query = query.Where(t =>
-                    (t.Module != null && t.Module.ToLower().Contains(searchTerm)) ||
-                    (t.Action != null && t.Action.ToLower().Contains(searchTerm)) ||
-                    (t.User != null && t.User.Username.ToLower().Contains(searchTerm))
+                    (t.Module != null && t.Module.ToLowerInvariant().Contains(searchLower)) ||
+                    (t.Action != null && t.Action.ToLowerInvariant().Contains(searchLower)) ||
+                    (t.User != null && t.User.Username.ToLowerInvariant().Contains(searchLower))
                 );
             }
 
@@ -69,29 +73,31 @@ namespace PrimeSystems.Services
                 query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
             }
 
-            return query.ToList();
+            return await query.ToListAsync(ct);
         }
 
-        public List<ActivityRecordModel> GetPaged(int pageNumber, int pageSize)
+        public async Task<List<ActivityRecordModel>> GetPagedAsync(int pageNumber, int pageSize, CancellationToken ct = default)
         {
-            return GetAll(false, pageNumber, pageSize);
+            return await GetAllAsync(false, pageNumber, pageSize, ct);
         }
 
-        public ActivityRecordModel? GetById(int id)
+        public async Task<ActivityRecordModel?> GetByIdAsync(int id, CancellationToken ct = default)
         {
-            return _context.Transaction
+            return await _context.Transaction
+                .AsNoTracking()
                 .Include(t => t.User)
                 .Include(t => t.Sell)
                 .Include(t => t.Purchase)
                 .Include(t => t.Article)
                 .Include(t => t.Client)
                 .Include(t => t.Supplier)
-                .FirstOrDefault(t => t.Id == id);
+                .FirstOrDefaultAsync(t => t.Id == id, ct);
         }
 
-        public List<ActivityRecordModel> GetMovimientosByUsuario(int usuarioId)
+        public async Task<List<ActivityRecordModel>> GetMovimientosByUsuarioAsync(int usuarioId, CancellationToken ct = default)
         {
-            return _context.Transaction
+            return await _context.Transaction
+                .AsNoTracking()
                 .Include(t => t.User)
                 .Include(t => t.Sell)
                 .Include(t => t.Purchase)
@@ -99,12 +105,13 @@ namespace PrimeSystems.Services
                 .Include(t => t.Client)
                 .Include(t => t.Supplier)
                 .Where(t => t.UserId == usuarioId)
-                .ToList();
+                .ToListAsync(ct);
         }
 
-        public List<ActivityRecordModel> GetRecordByModules(List<string> modules)
+        public async Task<List<ActivityRecordModel>> GetRecordByModulesAsync(List<string> modules, CancellationToken ct = default)
         {
-            return _context.Transaction
+            return await _context.Transaction
+                .AsNoTracking()
                 .Include(t => t.User)
                 .Include(t => t.Sell)
                     .ThenInclude(s => s.Client)
@@ -114,12 +121,13 @@ namespace PrimeSystems.Services
                 .Include(t => t.Client)
                 .Include(t => t.Supplier)
                 .Where(t => modules.Contains(t.Module ?? string.Empty))
-                .ToList();
+                .ToListAsync(ct);
         }
 
-        public List<ActivityRecordModel> GetMovimientosByFecha(DateTime fecha)
+        public async Task<List<ActivityRecordModel>> GetMovimientosByFechaAsync(DateTime fecha, CancellationToken ct = default)
         {
-            return _context.Transaction
+            return await _context.Transaction
+                .AsNoTracking()
                 .Include(t => t.User)
                 .Include(t => t.Sell)
                 .Include(t => t.Purchase)
@@ -127,12 +135,13 @@ namespace PrimeSystems.Services
                 .Include(t => t.Client)
                 .Include(t => t.Supplier)
                 .Where(t => t.Date.HasValue && t.Date.Value.Date == fecha.Date)
-                .ToList();
+                .ToListAsync(ct);
         }
 
-        public List<ActivityRecordModel> GetRecordByModulesAndDateRange(List<string> modules, DateTime dateFrom, DateTime dateTo)
+        public async Task<List<ActivityRecordModel>> GetRecordByModulesAndDateRangeAsync(List<string> modules, DateTime dateFrom, DateTime dateTo, CancellationToken ct = default)
         {
-            return _context.Transaction
+            return await _context.Transaction
+                .AsNoTracking()
                 .Include(t => t.User)
                 .Include(t => t.Sell)
                     .ThenInclude(s => s.Client)
@@ -145,12 +154,20 @@ namespace PrimeSystems.Services
                     && t.Date.HasValue
                     && t.Date.Value.Date >= dateFrom.Date
                     && t.Date.Value.Date <= dateTo.Date)
-                .ToList();
+                .ToListAsync(ct);
         }
 
-        public List<ActivityRecordModel> GetRecordByModulesAndDateRangePaged(List<string> modules, DateTime dateFrom, DateTime dateTo, int pageNumber, int pageSize)
+        public async Task<(List<ActivityRecordModel> Items, bool HasMore, int TotalCount, int TotalSells, int TotalPurchases, decimal TotalRevenue, decimal TotalExpenses)> 
+            GetRecordByModulesAndDateRangePagedWithTotalsAsync(
+                List<string> modules, 
+                DateTime dateFrom, 
+                DateTime dateTo, 
+                int pageNumber, 
+                int pageSize,
+                CancellationToken ct = default)
         {
-            return _context.Transaction
+            var query = _context.Transaction
+                .AsNoTracking()
                 .Include(t => t.User)
                 .Include(t => t.Sell)
                     .ThenInclude(s => s.Client)
@@ -162,28 +179,84 @@ namespace PrimeSystems.Services
                 .Where(t => modules.Contains(t.Module ?? string.Empty)
                     && t.Date.HasValue
                     && t.Date.Value.Date >= dateFrom.Date
-                    && t.Date.Value.Date <= dateTo.Date)
+                    && t.Date.Value.Date <= dateTo.Date);
+
+            var totalCount = await query.CountAsync(ct);
+            
+            var items = await query
+                .OrderByDescending(t => t.Date)
                 .Skip(pageNumber * pageSize)
                 .Take(pageSize)
-                .ToList();
+                .ToListAsync(ct);
+
+            int totalSells = 0;
+            int totalPurchases = 0;
+            decimal totalRevenue = 0;
+            decimal totalExpenses = 0;
+
+            foreach (var record in items)
+            {
+                if (record.Module == ActivityModules.Sells && record.Sell != null)
+                {
+                    totalSells++;
+                    if (decimal.TryParse(record.Sell.Total, out decimal sellAmount))
+                    {
+                        totalRevenue += sellAmount;
+                    }
+                }
+                else if (record.Module == ActivityModules.Purchases && record.Purchase != null)
+                {
+                    totalPurchases++;
+                    if (decimal.TryParse(record.Purchase.Total, out decimal purchaseAmount))
+                    {
+                        totalExpenses += purchaseAmount;
+                    }
+                }
+            }
+
+            bool hasMore = items.Count >= pageSize;
+
+            return (items, hasMore, totalCount, totalSells, totalPurchases, totalRevenue, totalExpenses);
         }
 
-        public int GetTotalCountByModulesAndDateRange(List<string> modules, DateTime dateFrom, DateTime dateTo)
+        public async Task<List<ActivityRecordModel>> GetRecordByModulesAndDateRangePagedAsync(List<string> modules, DateTime dateFrom, DateTime dateTo, int pageNumber, int pageSize, CancellationToken ct = default)
         {
-            return _context.Transaction
+            return await _context.Transaction
+                .AsNoTracking()
+                .Include(t => t.User)
+                .Include(t => t.Sell)
+                    .ThenInclude(s => s.Client)
+                .Include(t => t.Purchase)
+                    .ThenInclude(p => p.Supplier)
+                .Include(t => t.Article)
+                .Include(t => t.Client)
+                .Include(t => t.Supplier)
                 .Where(t => modules.Contains(t.Module ?? string.Empty)
                     && t.Date.HasValue
                     && t.Date.Value.Date >= dateFrom.Date
                     && t.Date.Value.Date <= dateTo.Date)
-                .Count();
+                .OrderByDescending(t => t.Date)
+                .Skip(pageNumber * pageSize)
+                .Take(pageSize)
+                .ToListAsync(ct);
         }
 
-        public bool Create(ActivityRecordModel movimiento)
+        public async Task<int> GetTotalCountByModulesAndDateRangeAsync(List<string> modules, DateTime dateFrom, DateTime dateTo, CancellationToken ct = default)
+        {
+            return await _context.Transaction
+                .Where(t => modules.Contains(t.Module ?? string.Empty)
+                    && t.Date.HasValue
+                    && t.Date.Value.Date >= dateFrom.Date
+                    && t.Date.Value.Date <= dateTo.Date)
+                .CountAsync(ct);
+        }
+
+        public async Task<bool> CreateAsync(ActivityRecordModel movimiento, CancellationToken ct = default)
         {
             try
             {
                 _context.Transaction.Add(movimiento);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch (Exception ex)
@@ -193,11 +266,11 @@ namespace PrimeSystems.Services
             }
         }
 
-        public bool Update(ActivityRecordModel movimiento)
+        public async Task<bool> UpdateAsync(ActivityRecordModel movimiento, CancellationToken ct = default)
         {
             try
             {
-                var existingMovimiento = _context.Transaction.Find(movimiento.Id);
+                var existingMovimiento = await _context.Transaction.FindAsync(new object[] { movimiento.Id }, ct);
                 if (existingMovimiento == null)
                     return false;
 
@@ -205,7 +278,7 @@ namespace PrimeSystems.Services
                 existingMovimiento.Module = movimiento.Module;
                 existingMovimiento.Date = movimiento.Date;
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch
@@ -214,14 +287,14 @@ namespace PrimeSystems.Services
             }
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)
         {
             try
             {
-                var movimiento = _context.Transaction.Find(id);
+                var movimiento = await _context.Transaction.FindAsync(new object[] { id }, ct);
                 if (movimiento == null) return false;
                 _context.Transaction.Remove(movimiento);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch
@@ -229,5 +302,44 @@ namespace PrimeSystems.Services
                 return false;
             }
         }
+
+        public List<ActivityRecordModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+            => GetAllAsync(includeInactive, pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public List<ActivityRecordModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+            => SearchAsync(searchTerm, includeInactive, pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public ActivityRecordModel? GetById(int id)
+            => GetByIdAsync(id).GetAwaiter().GetResult();
+
+        public bool Create(ActivityRecordModel item)
+            => CreateAsync(item).GetAwaiter().GetResult();
+
+        public bool Update(ActivityRecordModel item)
+            => UpdateAsync(item).GetAwaiter().GetResult();
+
+        public bool Delete(int id)
+            => DeleteAsync(id).GetAwaiter().GetResult();
+
+        public List<ActivityRecordModel> GetPaged(int pageNumber, int pageSize)
+            => GetPagedAsync(pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public List<ActivityRecordModel> GetMovimientosByUsuario(int usuarioId)
+            => GetMovimientosByUsuarioAsync(usuarioId).GetAwaiter().GetResult();
+
+        public List<ActivityRecordModel> GetRecordByModules(List<string> modules)
+            => GetRecordByModulesAsync(modules).GetAwaiter().GetResult();
+
+        public List<ActivityRecordModel> GetMovimientosByFecha(DateTime fecha)
+            => GetMovimientosByFechaAsync(fecha).GetAwaiter().GetResult();
+
+        public List<ActivityRecordModel> GetRecordByModulesAndDateRange(List<string> modules, DateTime dateFrom, DateTime dateTo)
+            => GetRecordByModulesAndDateRangeAsync(modules, dateFrom, dateTo).GetAwaiter().GetResult();
+
+        public List<ActivityRecordModel> GetRecordByModulesAndDateRangePaged(List<string> modules, DateTime dateFrom, DateTime dateTo, int pageNumber, int pageSize)
+            => GetRecordByModulesAndDateRangePagedAsync(modules, dateFrom, dateTo, pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public int GetTotalCountByModulesAndDateRange(List<string> modules, DateTime dateFrom, DateTime dateTo)
+            => GetTotalCountByModulesAndDateRangeAsync(modules, dateFrom, dateTo).GetAwaiter().GetResult();
     }
 }

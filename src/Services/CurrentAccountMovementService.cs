@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using PrimeSystems.Core;
 
 namespace PrimeSystems.Services
@@ -22,51 +24,54 @@ namespace PrimeSystems.Services
             _context = context;
         }
 
-        public List<CurrentAccountMovementModel> GetByCurrentAccountId(int currentAccountId, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<CurrentAccountMovementModel>> GetByCurrentAccountIdAsync(int currentAccountId, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
             var orderedQuery = _context.CurrentAccountMovement
+                .AsNoTracking()
                 .Where(m => m.CurrentAccountId == currentAccountId)
                 .Include(m => m.User)
                 .OrderByDescending(m => m.Date);
 
             if (pageNumber.HasValue && pageSize.HasValue)
             {
-                return orderedQuery.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value).ToList();
+                return await orderedQuery.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value).ToListAsync(ct);
             }
 
-            return orderedQuery.ToList();
+            return await orderedQuery.ToListAsync(ct);
         }
 
-        public List<CurrentAccountMovementModel> GetByReference(string reference, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<CurrentAccountMovementModel>> GetByReferenceAsync(string reference, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
             var orderedQuery = _context.CurrentAccountMovement
+                .AsNoTracking()
                 .Where(m => m.Reference != null && m.Reference.Contains(reference))
                 .Include(m => m.User)
                 .OrderByDescending(m => m.Date);
 
             if (pageNumber.HasValue && pageSize.HasValue)
             {
-                return orderedQuery.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value).ToList();
+                return await orderedQuery.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value).ToListAsync(ct);
             }
 
-            return orderedQuery.ToList();
+            return await orderedQuery.ToListAsync(ct);
         }
 
-        public CurrentAccountMovementModel? GetById(int id)
+        public async Task<CurrentAccountMovementModel?> GetByIdAsync(int id, CancellationToken ct = default)
         {
-            return _context.CurrentAccountMovement
+            return await _context.CurrentAccountMovement
+                .AsNoTracking()
                 .Include(m => m.User)
                 .Include(m => m.RelatedSell)
                 .Include(m => m.RelatedPurchase)
-                .FirstOrDefault(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == id, ct);
         }
 
-        public bool Create(CurrentAccountMovementModel movement)
+        public async Task<bool> CreateAsync(CurrentAccountMovementModel movement, CancellationToken ct = default)
         {
             try
             {
                 _context.CurrentAccountMovement.Add(movement);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch (Exception ex)
@@ -76,15 +81,15 @@ namespace PrimeSystems.Services
             }
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)
         {
             try
             {
-                var movement = _context.CurrentAccountMovement.Find(id);
+                var movement = await _context.CurrentAccountMovement.FindAsync(new object[] { id }, ct);
                 if (movement == null) return false;
 
                 _context.CurrentAccountMovement.Remove(movement);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch
@@ -93,19 +98,38 @@ namespace PrimeSystems.Services
             }
         }
 
-        public List<CurrentAccountMovementModel> GetByDateRange(DateTime dateFrom, DateTime dateTo, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<CurrentAccountMovementModel>> GetByDateRangeAsync(DateTime dateFrom, DateTime dateTo, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
             var orderedQuery = _context.CurrentAccountMovement
+                .AsNoTracking()
                 .Where(m => m.Date >= dateFrom && m.Date <= dateTo)
                 .Include(m => m.User)
                 .OrderByDescending(m => m.Date);
 
             if (pageNumber.HasValue && pageSize.HasValue)
             {
-                return orderedQuery.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value).ToList();
+                return await orderedQuery.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value).ToListAsync(ct);
             }
 
-            return orderedQuery.ToList();
+            return await orderedQuery.ToListAsync(ct);
         }
+
+        public List<CurrentAccountMovementModel> GetByCurrentAccountId(int currentAccountId, int? pageNumber = null, int? pageSize = null)
+            => GetByCurrentAccountIdAsync(currentAccountId, pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public List<CurrentAccountMovementModel> GetByReference(string reference, int? pageNumber = null, int? pageSize = null)
+            => GetByReferenceAsync(reference, pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public CurrentAccountMovementModel? GetById(int id)
+            => GetByIdAsync(id).GetAwaiter().GetResult();
+
+        public bool Create(CurrentAccountMovementModel movement)
+            => CreateAsync(movement).GetAwaiter().GetResult();
+
+        public bool Delete(int id)
+            => DeleteAsync(id).GetAwaiter().GetResult();
+
+        public List<CurrentAccountMovementModel> GetByDateRange(DateTime dateFrom, DateTime dateTo, int? pageNumber = null, int? pageSize = null)
+            => GetByDateRangeAsync(dateFrom, dateTo, pageNumber, pageSize).GetAwaiter().GetResult();
     }
 }

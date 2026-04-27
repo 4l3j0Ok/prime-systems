@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using PrimeSystems.Core;
 
 namespace PrimeSystems.Services
@@ -28,9 +30,10 @@ namespace PrimeSystems.Services
             _clientService = new ClientService(context);
         }
 
-        public List<SellModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<SellModel>> GetAllAsync(bool includeInactive = false, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
             var query = _context.Sell
+                .AsNoTracking()
                 .Include(v => v.User)
                 .Include(v => v.Client)
                 .Include(v => v.Detail)
@@ -48,17 +51,17 @@ namespace PrimeSystems.Services
                 query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
             }
 
-            return query.ToList();
+            return await query.ToListAsync(ct);
         }
 
-        public List<SellModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<SellModel>> SearchAsync(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
             var query = _context.Sell
+                .AsNoTracking()
                 .Include(v => v.User)
                 .Include(v => v.Client)
                 .Include(v => v.Detail)
                 .AsQueryable();
-
 
             if (!includeInactive)
             {
@@ -67,10 +70,10 @@ namespace PrimeSystems.Services
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                searchTerm = searchTerm.ToLower();
+                var searchLower = searchTerm.ToLowerInvariant();
                 query = query.Where(v =>
-                    (v.Title != null && v.Title.ToLower().Contains(searchTerm)) ||
-                    (v.Description != null && v.Description.ToLower().Contains(searchTerm))
+                    (v.Title != null && v.Title.ToLowerInvariant().Contains(searchLower)) ||
+                    (v.Description != null && v.Description.ToLowerInvariant().Contains(searchLower))
                 );
             }
 
@@ -81,26 +84,27 @@ namespace PrimeSystems.Services
                 query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
             }
 
-            return query.ToList();
+            return await query.ToListAsync(ct);
         }
 
-        public SellModel? GetById(int id)
+        public async Task<SellModel?> GetByIdAsync(int id, CancellationToken ct = default)
         {
-            return _context.Sell
+            return await _context.Sell
+                .AsNoTracking()
                 .Include(v => v.User)
                 .Include(v => v.Client)
                 .Include(v => v.Detail)
                     .ThenInclude(d => d.Article)
-                .FirstOrDefault(v => v.Id == id);
+                .FirstOrDefaultAsync(v => v.Id == id, ct);
         }
 
-        public bool Create(SellModel venta)
+        public async Task<bool> CreateAsync(SellModel venta, CancellationToken ct = default)
         {
             try
             {
                 venta.Active = true;
                 _context.Sell.Add(venta);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch (Exception ex)
@@ -110,11 +114,11 @@ namespace PrimeSystems.Services
             }
         }
 
-        public bool Update(SellModel venta)
+        public async Task<bool> UpdateAsync(SellModel venta, CancellationToken ct = default)
         {
             try
             {
-                var existing = _context.Sell.Find(venta.Id);
+                var existing = await _context.Sell.FindAsync(new object[] { venta.Id }, ct);
                 if (existing == null) return false;
 
                 existing.UserId = venta.UserId;
@@ -127,7 +131,7 @@ namespace PrimeSystems.Services
                 existing.Title = venta.Title;
                 existing.Description = venta.Description;
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch
@@ -136,16 +140,15 @@ namespace PrimeSystems.Services
             }
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)
         {
             try
             {
-                var venta = _context.Sell.Find(id);
+                var venta = await _context.Sell.FindAsync(new object[] { id }, ct);
                 if (venta == null) return false;
                 
-                // Baja l�gica
                 venta.Active = false;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch
@@ -154,30 +157,29 @@ namespace PrimeSystems.Services
             }
         }
 
-        public bool CreateVentaConDetalles(SellModel venta, List<SellDetailModel> detalles)
+        public async Task<bool> CreateVentaConDetallesAsync(SellModel venta, List<SellDetailModel> detalles, CancellationToken ct = default)
         {
             try
             {
                 venta.Active = true;
                 _context.Sell.Add(venta);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
 
                 foreach (var detalle in detalles)
                 {
                     detalle.SellId = venta.Id;
                     _context.SellDetail.Add(detalle);
                     
-                    // Reducir el stock si el detalle tiene un art�culo asociado
                     if (detalle.ArticleId.HasValue && detalle.Quantity.HasValue)
                     {
-                        bool stockAdjusted = _stockService.AdjustStock(detalle.ArticleId.Value, -detalle.Quantity.Value);
+                        bool stockAdjusted = await _stockService.AdjustStockAsync(detalle.ArticleId.Value, -detalle.Quantity.Value, ct);
                         if (!stockAdjusted)
                         {
-                            Debug.WriteLine($"Advertencia: No se pudo ajustar el stock para el art�culo {detalle.ArticleId.Value}");
+                            Debug.WriteLine($"Advertencia: No se pudo ajustar el stock para el artículo {detalle.ArticleId.Value}");
                         }
                     }
                 }
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
 
                 return true;
             }
@@ -188,12 +190,11 @@ namespace PrimeSystems.Services
             }
         }
 
-        public bool UpdateVentaConDetalles(SellModel venta, List<SellDetailModel> detalles)
+        public async Task<bool> UpdateVentaConDetallesAsync(SellModel venta, List<SellDetailModel> detalles, CancellationToken ct = default)
         {
             try
             {
-                // Actualizar la venta
-                var existing = _context.Sell.Find(venta.Id);
+                var existing = await _context.Sell.FindAsync(new object[] { venta.Id }, ct);
                 if (existing == null) return false;
 
                 existing.UserId = venta.UserId;
@@ -206,39 +207,34 @@ namespace PrimeSystems.Services
                 existing.Title = venta.Title;
                 existing.Description = venta.Description;
 
-                // Obtener los detalles anteriores para restaurar el stock
-                var oldDetails = _context.SellDetail.Where(d => d.SellId == venta.Id).ToList();
+                var oldDetails = await _context.SellDetail.Where(d => d.SellId == venta.Id).ToListAsync(ct);
                 
-                // Restaurar el stock de los art�culos vendidos anteriormente
                 foreach (var oldDetail in oldDetails)
                 {
                     if (oldDetail.ArticleId.HasValue && oldDetail.Quantity.HasValue)
                     {
-                        _stockService.AdjustStock(oldDetail.ArticleId.Value, oldDetail.Quantity.Value);
+                        await _stockService.AdjustStockAsync(oldDetail.ArticleId.Value, oldDetail.Quantity.Value, ct);
                     }
                 }
 
-                // Eliminar los detalles anteriores
                 _context.SellDetail.RemoveRange(oldDetails);
 
-                // Agregar los nuevos detalles y reducir el stock
                 foreach (var detalle in detalles)
                 {
                     detalle.SellId = venta.Id;
                     _context.SellDetail.Add(detalle);
                     
-                    // Reducir el stock si el detalle tiene un art�culo asociado
                     if (detalle.ArticleId.HasValue && detalle.Quantity.HasValue)
                     {
-                        bool stockAdjusted = _stockService.AdjustStock(detalle.ArticleId.Value, -detalle.Quantity.Value);
+                        bool stockAdjusted = await _stockService.AdjustStockAsync(detalle.ArticleId.Value, -detalle.Quantity.Value, ct);
                         if (!stockAdjusted)
                         {
-                            Debug.WriteLine($"Advertencia: No se pudo ajustar el stock para el art�culo {detalle.ArticleId.Value}");
+                            Debug.WriteLine($"Advertencia: No se pudo ajustar el stock para el artículo {detalle.ArticleId.Value}");
                         }
                     }
                 }
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch (Exception ex)
@@ -248,45 +244,48 @@ namespace PrimeSystems.Services
             }
         }
 
-        public List<SellModel> GetVentasByCliente(int clienteId)
+        public async Task<List<SellModel>> GetVentasByClienteAsync(int clienteId, CancellationToken ct = default)
         {
-            return _context.Sell
+            return await _context.Sell
+                .AsNoTracking()
                 .Include(v => v.User)
                 .Include(v => v.Client)
                 .Where(v => v.ClientId == clienteId)
                 .OrderByDescending(v => v.Id)
-                .ToList();
+                .ToListAsync(ct);
         }
 
-        public List<SellModel> GetVentasByUsuario(int usuarioId)
+        public async Task<List<SellModel>> GetVentasByUsuarioAsync(int usuarioId, CancellationToken ct = default)
         {
-            return _context.Sell
+            return await _context.Sell
+                .AsNoTracking()
                 .Include(v => v.User)
                 .Include(v => v.Client)
                 .Where(v => v.UserId == usuarioId)
                 .OrderByDescending(v => v.Id)
-                .ToList();
+                .ToListAsync(ct);
         }
 
-        public List<ClientModel> GetAllClients()
+        public async Task<List<ClientModel>> GetAllClientsAsync(CancellationToken ct = default)
         {
-            return _clientService.GetAll();
+            return await _clientService.GetAllAsync(ct: ct);
         }
 
-        public ClientModel? GetClientByName(string name)
+        public async Task<ClientModel?> GetClientByNameAsync(string name, CancellationToken ct = default)
         {
-            return _clientService.GetAll().FirstOrDefault(c => c.Name == name);
+            var allClients = await GetAllClientsAsync(ct);
+            return allClients.FirstOrDefault(c => c.Name == name);
         }
 
-        public ArticleModel? GetArticleByName(string name)
+        public async Task<ArticleModel?> GetArticleByNameAsync(string name, CancellationToken ct = default)
         {
             var articleService = new ArticleService(_context);
-            return articleService.GetByName(name);
+            return await articleService.GetByNameAsync(name, ct);
         }
 
-        public StockModel? GetStockByArticleId(int articleId)
+        public async Task<StockModel?> GetStockByArticleIdAsync(int articleId, CancellationToken ct = default)
         {
-            return _stockService.GetStockByArticuloId(articleId);
+            return await _stockService.GetStockByArticuloIdAsync(articleId, ct);
         }
 
         public decimal CalculateSubtotal(List<(decimal UnitPrice, int Quantity)> items)
@@ -306,11 +305,12 @@ namespace PrimeSystems.Services
             return (subtotal, discountAmount, total);
         }
 
-        public SellValidationResult ValidateSell(
+        public async Task<SellValidationResult> ValidateSellAsync(
             int? clientId,
             List<(int ArticleId, int Quantity, decimal UnitPrice, string ArticleName)> items,
             bool isEditMode,
-            SellModel? existingSell)
+            SellModel? existingSell,
+            CancellationToken ct = default)
         {
             var errors = new List<string>();
 
@@ -338,7 +338,7 @@ namespace PrimeSystems.Services
                     break;
                 }
 
-                var stock = _stockService.GetStockByArticuloId(item.ArticleId);
+                var stock = await _stockService.GetStockByArticuloIdAsync(item.ArticleId, ct);
                 if (stock != null)
                 {
                     int availableStock = stock.Stock ?? 0;
@@ -376,13 +376,14 @@ namespace PrimeSystems.Services
             }).ToList();
         }
 
-        public SellSaveResult SaveSell(
+        public async Task<SellSaveResult> SaveSellAsync(
             int? clientId,
             decimal subtotal,
             decimal discountPercent,
             List<(int ArticleId, int Quantity)> details,
             bool isEditMode,
-            SellModel? existingSell)
+            SellModel? existingSell,
+            CancellationToken ct = default)
         {
             var result = new SellSaveResult { Success = false };
 
@@ -392,7 +393,7 @@ namespace PrimeSystems.Services
                 return result;
             }
 
-            var client = GetClientByName(GetAllClients().FirstOrDefault(c => c.Id == clientId.Value)?.Name ?? "");
+            var client = await GetClientByNameAsync(GetAllClientsAsync(ct).Result.FirstOrDefault(c => c.Id == clientId.Value)?.Name ?? "", ct);
             if (client == null)
             {
                 result.ErrorMessage = "Cliente no encontrado";
@@ -417,16 +418,16 @@ namespace PrimeSystems.Services
             {
                 sell.Title = $"Venta #{sell.Id}";
                 sell.Description = $"Cliente: {client.Name} | Total: ${sell.Total} | Fecha: {DateTime.Now:dd/MM/yyyy}";
-                success = UpdateVentaConDetalles(sell, sellDetails);
+                success = await UpdateVentaConDetallesAsync(sell, sellDetails, ct);
             }
             else
             {
-                success = CreateVentaConDetalles(sell, sellDetails);
+                success = await CreateVentaConDetallesAsync(sell, sellDetails, ct);
                 if (success)
                 {
                     sell.Title = $"Venta #{sell.Id}";
                     sell.Description = $"Cliente: {client.Name} | Total: ${sell.Total} | Fecha: {DateTime.Now:dd/MM/yyyy}";
-                    Update(sell);
+                    await UpdateAsync(sell, ct);
                 }
             }
 
@@ -437,6 +438,52 @@ namespace PrimeSystems.Services
 
             return result;
         }
+
+        public List<SellModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+            => GetAllAsync(includeInactive, pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public List<SellModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+            => SearchAsync(searchTerm, includeInactive, pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public SellModel? GetById(int id)
+            => GetByIdAsync(id).GetAwaiter().GetResult();
+
+        public bool Create(SellModel item)
+            => CreateAsync(item).GetAwaiter().GetResult();
+
+        public bool Update(SellModel item)
+            => UpdateAsync(item).GetAwaiter().GetResult();
+
+        public bool Delete(int id)
+            => DeleteAsync(id).GetAwaiter().GetResult();
+
+        public List<ClientModel> GetAllClients()
+            => GetAllClientsAsync().GetAwaiter().GetResult();
+
+        public ClientModel? GetClientByName(string name)
+            => GetClientByNameAsync(name).GetAwaiter().GetResult();
+
+        public ArticleModel? GetArticleByName(string name)
+            => GetArticleByNameAsync(name).GetAwaiter().GetResult();
+
+        public StockModel? GetStockByArticleId(int articleId)
+            => GetStockByArticleIdAsync(articleId).GetAwaiter().GetResult();
+
+        public SellValidationResult ValidateSell(
+            int? clientId,
+            List<(int ArticleId, int Quantity, decimal UnitPrice, string ArticleName)> items,
+            bool isEditMode,
+            SellModel? existingSell)
+            => ValidateSellAsync(clientId, items, isEditMode, existingSell).GetAwaiter().GetResult();
+
+        public SellSaveResult SaveSell(
+            int? clientId,
+            decimal subtotal,
+            decimal discountPercent,
+            List<(int ArticleId, int Quantity)> details,
+            bool isEditMode,
+            SellModel? existingSell)
+            => SaveSellAsync(clientId, subtotal, discountPercent, details, isEditMode, existingSell).GetAwaiter().GetResult();
     }
 
     public class SellValidationResult

@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using PrimeSystems.Core;
 
 namespace PrimeSystems.Services
@@ -22,9 +24,11 @@ namespace PrimeSystems.Services
             _context = context;
         }
 
-        public List<CurrentAccountModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<CurrentAccountModel>> GetAllAsync(bool includeInactive = false, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
-            var query = _context.CurrentAccount.AsQueryable();
+            var query = _context.CurrentAccount
+                .AsNoTracking()
+                .AsQueryable();
 
             if (!includeInactive)
             {
@@ -38,30 +42,35 @@ namespace PrimeSystems.Services
                 query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
             }
 
-            return query.ToList();
+            return await query.ToListAsync(ct);
         }
 
-        public List<CurrentAccountModel> GetByEntityType(CurrentAccountType entityType, bool includeInactive = false)
+        public async Task<List<CurrentAccountModel>> GetByEntityTypeAsync(CurrentAccountType entityType, bool includeInactive = false, CancellationToken ct = default)
         {
-            var query = _context.CurrentAccount.Where(ca => ca.EntityType == entityType);
+            var query = _context.CurrentAccount
+                .AsNoTracking()
+                .Where(ca => ca.EntityType == entityType);
 
             if (!includeInactive)
             {
                 query = query.Where(ca => ca.Active);
             }
 
-            return query.OrderBy(ca => ca.Id).ToList();
+            return await query.OrderBy(ca => ca.Id).ToListAsync(ct);
         }
 
-        public CurrentAccountModel? GetByEntityId(CurrentAccountType entityType, int entityId)
+        public async Task<CurrentAccountModel?> GetByEntityIdAsync(CurrentAccountType entityType, int entityId, CancellationToken ct = default)
         {
-            return _context.CurrentAccount
-                .FirstOrDefault(ca => ca.EntityType == entityType && ca.EntityId == entityId);
+            return await _context.CurrentAccount
+                .AsNoTracking()
+                .FirstOrDefaultAsync(ca => ca.EntityType == entityType && ca.EntityId == entityId, ct);
         }
 
-        public List<CurrentAccountModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<CurrentAccountModel>> SearchAsync(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
-            var query = _context.CurrentAccount.AsQueryable();
+            var query = _context.CurrentAccount
+                .AsNoTracking()
+                .AsQueryable();
 
             if (!includeInactive)
             {
@@ -70,10 +79,10 @@ namespace PrimeSystems.Services
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                searchTerm = searchTerm.ToLower();
+                var searchLower = searchTerm.ToLowerInvariant();
                 query = query.Where(ca =>
-                    (ca.Title != null && ca.Title.ToLower().Contains(searchTerm)) ||
-                    (ca.Description != null && ca.Description.ToLower().Contains(searchTerm))
+                    (ca.Title != null && ca.Title.ToLowerInvariant().Contains(searchLower)) ||
+                    (ca.Description != null && ca.Description.ToLowerInvariant().Contains(searchLower))
                 );
             }
 
@@ -84,19 +93,21 @@ namespace PrimeSystems.Services
                 query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
             }
 
-            return query.ToList();
+            return await query.ToListAsync(ct);
         }
 
-        public CurrentAccountModel? GetById(int id)
+        public async Task<CurrentAccountModel?> GetByIdAsync(int id, CancellationToken ct = default)
         {
-            return _context.CurrentAccount.FirstOrDefault(ca => ca.Id == id);
+            return await _context.CurrentAccount
+                .AsNoTracking()
+                .FirstOrDefaultAsync(ca => ca.Id == id, ct);
         }
 
-        public bool Create(CurrentAccountModel cuenta)
+        public async Task<bool> CreateAsync(CurrentAccountModel cuenta, CancellationToken ct = default)
         {
             try
             {
-                var existing = GetByEntityId(cuenta.EntityType, cuenta.EntityId);
+                var existing = await GetByEntityIdAsync(cuenta.EntityType, cuenta.EntityId, ct);
                 if (existing != null)
                 {
                     Debug.WriteLine("CurrentAccount already exists for this entity");
@@ -107,10 +118,10 @@ namespace PrimeSystems.Services
                 cuenta.CreatedAt = DateTime.Now;
                 cuenta.Balance = 0;
                 _context.CurrentAccount.Add(cuenta);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
 
                 UpdateTitleAndDescription(cuenta);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
 
                 return true;
             }
@@ -121,11 +132,11 @@ namespace PrimeSystems.Services
             }
         }
 
-        public bool Update(CurrentAccountModel cuenta)
+        public async Task<bool> UpdateAsync(CurrentAccountModel cuenta, CancellationToken ct = default)
         {
             try
             {
-                var existing = _context.CurrentAccount.Find(cuenta.Id);
+                var existing = await _context.CurrentAccount.FindAsync(new object[] { cuenta.Id }, ct);
                 if (existing == null)
                     return false;
 
@@ -134,7 +145,7 @@ namespace PrimeSystems.Services
                 existing.UpdatedAt = DateTime.Now;
 
                 UpdateTitleAndDescription(existing);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch
@@ -143,15 +154,15 @@ namespace PrimeSystems.Services
             }
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)
         {
             try
             {
-                var cuenta = _context.CurrentAccount.Find(id);
+                var cuenta = await _context.CurrentAccount.FindAsync(new object[] { id }, ct);
                 if (cuenta == null) return false;
 
                 cuenta.Active = false;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch
@@ -162,31 +173,47 @@ namespace PrimeSystems.Services
 
         private void UpdateTitleAndDescription(CurrentAccountModel cuenta)
         {
-            var entityName = cuenta.EntityType switch
-            {
-                CurrentAccountType.Client => _context.Client.Find(cuenta.EntityId)?.Name ?? $"Cliente {cuenta.EntityId}",
-                CurrentAccountType.Supplier => _context.Supplier.Find(cuenta.EntityId)?.Name ?? $"Proveedor {cuenta.EntityId}",
-                CurrentAccountType.User => _context.User.Find(cuenta.EntityId)?.Username ?? $"Usuario {cuenta.EntityId}",
-                _ => $"Entidad {cuenta.EntityId}"
-            };
+            string entityName;
+            string typeName;
 
-            var typeName = cuenta.EntityType switch
+            switch (cuenta.EntityType)
             {
-                CurrentAccountType.Client => "Cliente",
-                CurrentAccountType.Supplier => "Proveedor",
-                CurrentAccountType.User => "Usuario",
-                _ => "Entidad"
-            };
+                case CurrentAccountType.Client:
+                    entityName = _context.Client.Find(cuenta.EntityId)?.Name ?? $"Cliente {cuenta.EntityId}";
+                    typeName = "Cliente";
+                    break;
+                case CurrentAccountType.Supplier:
+                    entityName = _context.Supplier.Find(cuenta.EntityId)?.Name ?? $"Proveedor {cuenta.EntityId}";
+                    typeName = "Proveedor";
+                    break;
+                case CurrentAccountType.User:
+                    entityName = _context.User.Find(cuenta.EntityId)?.Username ?? $"Usuario {cuenta.EntityId}";
+                    typeName = "Usuario";
+                    break;
+                default:
+                    entityName = $"Entidad {cuenta.EntityId}";
+                    typeName = "Entidad";
+                    break;
+            }
 
             cuenta.Title = $"{typeName}: {entityName}";
             cuenta.Description = $"Saldo: ${cuenta.Balance:N2} | Creado: {cuenta.CreatedAt:g}";
         }
 
-        public bool AddMovement(int cuentaId, MovementType type, decimal amount, string? reference = null, string? description = null, int? userId = null, int? relatedSellId = null, int? relatedPurchaseId = null)
+        public async Task<bool> AddMovementAsync(
+            int cuentaId, 
+            MovementType type, 
+            decimal amount, 
+            string? reference = null, 
+            string? description = null, 
+            int? userId = null, 
+            int? relatedSellId = null, 
+            int? relatedPurchaseId = null,
+            CancellationToken ct = default)
         {
             try
             {
-                var cuenta = _context.CurrentAccount.Find(cuentaId);
+                var cuenta = await _context.CurrentAccount.FindAsync(new object[] { cuentaId }, ct);
                 if (cuenta == null) return false;
 
                 var movement = new CurrentAccountMovementModel
@@ -220,10 +247,10 @@ namespace PrimeSystems.Services
 
                 cuenta.UpdatedAt = DateTime.Now;
                 _context.CurrentAccountMovement.Add(movement);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
 
                 UpdateTitleAndDescription(cuenta);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
 
                 return true;
             }
@@ -234,18 +261,49 @@ namespace PrimeSystems.Services
             }
         }
 
-        public List<CurrentAccountMovementModel> GetMovements(int cuentaId, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<CurrentAccountMovementModel>> GetMovementsAsync(int cuentaId, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
             var orderedQuery = _context.CurrentAccountMovement
+                .AsNoTracking()
                 .Where(m => m.CurrentAccountId == cuentaId)
                 .OrderByDescending(m => m.Date);
 
             if (pageNumber.HasValue && pageSize.HasValue)
             {
-                return orderedQuery.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value).Include(m => m.User).ToList();
+                return await orderedQuery.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value).Include(m => m.User).ToListAsync(ct);
             }
 
-            return orderedQuery.Include(m => m.User).ToList();
+            return await orderedQuery.Include(m => m.User).ToListAsync(ct);
         }
+
+        public List<CurrentAccountModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+            => GetAllAsync(includeInactive, pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public List<CurrentAccountModel> GetByEntityType(CurrentAccountType entityType, bool includeInactive = false)
+            => GetByEntityTypeAsync(entityType, includeInactive).GetAwaiter().GetResult();
+
+        public CurrentAccountModel? GetByEntityId(CurrentAccountType entityType, int entityId)
+            => GetByEntityIdAsync(entityType, entityId).GetAwaiter().GetResult();
+
+        public List<CurrentAccountModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+            => SearchAsync(searchTerm, includeInactive, pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public CurrentAccountModel? GetById(int id)
+            => GetByIdAsync(id).GetAwaiter().GetResult();
+
+        public bool Create(CurrentAccountModel item)
+            => CreateAsync(item).GetAwaiter().GetResult();
+
+        public bool Update(CurrentAccountModel item)
+            => UpdateAsync(item).GetAwaiter().GetResult();
+
+        public bool Delete(int id)
+            => DeleteAsync(id).GetAwaiter().GetResult();
+
+        public bool AddMovement(int cuentaId, MovementType type, decimal amount, string? reference = null, string? description = null, int? userId = null, int? relatedSellId = null, int? relatedPurchaseId = null)
+            => AddMovementAsync(cuentaId, type, amount, reference, description, userId, relatedSellId, relatedPurchaseId).GetAwaiter().GetResult();
+
+        public List<CurrentAccountMovementModel> GetMovements(int cuentaId, int? pageNumber = null, int? pageSize = null)
+            => GetMovementsAsync(cuentaId, pageNumber, pageSize).GetAwaiter().GetResult();
     }
 }

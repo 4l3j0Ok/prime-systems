@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using PrimeSystems.Core;
 
 namespace PrimeSystems.Services
@@ -22,9 +24,10 @@ namespace PrimeSystems.Services
             _context = context;
         }
 
-        public List<ArticleModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<ArticleModel>> GetAllAsync(bool includeInactive = false, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
             var query = _context.Article
+                .AsNoTracking()
                 .Include(a => a.Category)
                 .Include(a => a.Subcategory)
                 .Include(a => a.Supplier)
@@ -43,12 +46,13 @@ namespace PrimeSystems.Services
                 query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
             }
 
-            return query.ToList();
+            return await query.ToListAsync(ct);
         }
 
-        public List<ArticleModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<ArticleModel>> SearchAsync(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
             var query = _context.Article
+                .AsNoTracking()
                 .Include(a => a.Category)
                 .Include(a => a.Subcategory)
                 .Include(a => a.Supplier)
@@ -62,10 +66,10 @@ namespace PrimeSystems.Services
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                searchTerm = searchTerm.ToLower();
+                var searchLower = searchTerm.ToLowerInvariant();
                 query = query.Where(a =>
-                    (a.Title != null && a.Title.ToLower().Contains(searchTerm)) ||
-                    (a.Description != null && a.Description.ToLower().Contains(searchTerm))
+                    (a.Title != null && a.Title.ToLowerInvariant().Contains(searchLower)) ||
+                    (a.Description != null && a.Description.ToLowerInvariant().Contains(searchLower))
                 );
             }
 
@@ -76,53 +80,55 @@ namespace PrimeSystems.Services
                 query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
             }
 
-            return query.ToList();
+            return await query.ToListAsync(ct);
         }
 
-        public ArticleModel? GetById(int id)
+        public async Task<ArticleModel?> GetByIdAsync(int id, CancellationToken ct = default)
         {
-            return _context.Article
+            return await _context.Article
+                .AsNoTracking()
                 .Include(a => a.Category)
                 .Include(a => a.Subcategory)
                 .Include(a => a.Supplier)
                 .Include(a => a.Stock)
-                .FirstOrDefault(a => a.Id == id);
+                .FirstOrDefaultAsync(a => a.Id == id, ct);
         }
 
-        public ArticleModel? GetArticuloByCodigo(string codigo)
+        public async Task<ArticleModel?> GetArticuloByCodigoAsync(string codigo, CancellationToken ct = default)
         {
-            return _context.Article
+            return await _context.Article
+                .AsNoTracking()
                 .Include(a => a.Category)
                 .Include(a => a.Subcategory)
                 .Include(a => a.Supplier)
                 .Include(a => a.Stock)
-                .FirstOrDefault(a => a.Code == codigo);
+                .FirstOrDefaultAsync(a => a.Code == codigo, ct);
         }
 
-        public ArticleModel? GetByName(string name)
+        public async Task<ArticleModel?> GetByNameAsync(string name, CancellationToken ct = default)
         {
-            return _context.Article
+            return await _context.Article
+                .AsNoTracking()
                 .Include(a => a.Category)
                 .Include(a => a.Subcategory)
                 .Include(a => a.Supplier)
                 .Include(a => a.Stock)
-                .FirstOrDefault(a => a.Name == name);
+                .FirstOrDefaultAsync(a => a.Name == name, ct);
         }
 
-        public bool Create(ArticleModel articulo)
+        public async Task<bool> CreateAsync(ArticleModel articulo, CancellationToken ct = default)
         {
             try
             {
-                // Validar que el c�digo de art�culo no exista
-                if (_context.Article.Any(a => a.Code == articulo.Code))
+                if (await _context.Article.AnyAsync(a => a.Code == articulo.Code, ct))
                     return false;
 
                 articulo.Active = true;
                 _context.Article.Add(articulo);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 articulo.Title = articulo.Name;
-                articulo.Description = $"C�digo: {articulo.Code} | Categor�a: {articulo.Category?.Name ?? "Sin categor�a"}";
-                _context.SaveChanges();
+                articulo.Description = $"Código: {articulo.Code} | Categoría: {articulo.Category?.Name ?? "Sin categoría"}";
+                await _context.SaveChangesAsync(ct);
 
                 return true;
             }
@@ -133,15 +139,15 @@ namespace PrimeSystems.Services
             }
         }
 
-        public bool Update(ArticleModel articulo)
+        public async Task<bool> UpdateAsync(ArticleModel articulo, CancellationToken ct = default)
         {
             try
             {
-                var existingArticulo = _context.Article.Find(articulo.Id);
+                var existingArticulo = await _context.Article.FindAsync(new object[] { articulo.Id }, ct);
                 if (existingArticulo == null)
                     return false;
 
-                if (_context.Article.Any(a => a.Code == articulo.Code && a.Id != articulo.Id))
+                if (await _context.Article.AnyAsync(a => a.Code == articulo.Code && a.Id != articulo.Id, ct))
                     return false;
 
                 existingArticulo.Code = articulo.Code;
@@ -153,10 +159,10 @@ namespace PrimeSystems.Services
                 existingArticulo.Active = articulo.Active;
 
                 existingArticulo.Title = articulo.Name;
-                var category = _context.Category.Find(articulo.CategoryId);
-                existingArticulo.Description = $"C�digo: {articulo.Code} | Categor�a: {category?.Name ?? "Sin categor�a"}";
+                var category = await _context.Category.FindAsync(new object[] { articulo.CategoryId }, ct);
+                existingArticulo.Description = $"Código: {articulo.Code} | Categoría: {category?.Name ?? "Sin categoría"}";
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch
@@ -165,21 +171,45 @@ namespace PrimeSystems.Services
             }
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)
         {
             try
             {
-                var articulo = _context.Article.Find(id);
+                var articulo = await _context.Article.FindAsync(new object[] { id }, ct);
                 if (articulo == null) return false;
 
                 articulo.Active = false;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch
             {
                 return false;
             }
+        }
+
+        public List<ArticleModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+            => GetAllAsync(includeInactive, pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public List<ArticleModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+            => SearchAsync(searchTerm, includeInactive, pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public ArticleModel? GetById(int id)
+            => GetByIdAsync(id).GetAwaiter().GetResult();
+
+        public bool Create(ArticleModel item)
+            => CreateAsync(item).GetAwaiter().GetResult();
+
+        public bool Update(ArticleModel item)
+            => UpdateAsync(item).GetAwaiter().GetResult();
+
+        public bool Delete(int id)
+            => DeleteAsync(id).GetAwaiter().GetResult();
+
+        public async Task<StockModel?> GetStockByArticuloIdAsync(int articleId, CancellationToken ct = default)
+        {
+            var stockService = new StockService(_context);
+            return await stockService.GetStockByArticuloIdAsync(articleId, ct);
         }
 
         public StockModel? GetStockByArticuloId(int articleId)
@@ -188,16 +218,41 @@ namespace PrimeSystems.Services
             return stockService.GetStockByArticuloId(articleId);
         }
 
+        public async Task<List<CategoryModel>> GetAllCategoriesAsync(CancellationToken ct = default)
+        {
+            var categoryService = new CategoryService(_context);
+            return await categoryService.GetAllAsync(ct: ct);
+        }
+
         public List<CategoryModel> GetAllCategories()
         {
             var categoryService = new CategoryService(_context);
             return categoryService.GetAll();
         }
 
+        public async Task<CategoryModel?> GetCategoryByNameAsync(string name, CancellationToken ct = default)
+        {
+            var categoryService = new CategoryService(_context);
+            return await categoryService.GetAllAsync(ct: ct)
+                .ContinueWith(t => t.Result.FirstOrDefault(c => c.Name == name), ct);
+        }
+
         public CategoryModel? GetCategoryByName(string name)
         {
             var categoryService = new CategoryService(_context);
             return categoryService.GetAll().FirstOrDefault(c => c.Name == name);
+        }
+
+        public async Task<CategoryModel?> CreateCategoryAsync(string name, CancellationToken ct = default)
+        {
+            var categoryService = new CategoryService(_context);
+            var newCategory = new CategoryModel { Name = name };
+            if (await categoryService.CreateAsync(newCategory, ct))
+            {
+                var allCategories = await categoryService.GetAllAsync(ct: ct);
+                return allCategories.FirstOrDefault(c => c.Name == name);
+            }
+            return null;
         }
 
         public CategoryModel? CreateCategory(string name)
@@ -211,10 +266,23 @@ namespace PrimeSystems.Services
             return null;
         }
 
+        public async Task<List<SubcategoryModel>> GetSubcategoriesByCategoryAsync(int categoryId, CancellationToken ct = default)
+        {
+            var subcategoryService = new SubcategoryService(_context);
+            return await subcategoryService.GetSubcategoriesByCategoriaAsync(categoryId, ct);
+        }
+
         public List<SubcategoryModel> GetSubcategoriesByCategory(int categoryId)
         {
             var subcategoryService = new SubcategoryService(_context);
             return subcategoryService.GetSubcategoriesByCategoria(categoryId);
+        }
+
+        public async Task<SubcategoryModel?> GetSubcategoryByNameAndCategoryAsync(string name, int categoryId, CancellationToken ct = default)
+        {
+            var subcategoryService = new SubcategoryService(_context);
+            var all = await subcategoryService.GetAllAsync(ct: ct);
+            return all.FirstOrDefault(s => s.Name == name && s.CategoryId == categoryId);
         }
 
         public SubcategoryModel? GetSubcategoryByNameAndCategory(string name, int categoryId)
@@ -222,6 +290,18 @@ namespace PrimeSystems.Services
             var subcategoryService = new SubcategoryService(_context);
             return subcategoryService.GetAll()
                 .FirstOrDefault(s => s.Name == name && s.CategoryId == categoryId);
+        }
+
+        public async Task<SubcategoryModel?> CreateSubcategoryAsync(string name, int categoryId, CancellationToken ct = default)
+        {
+            var subcategoryService = new SubcategoryService(_context);
+            var newSubcategory = new SubcategoryModel { Name = name, CategoryId = categoryId };
+            if (await subcategoryService.CreateAsync(newSubcategory, ct))
+            {
+                var all = await subcategoryService.GetAllAsync(ct: ct);
+                return all.FirstOrDefault(s => s.Name == name && s.CategoryId == categoryId);
+            }
+            return null;
         }
 
         public SubcategoryModel? CreateSubcategory(string name, int categoryId)
@@ -276,7 +356,7 @@ namespace PrimeSystems.Services
             };
         }
 
-        public ArticleSaveResult SaveArticle(
+        public async Task<ArticleSaveResult> SaveArticleAsync(
             int originalId,
             string code,
             string name,
@@ -285,14 +365,15 @@ namespace PrimeSystems.Services
             string? subcategoryName,
             int stockQuantity,
             decimal cost,
-            int profitPercent)
+            int profitPercent,
+            CancellationToken ct = default)
         {
             var result = new ArticleSaveResult { Success = false };
 
-            var category = GetCategoryByName(categoryName);
+            var category = await GetCategoryByNameAsync(categoryName, ct);
             if (category == null)
             {
-                category = CreateCategory(categoryName);
+                category = await CreateCategoryAsync(categoryName, ct);
                 if (category == null)
                 {
                     result.ErrorMessage = "Error al crear la nueva categoría";
@@ -303,15 +384,15 @@ namespace PrimeSystems.Services
             int? subcategoryId = null;
             if (!string.IsNullOrWhiteSpace(subcategoryName))
             {
-                var subcategory = GetSubcategoryByNameAndCategory(subcategoryName, category.Id);
+                var subcategory = await GetSubcategoryByNameAndCategoryAsync(subcategoryName, category.Id, ct);
                 if (subcategory == null)
                 {
-                    subcategory = CreateSubcategory(subcategoryName, category.Id);
+                    subcategory = await CreateSubcategoryAsync(subcategoryName, category.Id, ct);
                 }
                 subcategoryId = subcategory?.Id;
             }
 
-            var article = originalId == 0 ? new ArticleModel() : (GetById(originalId) ?? new ArticleModel());
+            var article = originalId == 0 ? new ArticleModel() : (await GetByIdAsync(originalId, ct) ?? new ArticleModel());
             article.Code = code.Trim().ToUpper();
             article.Name = name.Trim();
             article.Description = string.IsNullOrWhiteSpace(description) ? null : description.Trim();
@@ -320,9 +401,9 @@ namespace PrimeSystems.Services
 
             bool articleSuccess;
             if (originalId == 0)
-                articleSuccess = Create(article);
+                articleSuccess = await CreateAsync(article, ct);
             else
-                articleSuccess = Update(article);
+                articleSuccess = await UpdateAsync(article, ct);
 
             if (!articleSuccess)
             {
@@ -332,7 +413,7 @@ namespace PrimeSystems.Services
 
             if (article.Stock == null || article.Stock.ArticleId == 0)
             {
-                var savedByCode = GetArticuloByCodigo(article.Code);
+                var savedByCode = await GetArticuloByCodigoAsync(article.Code, ct);
                 if (savedByCode != null)
                 {
                     article.Id = savedByCode.Id;
@@ -347,9 +428,9 @@ namespace PrimeSystems.Services
 
             bool stockSuccess;
             if (stock.Id == 0)
-                stockSuccess = stockService.Create(stock);
+                stockSuccess = await stockService.CreateAsync(stock, ct);
             else
-                stockSuccess = stockService.Update(stock);
+                stockSuccess = await stockService.UpdateAsync(stock, ct);
 
             result.Success = stockSuccess;
             result.ArticleId = article.Id;
@@ -357,6 +438,24 @@ namespace PrimeSystems.Services
 
             return result;
         }
+
+        public ArticleModel? GetByName(string name)
+            => GetByNameAsync(name).GetAwaiter().GetResult();
+
+        public ArticleModel? GetArticuloByCodigo(string codigo)
+            => GetArticuloByCodigoAsync(codigo).GetAwaiter().GetResult();
+
+        public ArticleSaveResult SaveArticle(
+            int originalId,
+            string code,
+            string name,
+            string? description,
+            string categoryName,
+            string? subcategoryName,
+            int stockQuantity,
+            decimal cost,
+            int profitPercent)
+            => SaveArticleAsync(originalId, code, name, description, categoryName, subcategoryName, stockQuantity, cost, profitPercent).GetAwaiter().GetResult();
     }
 
     public class ArticleValidationResult

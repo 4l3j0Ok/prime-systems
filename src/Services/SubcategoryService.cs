@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using PrimeSystems.Core;
 
 namespace PrimeSystems.Services
@@ -22,9 +24,10 @@ namespace PrimeSystems.Services
             _context = context;
         }
 
-        public List<SubcategoryModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<SubcategoryModel>> GetAllAsync(bool includeInactive = false, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
             var query = _context.Subcategory
+                .AsNoTracking()
                 .Include(s => s.Category)
                 .AsQueryable();
 
@@ -35,21 +38,22 @@ namespace PrimeSystems.Services
                 query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
             }
 
-            return query.ToList();
+            return await query.ToListAsync(ct);
         }
 
-        public List<SubcategoryModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<SubcategoryModel>> SearchAsync(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
             var query = _context.Subcategory
+                .AsNoTracking()
                 .Include(s => s.Category)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                searchTerm = searchTerm.ToLower();
+                var searchLower = searchTerm.ToLowerInvariant();
                 query = query.Where(s =>
-                    (s.Name != null && s.Name.ToLower().Contains(searchTerm)) ||
-                    (s.Category != null && s.Category.Name != null && s.Category.Name.ToLower().Contains(searchTerm))
+                    (s.Name != null && s.Name.ToLowerInvariant().Contains(searchLower)) ||
+                    (s.Category != null && s.Category.Name != null && s.Category.Name.ToLowerInvariant().Contains(searchLower))
                 );
             }
 
@@ -60,31 +64,36 @@ namespace PrimeSystems.Services
                 query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
             }
 
-            return query.ToList();
+            return await query.ToListAsync(ct);
         }
 
-        public SubcategoryModel? GetById(int id)
+        public async Task<SubcategoryModel?> GetByIdAsync(int id, CancellationToken ct = default)
         {
-            return _context.Subcategory
+            return await _context.Subcategory
+                .AsNoTracking()
                 .Include(s => s.Category)
                 .Include(s => s.Articles)
-                .FirstOrDefault(s => s.Id == id);
+                .FirstOrDefaultAsync(s => s.Id == id, ct);
+        }
+
+        public async Task<List<SubcategoryModel>> GetSubcategoriesByCategoriaAsync(int categoryId, CancellationToken ct = default)
+        {
+            return await _context.Subcategory
+                .AsNoTracking()
+                .Include(s => s.Category)
+                .Where(s => s.CategoryId == categoryId)
+                .ToListAsync(ct);
         }
 
         public List<SubcategoryModel> GetSubcategoriesByCategoria(int categoryId)
-        {
-            return _context.Subcategory
-                .Include(s => s.Category)
-                .Where(s => s.CategoryId == categoryId)
-                .ToList();
-        }
+            => GetSubcategoriesByCategoriaAsync(categoryId).GetAwaiter().GetResult();
 
-        public bool Create(SubcategoryModel subcategory)
+        public async Task<bool> CreateAsync(SubcategoryModel subcategory, CancellationToken ct = default)
         {
             try
             {
                 _context.Subcategory.Add(subcategory);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch (Exception ex)
@@ -94,18 +103,18 @@ namespace PrimeSystems.Services
             }
         }
 
-        public bool Update(SubcategoryModel subcategory)
+        public async Task<bool> UpdateAsync(SubcategoryModel subcategory, CancellationToken ct = default)
         {
             try
             {
-                var existingSubcategory = _context.Subcategory.Find(subcategory.Id);
+                var existingSubcategory = await _context.Subcategory.FindAsync(new object[] { subcategory.Id }, ct);
                 if (existingSubcategory == null)
                     return false;
 
                 existingSubcategory.Name = subcategory.Name;
                 existingSubcategory.CategoryId = subcategory.CategoryId;
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch
@@ -114,14 +123,14 @@ namespace PrimeSystems.Services
             }
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)
         {
             try
             {
-                var subcategory = _context.Subcategory.Find(id);
+                var subcategory = await _context.Subcategory.FindAsync(new object[] { id }, ct);
                 if (subcategory == null) return false;
                 _context.Subcategory.Remove(subcategory);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch
@@ -129,5 +138,23 @@ namespace PrimeSystems.Services
                 return false;
             }
         }
+
+        public List<SubcategoryModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+            => GetAllAsync(includeInactive, pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public List<SubcategoryModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+            => SearchAsync(searchTerm, includeInactive, pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public SubcategoryModel? GetById(int id)
+            => GetByIdAsync(id).GetAwaiter().GetResult();
+
+        public bool Create(SubcategoryModel item)
+            => CreateAsync(item).GetAwaiter().GetResult();
+
+        public bool Update(SubcategoryModel item)
+            => UpdateAsync(item).GetAwaiter().GetResult();
+
+        public bool Delete(int id)
+            => DeleteAsync(id).GetAwaiter().GetResult();
     }
 }

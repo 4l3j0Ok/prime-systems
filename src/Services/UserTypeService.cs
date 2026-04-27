@@ -1,9 +1,12 @@
 using PrimeSystems.Core;
 using PrimeSystems.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PrimeSystems.Services
 {
@@ -21,7 +24,7 @@ namespace PrimeSystems.Services
             _context = context;
         }
 
-        public List<RoleModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<RoleModel>> GetAllAsync(bool includeInactive = false, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
             var query = _context.UserType.AsQueryable();
 
@@ -37,10 +40,10 @@ namespace PrimeSystems.Services
                 query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
             }
 
-            return query.ToList();
+            return await query.ToListAsync(ct);
         }
 
-        public List<RoleModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<RoleModel>> SearchAsync(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
             var query = _context.UserType.AsQueryable();
 
@@ -51,10 +54,10 @@ namespace PrimeSystems.Services
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                searchTerm = searchTerm.ToLower();
+                var searchLower = searchTerm.ToLowerInvariant();
                 query = query.Where(r =>
-                    (r.Title != null && r.Title.ToLower().Contains(searchTerm)) ||
-                    (r.Description != null && r.Description.ToLower().Contains(searchTerm))
+                    (r.Title != null && r.Title.ToLowerInvariant().Contains(searchLower)) ||
+                    (r.Description != null && r.Description.ToLowerInvariant().Contains(searchLower))
                 );
             }
 
@@ -65,35 +68,33 @@ namespace PrimeSystems.Services
                 query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
             }
 
-            return query.ToList();
+            return await query.ToListAsync(ct);
         }
 
-        public RoleModel? GetById(string id)
+        public async Task<RoleModel?> GetByIdAsync(string id, CancellationToken ct = default)
         {
-            return _context.UserType.FirstOrDefault(ut => ut.Id == id);
+            return await _context.UserType.FirstOrDefaultAsync(ut => ut.Id == id, ct);
         }
 
-        public RoleModel? GetByDescription(string descripcion)
+        public async Task<RoleModel?> GetByDescriptionAsync(string descripcion, CancellationToken ct = default)
         {
-            return _context.UserType.FirstOrDefault(ut => ut.Name == descripcion);
+            return await _context.UserType.FirstOrDefaultAsync(ut => ut.Name == descripcion, ct);
         }
 
-        public bool Create(RoleModel usuarioTipo)
+        public async Task<bool> CreateAsync(RoleModel usuarioTipo, CancellationToken ct = default)
         {
             try
             {
-                // Validar que el ID no exista
-                if (_context.UserType.Any(ut => ut.Id == usuarioTipo.Id))
+                if (await _context.UserType.AnyAsync(ut => ut.Id == usuarioTipo.Id, ct))
                     return false;
 
                 usuarioTipo.Active = true;
                 _context.UserType.Add(usuarioTipo);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
 
-                // Set Title and Description after saving
                 usuarioTipo.Title = usuarioTipo.Name;
                 usuarioTipo.Description = usuarioTipo.Id;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
 
                 return true;
             }
@@ -104,11 +105,11 @@ namespace PrimeSystems.Services
             }
         }
 
-        public bool Update(RoleModel role)
+        public async Task<bool> UpdateAsync(RoleModel role, CancellationToken ct = default)
         {
             try
             {
-                var existingRole = _context.UserType.Find(role.Id);
+                var existingRole = await _context.UserType.FindAsync(new object[] { role.Id }, ct);
                 if (existingRole == null)
                     return false;
 
@@ -121,11 +122,10 @@ namespace PrimeSystems.Services
                 existingRole.UserPermission = role.UserPermission;
                 existingRole.Active = role.Active;
 
-                // Update Title and Description
                 existingRole.Title = role.Name;
                 existingRole.Description = role.Id;
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch
@@ -134,16 +134,15 @@ namespace PrimeSystems.Services
             }
         }
 
-        public bool Delete(string id)
+        public async Task<bool> DeleteAsync(string id, CancellationToken ct = default)
         {
             try
             {
-                var usuarioTipo = _context.UserType.Find(id);
+                var usuarioTipo = await _context.UserType.FindAsync(new object[] { id }, ct);
                 if (usuarioTipo == null) return false;
 
-                // Baja lógica
                 usuarioTipo.Active = false;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch
@@ -151,5 +150,26 @@ namespace PrimeSystems.Services
                 return false;
             }
         }
+
+        public List<RoleModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+            => GetAllAsync(includeInactive, pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public List<RoleModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+            => SearchAsync(searchTerm, includeInactive, pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public RoleModel? GetById(string id)
+            => GetByIdAsync(id).GetAwaiter().GetResult();
+
+        public bool Create(RoleModel item)
+            => CreateAsync(item).GetAwaiter().GetResult();
+
+        public bool Update(RoleModel item)
+            => UpdateAsync(item).GetAwaiter().GetResult();
+
+        public bool Delete(string id)
+            => DeleteAsync(id).GetAwaiter().GetResult();
+
+        public RoleModel? GetByDescription(string descripcion)
+            => GetByDescriptionAsync(descripcion).GetAwaiter().GetResult();
     }
 }

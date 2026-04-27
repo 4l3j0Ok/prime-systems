@@ -202,6 +202,43 @@ namespace PrimeSystems.Core
                 .HasForeignKey(m => m.RelatedPurchaseId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<ActivityRecordModel>()
+                .HasIndex(h => h.Module);
+
+            modelBuilder.Entity<ActivityRecordModel>()
+                .HasIndex(h => h.Date);
+
+            modelBuilder.Entity<ActivityRecordModel>()
+                .HasIndex(h => h.UserId);
+
+            modelBuilder.Entity<ActivityRecordModel>()
+                .HasIndex(h => new { h.Module, h.Date });
+
+            modelBuilder.Entity<ArticleModel>()
+                .HasIndex(a => a.Title);
+
+            modelBuilder.Entity<ArticleModel>()
+                .HasIndex(a => a.Code)
+                .IsUnique();
+
+            modelBuilder.Entity<SellModel>()
+                .HasIndex(s => s.Date);
+
+            modelBuilder.Entity<SellModel>()
+                .HasIndex(s => s.UserId);
+
+            modelBuilder.Entity<PurchaseModel>()
+                .HasIndex(p => p.Date);
+
+            modelBuilder.Entity<PurchaseModel>()
+                .HasIndex(p => p.UserId);
+
+            modelBuilder.Entity<CurrentAccountMovementModel>()
+                .HasIndex(m => m.CurrentAccountId);
+
+            modelBuilder.Entity<CurrentAccountMovementModel>()
+                .HasIndex(m => m.Date);
+
             base.OnModelCreating(modelBuilder);
         }
 

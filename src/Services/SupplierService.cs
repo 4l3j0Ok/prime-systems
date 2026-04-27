@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using PrimeSystems.Core;
 
 namespace PrimeSystems.Services
@@ -22,9 +24,11 @@ namespace PrimeSystems.Services
             _context = context;
         }
 
-        public List<SupplierModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<SupplierModel>> GetAllAsync(bool includeInactive = false, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
-            var query = _context.Supplier.AsQueryable();
+            var query = _context.Supplier
+                .AsNoTracking()
+                .AsQueryable();
 
             if (!includeInactive)
             {
@@ -38,12 +42,14 @@ namespace PrimeSystems.Services
                 query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
             }
 
-            return query.ToList();
+            return await query.ToListAsync(ct);
         }
 
-        public List<SupplierModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+        public async Task<List<SupplierModel>> SearchAsync(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null, CancellationToken ct = default)
         {
-            var query = _context.Supplier.AsQueryable();
+            var query = _context.Supplier
+                .AsNoTracking()
+                .AsQueryable();
 
             if (!includeInactive)
             {
@@ -52,10 +58,10 @@ namespace PrimeSystems.Services
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                searchTerm = searchTerm.ToLower();
+                var searchLower = searchTerm.ToLowerInvariant();
                 query = query.Where(s =>
-                    (s.Title != null && s.Title.ToLower().Contains(searchTerm)) ||
-                    (s.Description != null && s.Description.ToLower().Contains(searchTerm))
+                    (s.Title != null && s.Title.ToLowerInvariant().Contains(searchLower)) ||
+                    (s.Description != null && s.Description.ToLowerInvariant().Contains(searchLower))
                 );
             }
 
@@ -66,26 +72,27 @@ namespace PrimeSystems.Services
                 query = query.Skip(pageNumber.Value * pageSize.Value).Take(pageSize.Value);
             }
 
-            return query.ToList();
+            return await query.ToListAsync(ct);
         }
 
-        public SupplierModel? GetById(int id)
+        public async Task<SupplierModel?> GetByIdAsync(int id, CancellationToken ct = default)
         {
-            return _context.Supplier.FirstOrDefault(p => p.Id == id);
+            return await _context.Supplier
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == id, ct);
         }
 
-        public bool Create(SupplierModel proveedor)
+        public async Task<bool> CreateAsync(SupplierModel proveedor, CancellationToken ct = default)
         {
             try
             {
                 proveedor.Active = true;
                 _context.Supplier.Add(proveedor);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 
-                // Set Title and Description after saving
                 proveedor.Title = proveedor.Name;
                 proveedor.Description = $"CUIT: {proveedor.Cuit?.ToString() ?? "N/A"} | Contacto: {proveedor.ContactName ?? "N/A"}";
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 
                 return true;
             }
@@ -96,11 +103,11 @@ namespace PrimeSystems.Services
             }
         }
 
-        public bool Update(SupplierModel proveedor)
+        public async Task<bool> UpdateAsync(SupplierModel proveedor, CancellationToken ct = default)
         {
             try
             {
-                var existingProveedor = _context.Supplier.Find(proveedor.Id);
+                var existingProveedor = await _context.Supplier.FindAsync(new object[] { proveedor.Id }, ct);
                 if (existingProveedor == null)
                     return false;
 
@@ -111,11 +118,10 @@ namespace PrimeSystems.Services
                 existingProveedor.Email = proveedor.Email;
                 existingProveedor.Active = proveedor.Active;
                 
-                // Update Title and Description
                 existingProveedor.Title = proveedor.Name;
                 existingProveedor.Description = $"CUIT: {proveedor.Cuit?.ToString() ?? "N/A"} | Contacto: {proveedor.ContactName ?? "N/A"}";
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch
@@ -124,16 +130,15 @@ namespace PrimeSystems.Services
             }
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)
         {
             try
             {
-                var proveedor = _context.Supplier.Find(id);
+                var proveedor = await _context.Supplier.FindAsync(new object[] { id }, ct);
                 if (proveedor == null) return false;
                 
-                // Baja lógica
                 proveedor.Active = false;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(ct);
                 return true;
             }
             catch
@@ -141,5 +146,23 @@ namespace PrimeSystems.Services
                 return false;
             }
         }
+
+        public List<SupplierModel> GetAll(bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+            => GetAllAsync(includeInactive, pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public List<SupplierModel> Search(string searchTerm, bool includeInactive = false, int? pageNumber = null, int? pageSize = null)
+            => SearchAsync(searchTerm, includeInactive, pageNumber, pageSize).GetAwaiter().GetResult();
+
+        public SupplierModel? GetById(int id)
+            => GetByIdAsync(id).GetAwaiter().GetResult();
+
+        public bool Create(SupplierModel item)
+            => CreateAsync(item).GetAwaiter().GetResult();
+
+        public bool Update(SupplierModel item)
+            => UpdateAsync(item).GetAwaiter().GetResult();
+
+        public bool Delete(int id)
+            => DeleteAsync(id).GetAwaiter().GetResult();
     }
 }

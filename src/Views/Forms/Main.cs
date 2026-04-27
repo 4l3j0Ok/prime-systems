@@ -9,6 +9,8 @@ using ReaLTaiizor.Forms;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Panel = System.Windows.Forms.Panel;
 using TabPage = System.Windows.Forms.TabPage;
 using GroupBox = System.Windows.Forms.GroupBox;
@@ -802,7 +804,7 @@ namespace PrimeSystems
             }
         }
 
-        private void RefreshFinancialState(bool append = false)
+        private async void RefreshFinancialState(bool append = false)
         {
             ActivityRecordService activityController = new ActivityRecordService();
             List<string> activityRecordModules = new List<string> { ActivityModules.Sells, ActivityModules.Purchases };
@@ -816,7 +818,8 @@ namespace PrimeSystems
             }
 
             int pageNumber = currentPages.ContainsKey(tpFinancialState) ? currentPages[tpFinancialState] : 0;
-            List<ActivityRecordModel> activityRecords = activityController.GetRecordByModulesAndDateRangePaged(
+
+            var pagedResult = await activityController.GetRecordByModulesAndDateRangePagedWithTotalsAsync(
                 activityRecordModules,
                 dateFrom,
                 dateTo,
@@ -824,7 +827,12 @@ namespace PrimeSystems
                 PAGE_SIZE
             );
 
-            bool hasMore = activityRecords.Count >= PAGE_SIZE;
+            List<ActivityRecordModel> activityRecords = pagedResult.Items;
+            bool hasMore = pagedResult.HasMore;
+            int totalSells = pagedResult.TotalSells;
+            int totalPurchases = pagedResult.TotalPurchases;
+            decimal totalRevenue = pagedResult.TotalRevenue;
+            decimal totalExpenses = pagedResult.TotalExpenses;
 
             if (!append)
             {
@@ -837,16 +845,6 @@ namespace PrimeSystems
 
                 pFinancialStateTableItems.ResumeLayout();
             }
-            var allRecordsForTotals = activityController.GetRecordByModulesAndDateRange(
-                activityRecordModules,
-                dateFrom,
-                dateTo
-            );
-
-            int totalSells = 0;
-            int totalPurchases = 0;
-            decimal totalRevenue = 0;
-            decimal totalExpenses = 0;
 
             var sellDataByDate = new Dictionary<DateTime, decimal>();
             var purchaseDataByDate = new Dictionary<DateTime, decimal>();
@@ -857,38 +855,28 @@ namespace PrimeSystems
                 purchaseDataByDate[date] = 0;
             }
 
-            foreach (var record in allRecordsForTotals)
+            foreach (var record in activityRecords)
             {
                 if (record.Module == ActivityModules.Sells && record.Sell != null)
                 {
-                    totalSells++;
-                    if (decimal.TryParse(record.Sell.Total, out decimal sellAmount))
+                    if (decimal.TryParse(record.Sell.Total, out decimal sellAmount) && record.Date.HasValue)
                     {
-                        totalRevenue += sellAmount;
-                        if (record.Date.HasValue)
-                        {
-                            var dateKey = record.Date.Value.Date;
-                            if (sellDataByDate.ContainsKey(dateKey))
-                                sellDataByDate[dateKey] += sellAmount;
-                            else
-                                sellDataByDate[dateKey] = sellAmount;
-                        }
+                        var dateKey = record.Date.Value.Date;
+                        if (sellDataByDate.ContainsKey(dateKey))
+                            sellDataByDate[dateKey] += sellAmount;
+                        else
+                            sellDataByDate[dateKey] = sellAmount;
                     }
                 }
                 else if (record.Module == ActivityModules.Purchases && record.Purchase != null)
                 {
-                    totalPurchases++;
-                    if (decimal.TryParse(record.Purchase.Total, out decimal purchaseAmount))
+                    if (decimal.TryParse(record.Purchase.Total, out decimal purchaseAmount) && record.Date.HasValue)
                     {
-                        totalExpenses += purchaseAmount;
-                        if (record.Date.HasValue)
-                        {
-                            var dateKey = record.Date.Value.Date;
-                            if (purchaseDataByDate.ContainsKey(dateKey))
-                                purchaseDataByDate[dateKey] += purchaseAmount;
-                            else
-                                purchaseDataByDate[dateKey] = purchaseAmount;
-                        }
+                        var dateKey = record.Date.Value.Date;
+                        if (purchaseDataByDate.ContainsKey(dateKey))
+                            purchaseDataByDate[dateKey] += purchaseAmount;
+                        else
+                            purchaseDataByDate[dateKey] = purchaseAmount;
                     }
                 }
             }
