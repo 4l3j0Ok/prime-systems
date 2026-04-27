@@ -1,4 +1,4 @@
-﻿using PrimeSystems.Controllers;
+﻿using PrimeSystems.Services;
 using PrimeSystems.Core;
 using PrimeSystems.Models;
 using System;
@@ -15,13 +15,13 @@ namespace PrimeSystems.Views.Forms.Add
 {
     public partial class Supplier : UserControl
     {
-        private SupplierController supplierController;
+        private SupplierService supplierController;
         private SupplierModel selectedSupplier;
         private Main? formMain = Application.OpenForms.OfType<Main>().FirstOrDefault();
 
         public Supplier(SupplierModel? supplier = null)
         {
-            supplierController = new SupplierController();
+            supplierController = new SupplierService();
             InitializeComponent();
             SetupControls();
             

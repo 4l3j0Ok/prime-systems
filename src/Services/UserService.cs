@@ -8,18 +8,18 @@ using System.Text;
 using System.Threading.Tasks;
 using PrimeSystems.Core;
 
-namespace PrimeSystems.Controllers
+namespace PrimeSystems.Services
 {
-    public class UserController : IGenericController<UserModel, int>
+    public class UserService : IGenericController<UserModel, int>
     {
         private readonly AppDbContext _context;
 
-        public UserController()
+        public UserService()
         {
             _context = new AppDbContext();
         }
 
-        public UserController(AppDbContext context)
+        public UserService(AppDbContext context)
         {
             _context = context;
         }

@@ -6,18 +6,18 @@ using System.Diagnostics;
 using System.Linq;
 using PrimeSystems.Core;
 
-namespace PrimeSystems.Controllers
+namespace PrimeSystems.Services
 {
-    public class CategoryController : IGenericController<CategoryModel, int>
+    public class CategoryService : IGenericController<CategoryModel, int>
     {
         private readonly AppDbContext _context;
 
-        public CategoryController()
+        public CategoryService()
         {
             _context = new AppDbContext();
         }
 
-        public CategoryController(AppDbContext context)
+        public CategoryService(AppDbContext context)
         {
             _context = context;
         }

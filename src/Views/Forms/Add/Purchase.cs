@@ -1,49 +1,41 @@
-﻿using PrimeSystems.Controllers;
+﻿using PrimeSystems.Services;
 using PrimeSystems.Core;
 using PrimeSystems.Models;
 using PrimeSystems.Views.Controls;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace PrimeSystems.Views.Forms.Add
 {
     public partial class Purchase : UserControl
     {
-        private PurchaseController purchaseController;
-        private SupplierController supplierController;
-        private PurchaseDetailController purchaseDetailController;
-        private ArticleController articleController;
-        private Main? formMain = Application.OpenForms.OfType<Main>().FirstOrDefault();
-        private TabPage ParentTabPage = null;
-        private PurchaseModel? currentPurchase;
-        private bool isEditMode = false;
-        private bool isLoadingData = false;
+        private readonly PurchaseService _purchaseController;
+        private readonly SupplierService _supplierController;
+        private readonly ArticleService _articleController;
+        private Main? _formMain;
+        private TabPage _parentTabPage;
+        private PurchaseModel? _currentPurchase;
+        private bool _isEditMode;
+        private bool _isLoadingData;
 
         public Purchase(PurchaseModel? purchase = null, TabPage? parentTabPage = null)
         {
-            if (parentTabPage != null)
-                ParentTabPage = parentTabPage;
-            else
-                ParentTabPage = formMain?.tpPurchasesList ?? new TabPage();
-            purchaseController = new PurchaseController();
-            supplierController = new SupplierController();
-            purchaseDetailController = new PurchaseDetailController();
-            articleController = new ArticleController();
+            _purchaseController = new PurchaseService();
+            _supplierController = new SupplierService();
+            _articleController = new ArticleService();
+            _formMain = Application.OpenForms.OfType<Main>().FirstOrDefault();
+            _parentTabPage = parentTabPage ?? _formMain?.tpPurchasesList ?? new TabPage();
+            _currentPurchase = purchase;
+            _isEditMode = purchase != null;
+
             InitializeComponent();
             SetupControls();
+            LoadSuppliers();
 
             if (purchase != null)
             {
-                currentPurchase = purchase;
-                isEditMode = true;
                 LoadPurchaseData(purchase);
             }
         }
@@ -58,7 +50,7 @@ namespace PrimeSystems.Views.Forms.Add
         {
             try
             {
-                isLoadingData = true;
+                _isLoadingData = true;
 
                 if (purchase.Supplier != null)
                 {
@@ -67,7 +59,7 @@ namespace PrimeSystems.Views.Forms.Add
                 }
                 else if (purchase.SupplierId.HasValue)
                 {
-                    var supplier = supplierController.GetById(purchase.SupplierId.Value);
+                    var supplier = _supplierController.GetById(purchase.SupplierId.Value);
                     if (supplier != null)
                     {
                         LoadSuppliers();
@@ -75,15 +67,9 @@ namespace PrimeSystems.Views.Forms.Add
                     }
                 }
 
-                List<PurchaseDetailModel> details;
-                if (purchase.Detail != null && purchase.Detail.Any())
-                {
-                    details = purchase.Detail.ToList();
-                }
-                else
-                {
-                    details = purchaseDetailController.GetDetallesByCompra(purchase.Id);
-                }
+                var details = purchase.Detail?.ToList()
+                    ?? _purchaseController.GetById(purchase.Id)?.Detail?.ToList()
+                    ?? new List<PurchaseDetailModel>();
 
                 foreach (var detail in details)
                 {
@@ -103,7 +89,7 @@ namespace PrimeSystems.Views.Forms.Add
                     }
                     else if (detail.Article != null)
                     {
-                        var article = articleController.GetByName(detail.Article.Name);
+                        var article = _articleController.GetByName(detail.Article.Name);
                         if (article != null)
                         {
                             articleItem.SetArticleById(article.Id);
@@ -111,7 +97,7 @@ namespace PrimeSystems.Views.Forms.Add
                     }
                     else if (!string.IsNullOrWhiteSpace(detail.Description))
                     {
-                        var article = articleController.GetByName(detail.Description);
+                        var article = _articleController.GetByName(detail.Description);
                         if (article != null)
                         {
                             articleItem.SetArticleById(article.Id);
@@ -137,33 +123,22 @@ namespace PrimeSystems.Views.Forms.Add
                     tbTotal.Text = purchase.Total;
                 }
 
-                isLoadingData = false;
+                _isLoadingData = false;
                 CalculateTotals(null, EventArgs.Empty);
             }
             catch (Exception ex)
             {
-                isLoadingData = false;
+                _isLoadingData = false;
                 MessageBox.Show($"Error al cargar los datos de la compra: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private void btnAddArticle_Click(object sender, EventArgs e)
-        {
-            SupplierArticleItem newArticleItem = new Controls.SupplierArticleItem();
-            newArticleItem.Dock = DockStyle.Top;
-            gbArticlesData.Controls.Add(newArticleItem);
-            gbArticlesData.Controls.SetChildIndex(newArticleItem, 1);
-            newArticleItem.tbArticleUnitPrice.TextChanged += CalculateTotals;
-            newArticleItem.tbArticleQuantity.TextChanged += CalculateTotals;
-            newArticleItem.btnRemove.Click += CalculateTotals;
         }
 
         private void LoadSuppliers()
         {
             try
             {
-                var suppliers = supplierController.GetAll();
+                var suppliers = _purchaseController.GetAllSuppliers();
 
                 cbProvider.Items.Clear();
                 cbProvider.Items.Add("-- Seleccione un proveedor --");
@@ -185,7 +160,7 @@ namespace PrimeSystems.Views.Forms.Add
 
         private void CalculateTotals(object? sender, EventArgs e)
         {
-            if (isLoadingData)
+            if (_isLoadingData)
                 return;
 
             try
@@ -216,20 +191,10 @@ namespace PrimeSystems.Views.Forms.Add
             }
         }
 
-        private bool ValidateFields()
+        private List<(int? ArticleId, string Description, string UnitPrice, string Quantity)> GetArticleItemsData()
         {
-            List<string> errors = new List<string>();
-
-            if (cbProvider.SelectedIndex <= 0 || string.IsNullOrWhiteSpace(cbProvider.Text) || cbProvider.Text.StartsWith("--"))
-            {
-                errors.Add("Debe seleccionar un proveedor");
-            }
-
+            var items = new List<(int? ArticleId, string Description, string UnitPrice, string Quantity)>();
             var articleItems = gbArticlesData.Controls.OfType<Controls.SupplierArticleItem>().ToList();
-            if (articleItems.Count == 0)
-            {
-                errors.Add("Debe agregar al menos un artículo");
-            }
 
             foreach (var item in articleItems)
             {
@@ -237,48 +202,26 @@ namespace PrimeSystems.Views.Forms.Add
                 var tbUnitPrice = item.Controls.Find("tbArticleUnitPrice", true).FirstOrDefault() as ReaLTaiizor.Controls.MaterialTextBoxEdit;
                 var tbQuantity = item.Controls.Find("tbArticleQuantity", true).FirstOrDefault() as ReaLTaiizor.Controls.MaterialTextBoxEdit;
 
-                if (!articleId.HasValue)
+                if (articleId.HasValue && tbUnitPrice != null && tbQuantity != null)
                 {
-                    errors.Add("Todos los artículos deben estar seleccionados");
-                    break;
-                }
-
-                if (string.IsNullOrWhiteSpace(tbUnitPrice?.Text) || !decimal.TryParse(tbUnitPrice.Text, out decimal price) || price <= 0)
-                {
-                    errors.Add("Todos los artículos deben tener un precio unitario válido mayor a 0");
-                    break;
-                }
-
-                if (string.IsNullOrWhiteSpace(tbQuantity?.Text) || !int.TryParse(tbQuantity.Text, out int qty) || qty <= 0)
-                {
-                    errors.Add("Todos los artículos deben tener una cantidad válida mayor a 0");
-                    break;
+                    var article = _articleController.GetById(articleId.Value);
+                    items.Add((
+                        articleId,
+                        article?.Name ?? "",
+                        tbUnitPrice.Text,
+                        tbQuantity.Text
+                    ));
                 }
             }
 
-            if (string.IsNullOrWhiteSpace(tbTotal.Text) || !decimal.TryParse(tbTotal.Text, out decimal total) || total <= 0)
-            {
-                errors.Add("El total debe ser mayor a 0");
-            }
-
-            if (errors.Count > 0)
-            {
-                string message = "Se encontraron los siguientes errores:\n\n" + string.Join("\n", errors);
-                MessageBox.Show(message, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
-            }
-
-            return true;
+            return items;
         }
 
         private void mepPurchaseAdd_SaveClick(object sender, EventArgs e)
         {
-            if (!ValidateFields())
-                return;
-
             try
             {
-                var suppliers = supplierController.GetAll();
+                var suppliers = _purchaseController.GetAllSuppliers();
                 var selectedSupplier = suppliers.FirstOrDefault(s => s.Name == cbProvider.Text);
 
                 if (selectedSupplier == null)
@@ -287,96 +230,49 @@ namespace PrimeSystems.Views.Forms.Add
                     return;
                 }
 
-                PurchaseModel purchase;
+                decimal.TryParse(tbTotal.Text, out decimal total);
+                var articleItems = GetArticleItemsData();
 
-                if (isEditMode && currentPurchase != null)
+                var validationResult = _purchaseController.ValidatePurchase(
+                    selectedSupplier.Id,
+                    articleItems,
+                    total
+                );
+
+                if (!validationResult.IsValid)
                 {
-                    purchase = currentPurchase;
-                    purchase.UserId = Session.CurrentUser?.Id;
-                    purchase.SupplierId = selectedSupplier.Id;
-                    purchase.Date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                }
-                else
-                {
-                    purchase = new PurchaseModel
-                    {
-                        UserId = Session.CurrentUser?.Id,
-                        SupplierId = selectedSupplier.Id,
-                        Date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
-                    };
+                    MessageBox.Show("Se encontraron los siguientes errores:\n\n" + string.Join("\n", validationResult.Errors),
+                        "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
                 }
 
-                purchase.Subtotal = tbTotal.Text;
-                purchase.Discount = "0.00";
-                purchase.Total = tbTotal.Text;
+                var result = _purchaseController.SavePurchase(
+                    selectedSupplier.Id,
+                    total,
+                    articleItems,
+                    _isEditMode,
+                    _currentPurchase
+                );
 
-                var details = new List<PurchaseDetailModel>();
-                var articleItems = gbArticlesData.Controls.OfType<Controls.SupplierArticleItem>().ToList();
-
-                foreach (var item in articleItems)
+                if (result.Success)
                 {
-                    var articleId = item.GetSelectedArticleId();
-                    var tbUnitPrice = item.Controls.Find("tbArticleUnitPrice", true).FirstOrDefault() as ReaLTaiizor.Controls.MaterialTextBoxEdit;
-                    var tbQuantity = item.Controls.Find("tbArticleQuantity", true).FirstOrDefault() as ReaLTaiizor.Controls.MaterialTextBoxEdit;
+                    string action = _isEditMode ? ActivityActions.Update : ActivityActions.Create;
+                    ActivityLogger.LogActivity(action, ActivityModules.Purchases, purchaseId: result.PurchaseId, supplierId: result.SupplierId);
 
-                    if (articleId.HasValue && tbUnitPrice != null && tbQuantity != null)
-                    {
-                        var article = articleController.GetById(articleId.Value);
-
-                        var detail = new PurchaseDetailModel
-                        {
-                            ArticleId = articleId.Value,
-                            Description = article?.Name ?? "",
-                            UnitPrice = tbUnitPrice.Text,
-                            Quantity = tbQuantity.Text
-                        };
-
-                        details.Add(detail);
-                    }
-                }
-
-                bool success;
-                if (isEditMode && currentPurchase != null)
-                {
-                    // Set Title and Description for update
-                    purchase.Title = $"Compra #{purchase.Id}";
-                    purchase.Description = $"Proveedor: {selectedSupplier.Name} | Total: ${purchase.Total} | Fecha: {DateTime.Now:dd/MM/yyyy}";
-                    success = purchaseController.UpdateCompraConDetalles(purchase, details);
-                }
-                else
-                {
-                    // For new purchases, save first to get ID
-                    success = purchaseController.CreateCompraConDetalles(purchase, details);
-                    
-                    if (success)
-                    {
-                        // Update with Title and Description
-                        purchase.Title = $"Compra #{purchase.Id}";
-                        purchase.Description = $"Proveedor: {selectedSupplier.Name} | Total: ${purchase.Total} | Fecha: {DateTime.Now:dd/MM/yyyy}";
-                        purchaseController.Update(purchase);
-                    }
-                }
-
-                if (success)
-                {
-                    string message = isEditMode ? "Compra actualizada correctamente." : "Compra registrada correctamente.";
+                    string message = _isEditMode ? "Compra actualizada correctamente." : "Compra registrada correctamente.";
                     MessageBox.Show(message, "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    
-                    int purchaseId = isEditMode ? currentPurchase.Id : purchase.Id;
-                    string action = isEditMode ? ActivityActions.Update : ActivityActions.Create;
-                    ActivityLogger.LogActivity(action, ActivityModules.Purchases, purchaseId: purchaseId, supplierId: selectedSupplier.Id);
-                    
                     ReturnToPurchaseView();
                 }
                 else
                 {
-                    string message = isEditMode ? "Error al actualizar la compra." : "Error al registrar la compra.";
-                    MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(result.ErrorMessage ?? "Error al guardar la compra", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al guardar la compra: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error al guardar la compra: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -387,10 +283,21 @@ namespace PrimeSystems.Views.Forms.Add
 
         private void ReturnToPurchaseView()
         {
-            if (ParentTabPage != null && formMain != null)
+            if (_parentTabPage != null && _formMain != null)
             {
-                formMain.RestoreTabPage(ParentTabPage);
+                _formMain.RestoreTabPage(_parentTabPage);
             }
+        }
+
+        private void btnAddArticle_Click(object sender, EventArgs e)
+        {
+            SupplierArticleItem newArticleItem = new Controls.SupplierArticleItem();
+            newArticleItem.Dock = DockStyle.Top;
+            gbArticlesData.Controls.Add(newArticleItem);
+            gbArticlesData.Controls.SetChildIndex(newArticleItem, 1);
+            newArticleItem.tbArticleUnitPrice.TextChanged += CalculateTotals;
+            newArticleItem.tbArticleQuantity.TextChanged += CalculateTotals;
+            newArticleItem.btnRemove.Click += CalculateTotals;
         }
 
         private void cbProvider_DropDown(object sender, EventArgs e)

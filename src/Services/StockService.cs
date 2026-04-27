@@ -6,18 +6,18 @@ using System.Diagnostics;
 using System.Linq;
 using PrimeSystems.Core;
 
-namespace PrimeSystems.Controllers
+namespace PrimeSystems.Services
 {
-    public class StockController : IGenericController<StockModel, int>
+    public class StockService : IGenericController<StockModel, int>
     {
         private readonly AppDbContext _context;
 
-        public StockController()
+        public StockService()
         {
             _context = new AppDbContext();
         }
 
-        public StockController(AppDbContext context)
+        public StockService(AppDbContext context)
         {
             _context = context;
         }

@@ -1,4 +1,4 @@
-﻿using PrimeSystems.Controllers;
+﻿using PrimeSystems.Services;
 using PrimeSystems.Core;
 using PrimeSystems.Models;
 using System;
@@ -15,14 +15,14 @@ namespace PrimeSystems.Views.Forms.Add
 {
     public partial class Role : UserControl
     {
-        private UserTypeController roleController;
+        private UserTypeService roleController;
         private RoleModel selectedRole;
         private Main? formMain = Application.OpenForms.OfType<Main>().FirstOrDefault();
         private bool isNewRole;
 
         public Role(RoleModel? role = null)
         {
-            roleController = new UserTypeController();
+            roleController = new UserTypeService();
             InitializeComponent();
 
             if (role == null)

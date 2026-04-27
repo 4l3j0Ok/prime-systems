@@ -1,4 +1,4 @@
-﻿using PrimeSystems.Controllers;
+﻿using PrimeSystems.Services;
 using PrimeSystems.Core;
 using PrimeSystems.Models;
 using System;
@@ -15,13 +15,13 @@ namespace PrimeSystems.Views.Forms.Add
 {
     public partial class Client : UserControl
     {
-        private ClientController clientController;
+        private ClientService clientController;
         private ClientModel selectedClient;
         private Main? formMain = Application.OpenForms.OfType<Main>().FirstOrDefault();
 
         public Client(ClientModel? client = null)
         {
-            clientController = new ClientController();
+            clientController = new ClientService();
             InitializeComponent();
             SetupControls();
 

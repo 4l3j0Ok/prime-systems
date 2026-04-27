@@ -6,18 +6,18 @@ using System.Diagnostics;
 using System.Linq;
 using PrimeSystems.Core;
 
-namespace PrimeSystems.Controllers
+namespace PrimeSystems.Services
 {
-    public class CurrentAccountController : IGenericController<CurrentAccountModel, int>
+    public class CurrentAccountService : IGenericController<CurrentAccountModel, int>
     {
         private readonly AppDbContext _context;
 
-        public CurrentAccountController()
+        public CurrentAccountService()
         {
             _context = new AppDbContext();
         }
 
-        public CurrentAccountController(AppDbContext context)
+        public CurrentAccountService(AppDbContext context)
         {
             _context = context;
         }

@@ -6,18 +6,18 @@ using System.Diagnostics;
 using System.Linq;
 using PrimeSystems.Core;
 
-namespace PrimeSystems.Controllers
+namespace PrimeSystems.Services
 {
-    public class CurrentAccountMovementController
+    public class CurrentAccountMovementService
     {
         private readonly AppDbContext _context;
 
-        public CurrentAccountMovementController()
+        public CurrentAccountMovementService()
         {
             _context = new AppDbContext();
         }
 
-        public CurrentAccountMovementController(AppDbContext context)
+        public CurrentAccountMovementService(AppDbContext context)
         {
             _context = context;
         }

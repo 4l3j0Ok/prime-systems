@@ -6,18 +6,18 @@ using System.Diagnostics;
 using System.Linq;
 using PrimeSystems.Core;
 
-namespace PrimeSystems.Controllers
+namespace PrimeSystems.Services
 {
-    public class SellDetailController : IGenericController<SellDetailModel, int>
+    public class SellDetailService : IGenericController<SellDetailModel, int>
     {
         private readonly AppDbContext _context;
 
-        public SellDetailController()
+        public SellDetailService()
         {
             _context = new AppDbContext();
         }
 
-        public SellDetailController(AppDbContext context)
+        public SellDetailService(AppDbContext context)
         {
             _context = context;
         }
@@ -134,36 +134,6 @@ namespace PrimeSystems.Controllers
                 var detalle = _context.SellDetail.Find(id);
                 if (detalle == null) return false;
                 _context.SellDetail.Remove(detalle);
-                _context.SaveChanges();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public bool CreateBatch(List<SellDetailModel> detalles)
-        {
-            try
-            {
-                _context.SellDetail.AddRange(detalles);
-                _context.SaveChanges();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
-                return false;
-            }
-        }
-
-        public bool DeleteByVenta(int ventaId)
-        {
-            try
-            {
-                var detalles = _context.SellDetail.Where(d => d.SellId == ventaId);
-                _context.SellDetail.RemoveRange(detalles);
                 _context.SaveChanges();
                 return true;
             }

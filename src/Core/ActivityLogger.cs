@@ -1,4 +1,4 @@
-using PrimeSystems.Controllers;
+using PrimeSystems.Services;
 using PrimeSystems.Models;
 using System;
 using System.Diagnostics;
@@ -18,7 +18,7 @@ namespace PrimeSystems.Core
         {
             try
             {
-                var activityRecordController = new ActivityRecordController();
+                var activityRecordController = new ActivityRecordService();
 
                 var activityRecord = new ActivityRecordModel
                 {
@@ -41,12 +41,12 @@ namespace PrimeSystems.Core
                 }
                 else
                 {
-                    Debug.WriteLine($"Error al registrar actividad en módulo: {module}");
+                    Debug.WriteLine($"Error al registrar actividad en mï¿½dulo: {module}");
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Excepción al registrar actividad: {ex.Message}");
+                Debug.WriteLine($"Excepciï¿½n al registrar actividad: {ex.Message}");
             }
         }
     }

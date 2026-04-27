@@ -1,4 +1,4 @@
-﻿using PrimeSystems.Controllers;
+﻿using PrimeSystems.Services;
 using PrimeSystems.Core;
 using PrimeSystems.Models;
 using PrimeSystems.Views.Controls;
@@ -14,7 +14,7 @@ namespace PrimeSystems.Views.Forms.Add
 {
     public partial class CurrentAccount : UserControl
     {
-        private CurrentAccountController currentAccountController;
+        private CurrentAccountService currentAccountController;
         private CurrentAccountModel selectedAccount;
         private Main? formMain = Application.OpenForms.OfType<Main>().FirstOrDefault();
 
@@ -28,7 +28,7 @@ namespace PrimeSystems.Views.Forms.Add
 
         public CurrentAccount(CurrentAccountModel? account = null)
         {
-            currentAccountController = new CurrentAccountController();
+            currentAccountController = new CurrentAccountService();
             InitializeComponent();
             SetupControls();
 
@@ -222,21 +222,21 @@ namespace PrimeSystems.Views.Forms.Add
             switch (entityType)
             {
                 case CurrentAccountType.Client:
-                    var clients = new ClientController().GetAll();
+                    var clients = new ClientService().GetAll();
                     foreach (var client in clients)
                     {
                         cmbEntity.Items.Add(new ComboBoxItem { Text = client.Name ?? $"Cliente {client.Id}", Value = client.Id });
                     }
                     break;
                 case CurrentAccountType.Supplier:
-                    var suppliers = new SupplierController().GetAll();
+                    var suppliers = new SupplierService().GetAll();
                     foreach (var supplier in suppliers)
                     {
                         cmbEntity.Items.Add(new ComboBoxItem { Text = supplier.Name ?? $"Proveedor {supplier.Id}", Value = supplier.Id });
                     }
                     break;
                 case CurrentAccountType.User:
-                    var users = new UserController().GetAll();
+                    var users = new UserService().GetAll();
                     foreach (var user in users)
                     {
                         cmbEntity.Items.Add(new ComboBoxItem { Text = user.Username ?? $"Usuario {user.Id}", Value = user.Id });

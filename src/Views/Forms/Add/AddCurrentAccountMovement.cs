@@ -1,4 +1,4 @@
-using PrimeSystems.Controllers;
+using PrimeSystems.Services;
 using PrimeSystems.Core;
 using PrimeSystems.Models;
 using System;
@@ -15,7 +15,7 @@ namespace PrimeSystems.Views.Forms.Add
 {
     public partial class AddCurrentAccountMovement : UserControl
     {
-        private CurrentAccountController currentAccountController;
+        private CurrentAccountService currentAccountController;
         private CurrentAccountModel currentAccount;
         private Main? formMain = Application.OpenForms.OfType<Main>().FirstOrDefault();
 
@@ -27,7 +27,7 @@ namespace PrimeSystems.Views.Forms.Add
 
         public AddCurrentAccountMovement(CurrentAccountModel account)
         {
-            currentAccountController = new CurrentAccountController();
+            currentAccountController = new CurrentAccountService();
             currentAccount = account;
             InitializeComponent();
             SetupControls();

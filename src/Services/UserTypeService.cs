@@ -5,18 +5,18 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace PrimeSystems.Controllers
+namespace PrimeSystems.Services
 {
-    public class UserTypeController : IGenericController<RoleModel, string>
+    public class UserTypeService : IGenericController<RoleModel, string>
     {
         private readonly AppDbContext _context;
 
-        public UserTypeController()
+        public UserTypeService()
         {
             _context = new AppDbContext();
         }
 
-        public UserTypeController(AppDbContext context)
+        public UserTypeService(AppDbContext context)
         {
             _context = context;
         }

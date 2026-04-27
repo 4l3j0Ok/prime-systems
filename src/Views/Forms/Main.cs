@@ -1,4 +1,5 @@
-﻿using PrimeSystems.Controllers;
+﻿using PrimeSystems.Services;
+using PrimeSystems.Services;
 using PrimeSystems.Views.Controls;
 using PrimeSystems.Core;
 using PrimeSystems.Models;
@@ -131,56 +132,56 @@ namespace PrimeSystems
         private void InitializeTabConfigurations()
         {
             tabConfigurations[tpUsersList] = new TabConfiguration<UserModel, int, User>(
-                () => new UserController(),
+                () => new UserService(),
                 u => u.Title ?? u.Username,
                 u => u.Description ?? $"{u.Name} {u.LastName}",
                 u => GetUserProfilePicture(u),
                 u => new User(u)
             );
             tabConfigurations[tpUsersRoles] = new TabConfiguration<RoleModel, string, Role>(
-                () => new UserTypeController(),
+                () => new UserTypeService(),
                 r => r.Title ?? r.Name ?? "",
                 r => r.Description ?? r.Id,
                 null,
                 r => new Role(r)
             );
             tabConfigurations[tpSuppliers] = new TabConfiguration<SupplierModel, int, Supplier>(
-                () => new SupplierController(),
+                () => new SupplierService(),
                 s => s.Title ?? s.Name ?? "Sin nombre",
                 s => s.Description ?? $"CUIT: {s.Cuit?.ToString() ?? "N/A"}",
                 null,
                 s => new Supplier(s)
             );
             tabConfigurations[tpSellsClients] = new TabConfiguration<ClientModel, int, Client>(
-                () => new ClientController(),
+                () => new ClientService(),
                 c => c.Title ?? c.Name ?? "Sin nombre",
                 c => c.Description ?? $"CUIT: {c.Cuit?.ToString() ?? "N/A"} | Entidad: {c.Entity ?? "N/A"}",
                 null,
                 c => new Client(c)
             );
             tabConfigurations[tpArticles] = new TabConfiguration<ArticleModel, int, Article>(
-                () => new ArticleController(),
+                () => new ArticleService(),
                 a => a.Title ?? a.Name ?? "Sin nombre",
                 a => a.Description ?? $"Código: {a.Code} | Categoría: {a.Category?.Name ?? "N/A"}",
                 a => Properties.Resources.article_placeholder,
                 a => new Article(a)
             );
             tabConfigurations[tpSellsList] = new TabConfiguration<SellModel, int, Sell>(
-                () => new SellController(),
+                () => new SellService(),
                 s => s.Title ?? $"Venta #{s.Id}",
                 s => s.Description ?? $"Cliente: {s.Client?.Name ?? "N/A"} | Fecha: {s.Date ?? "N/A"}",
                 s => Properties.Resources.sell_placeholder,
                 s => new Sell(s)
             );
             tabConfigurations[tpPurchasesList] = new TabConfiguration<PurchaseModel, int, Purchase>(
-                () => new PurchaseController(),
+                () => new PurchaseService(),
                 p => p.Title ?? $"Compra #{p.Id}",
                 p => p.Description ?? $"Proveedor: {p.Supplier?.Name ?? "N/A"} | Total: ${p.Total ?? "0.00"} | Fecha: {p.Date ?? "N/A"}",
                 p => Properties.Resources.purchase_placeholder,
                 p => new Purchase(p)
             );
             tabConfigurations[tpCurrentAccounts] = new TabConfiguration<CurrentAccountModel, int, CurrentAccount>(
-                () => new CurrentAccountController(),
+                () => new CurrentAccountService(),
                 ca => ca.Title ?? $"Cuenta #{ca.Id}",
                 ca => ca.Description ?? $"Saldo: ${ca.Balance:N2} | Tipo: {ca.EntityType}",
                 null,
@@ -803,7 +804,7 @@ namespace PrimeSystems
 
         private void RefreshFinancialState(bool append = false)
         {
-            ActivityRecordController activityController = new ActivityRecordController();
+            ActivityRecordService activityController = new ActivityRecordService();
             List<string> activityRecordModules = new List<string> { ActivityModules.Sells, ActivityModules.Purchases };
             DateTime dateFrom = dtpDateFrom.Value.Date;
             DateTime dateTo = dtpDateTo.Value.Date;
@@ -978,7 +979,7 @@ namespace PrimeSystems
 
         private void RefreshActivityLog(bool append = false)
         {
-            ActivityRecordController activityController = new ActivityRecordController();
+            ActivityRecordService activityController = new ActivityRecordService();
 
             if (!append)
             {

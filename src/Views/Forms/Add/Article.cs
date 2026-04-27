@@ -1,35 +1,31 @@
-﻿using PrimeSystems.Controllers;
+﻿using PrimeSystems.Services;
 using PrimeSystems.Core;
 using PrimeSystems.Models;
 using System;
-using System.Diagnostics;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace PrimeSystems.Views.Forms.Add
 {
     public partial class Article : UserControl
     {
-        private ArticleController articleController;
-        private CategoryController categoryController;
-        private SubcategoryController subcategoryController;
-        private StockController stockController;
-        private ArticleModel selectedArticle;
-        private StockModel? selectedStock;
-        private Main? formMain = Application.OpenForms.OfType<Main>().FirstOrDefault();
+        private readonly ArticleService _articleController;
+        private readonly CategoryService _categoryController;
+        private readonly SubcategoryService _subcategoryController;
+        private readonly StockService _stockController;
+        private ArticleModel _selectedArticle;
+        private StockModel? _selectedStock;
+        private Main? _formMain;
+        private bool _isEditMode;
 
         public Article(ArticleModel? article = null)
         {
-            articleController = new ArticleController();
-            categoryController = new CategoryController();
-            subcategoryController = new SubcategoryController();
-            stockController = new StockController();
+            _articleController = new ArticleService();
+            _categoryController = new CategoryService();
+            _subcategoryController = new SubcategoryService();
+            _stockController = new StockService();
+            _formMain = Application.OpenForms.OfType<Main>().FirstOrDefault();
+            _isEditMode = article != null;
 
             InitializeComponent();
             SetupControls();
@@ -37,48 +33,44 @@ namespace PrimeSystems.Views.Forms.Add
 
             if (article == null)
             {
-                selectedArticle = new ArticleModel();
-                selectedStock = new StockModel();
+                _selectedArticle = new ArticleModel();
+                _selectedStock = new StockModel();
                 return;
             }
+
             mepArticleAdd.Title = "Modificar Artículo";
             mepArticleAdd.Description = "Edita los datos del artículo seleccionado";
-            var freshArticle = articleController.GetById(article.Id);
-            if (freshArticle != null)
+
+            var freshArticle = _articleController.GetById(article.Id);
+            _selectedArticle = freshArticle ?? article;
+            _selectedStock = _stockController.GetStockByArticuloId(_selectedArticle.Id);
+
+            if (_selectedStock == null)
             {
-                selectedArticle = freshArticle;
-            }
-            else
-            {
-                selectedArticle = article;
-            }
-            selectedStock = stockController.GetStockByArticuloId(selectedArticle.Id);
-            if (selectedStock == null)
-            {
-                selectedStock = new StockModel { ArticleId = selectedArticle.Id };
+                _selectedStock = new StockModel { ArticleId = _selectedArticle.Id };
             }
 
-            tbArticleCode.Text = selectedArticle.Code;
-            cbArticleName.Text = selectedArticle.Name;
-            cbArticleDescription.Text = selectedArticle.Description;
+            tbArticleCode.Text = _selectedArticle.Code;
+            cbArticleName.Text = _selectedArticle.Name;
+            cbArticleDescription.Text = _selectedArticle.Description;
 
-            if (selectedArticle.CategoryId.HasValue && selectedArticle.Category != null)
+            if (_selectedArticle.CategoryId.HasValue && _selectedArticle.Category != null)
             {
-                cbArticleCategory.SelectedItem = selectedArticle.Category.Name;
-                LoadSubcategories(selectedArticle.CategoryId.Value);
+                cbArticleCategory.SelectedItem = _selectedArticle.Category.Name;
+                LoadSubcategories(_selectedArticle.CategoryId.Value);
             }
 
-            if (selectedArticle.SubcategoryId.HasValue && selectedArticle.Subcategory != null)
+            if (_selectedArticle.SubcategoryId.HasValue && _selectedArticle.Subcategory != null)
             {
-                cbArticleSubcategory.SelectedItem = selectedArticle.Subcategory.Name;
+                cbArticleSubcategory.SelectedItem = _selectedArticle.Subcategory.Name;
             }
 
-            tbStockQuantity.Text = selectedStock.Stock?.ToString() ?? "0";
+            tbStockQuantity.Text = _selectedStock.Stock?.ToString() ?? "0";
 
-            if (decimal.TryParse(selectedStock.Cost, out decimal cost))
+            if (decimal.TryParse(_selectedStock.Cost, out decimal cost))
                 tbStockCost.Text = cost.ToString("F2");
 
-            tbCostProfit.Text = selectedStock.Profit?.ToString() ?? "0";
+            tbCostProfit.Text = _selectedStock.Profit?.ToString() ?? "0";
 
             CalculateSellPrice();
         }
@@ -108,7 +100,7 @@ namespace PrimeSystems.Views.Forms.Add
         {
             try
             {
-                var categories = categoryController.GetAll();
+                var categories = _articleController.GetAllCategories();
                 cbArticleCategory.Items.Clear();
 
                 foreach (var category in categories)
@@ -128,7 +120,7 @@ namespace PrimeSystems.Views.Forms.Add
         {
             try
             {
-                var subcategories = subcategoryController.GetSubcategoriesByCategoria(categoryId);
+                var subcategories = _articleController.GetSubcategoriesByCategory(categoryId);
                 cbArticleSubcategory.Items.Clear();
 
                 foreach (var subcategory in subcategories)
@@ -149,7 +141,7 @@ namespace PrimeSystems.Views.Forms.Add
             if (cbArticleCategory.SelectedItem != null)
             {
                 string categoryName = cbArticleCategory.SelectedItem.ToString() ?? "";
-                var category = categoryController.GetAll().FirstOrDefault(c => c.Name == categoryName);
+                var category = _categoryController.GetAll().FirstOrDefault(c => c.Name == categoryName);
 
                 if (category != null)
                 {
@@ -165,7 +157,7 @@ namespace PrimeSystems.Views.Forms.Add
                 if (decimal.TryParse(tbStockCost.Text, out decimal cost) &&
                     int.TryParse(tbCostProfit.Text, out int profit))
                 {
-                    decimal sellPrice = cost + (cost * profit / 100);
+                    decimal sellPrice = _articleController.CalculateSellPrice(cost, profit);
                     tbSellPrice.Text = sellPrice.ToString("F2");
                 }
                 else
@@ -179,154 +171,57 @@ namespace PrimeSystems.Views.Forms.Add
             }
         }
 
-        private bool ValidateFields()
-        {
-            List<string> errors = new List<string>();
-
-            if (string.IsNullOrWhiteSpace(tbArticleCode.Text))
-                errors.Add("Código del artículo");
-
-            if (string.IsNullOrWhiteSpace(cbArticleName.Text))
-                errors.Add("Nombre del artículo");
-
-            if (string.IsNullOrWhiteSpace(cbArticleCategory.Text))
-                errors.Add("Categoría");
-
-            if (string.IsNullOrWhiteSpace(tbStockQuantity.Text) || !int.TryParse(tbStockQuantity.Text, out int qty) || qty < 0)
-                errors.Add("Cantidad de stock (debe ser un número mayor o igual a 0)");
-
-            if (string.IsNullOrWhiteSpace(tbStockCost.Text) || !decimal.TryParse(tbStockCost.Text, out decimal cost) || cost < 0)
-                errors.Add("Costo (debe ser un número mayor o igual a 0)");
-
-            if (string.IsNullOrWhiteSpace(tbCostProfit.Text) || !int.TryParse(tbCostProfit.Text, out int profit) || profit < 0)
-                errors.Add("Ganancia (debe ser un porcentaje mayor o igual a 0)");
-
-            if (errors.Count > 0)
-            {
-                string message = "Los siguientes campos son obligatorios o inválidos:\n\n" + string.Join("\n", errors);
-                MessageBox.Show(message, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
-            }
-
-            return true;
-        }
-
         private void mepArticleAdd_SaveClick(object? sender, EventArgs e)
         {
-            if (!ValidateFields())
+            int.TryParse(tbStockQuantity.Text, out int stockQty);
+            decimal.TryParse(tbStockCost.Text, out decimal cost);
+            int.TryParse(tbCostProfit.Text, out int profit);
+
+            var validationResult = _articleController.ValidateArticle(
+                tbArticleCode.Text.Trim(),
+                cbArticleName.Text.Trim(),
+                cbArticleCategory.Text,
+                stockQty,
+                cost,
+                profit
+            );
+
+            if (!validationResult.IsValid)
+            {
+                MessageBox.Show("Los siguientes campos son obligatorios o inválidos:\n\n" + string.Join("\n", validationResult.Errors),
+                    "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
+            }
 
             try
             {
-                string categoryName = cbArticleCategory.Text.Trim();
-                var category = categoryController.GetAll().FirstOrDefault(c => c.Name == categoryName);
+                var result = _articleController.SaveArticle(
+                    _selectedArticle.Id,
+                    tbArticleCode.Text.Trim(),
+                    cbArticleName.Text.Trim(),
+                    cbArticleDescription.Text,
+                    cbArticleCategory.Text.Trim(),
+                    cbArticleSubcategory.Text,
+                    stockQty,
+                    cost,
+                    profit
+                );
 
-                if (category == null)
+                if (result.Success)
                 {
-                    var newCategory = new CategoryModel
-                    {
-                        Name = categoryName
-                    };
+                    string action = _isEditMode ? ActivityActions.Update : ActivityActions.Create;
+                    ActivityLogger.LogActivity(action, ActivityModules.Articles, result.ArticleId);
 
-                    if (!categoryController.Create(newCategory))
-                    {
-                        MessageBox.Show("Error al crear la nueva categoría.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-
-                    category = categoryController.GetAll().FirstOrDefault(c => c.Name == categoryName);
-                    if (category == null)
-                    {
-                        MessageBox.Show("Error al obtener la categoría creada.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                }
-
-                int? subcategoryId = null;
-                if (!string.IsNullOrWhiteSpace(cbArticleSubcategory.Text))
-                {
-                    string subcategoryName = cbArticleSubcategory.Text.Trim();
-                    var subcategory = subcategoryController.GetAll()
-                        .FirstOrDefault(s => s.Name == subcategoryName && s.CategoryId == category.Id);
-
-                    if (subcategory == null)
-                    {
-                        var newSubcategory = new SubcategoryModel
-                        {
-                            Name = subcategoryName,
-                            CategoryId = category.Id
-                        };
-
-                        if (!subcategoryController.Create(newSubcategory))
-                        {
-                            MessageBox.Show("Error al crear la nueva subcategoría.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
-                        }
-
-                        subcategory = subcategoryController.GetAll()
-                            .FirstOrDefault(s => s.Name == subcategoryName && s.CategoryId == category.Id);
-                    }
-
-                    subcategoryId = subcategory?.Id;
-                }
-
-                int originalId = selectedArticle.Id;
-                selectedArticle.Code = tbArticleCode.Text.Trim().ToUpper();
-                selectedArticle.Name = cbArticleName.Text.Trim();
-                selectedArticle.Description = string.IsNullOrWhiteSpace(cbArticleDescription.Text)
-                    ? null
-                    : cbArticleDescription.Text.Trim();
-                selectedArticle.CategoryId = category.Id;
-                selectedArticle.SubcategoryId = subcategoryId;
-
-                bool articleSuccess;
-                if (selectedArticle.Id == 0)
-                    articleSuccess = articleController.Create(selectedArticle);
-                else
-                    articleSuccess = articleController.Update(selectedArticle);
-
-                if (!articleSuccess)
-                {
-                    MessageBox.Show("Error al guardar el artículo. El código ya existe o hay un problema con los datos.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                if (selectedStock?.ArticleId == null || selectedStock.ArticleId == 0)
-                {
-                    var savedArticle = articleController.GetArticuloByCodigo(selectedArticle.Code);
-                    if (savedArticle != null)
-                    {
-                        selectedArticle.Id = savedArticle.Id;
-                        selectedStock = new StockModel { ArticleId = savedArticle.Id };
-                    }
-                }
-
-                selectedStock.ArticleId = selectedArticle.Id;
-                selectedStock.Stock = int.TryParse(tbStockQuantity.Text, out int stock) ? stock : 0;
-                selectedStock.Cost = decimal.TryParse(tbStockCost.Text, out decimal cost) ? cost.ToString("F2") : "0.00";
-                selectedStock.Profit = int.TryParse(tbCostProfit.Text, out int profit) ? profit : 0;
-
-                bool stockSuccess;
-                if (selectedStock.Id == 0)
-                    stockSuccess = stockController.Create(selectedStock);
-                else
-                    stockSuccess = stockController.Update(selectedStock);
-
-                if (!stockSuccess)
-                {
-                    MessageBox.Show("Artículo guardado, pero hubo un error al guardar el stock.", "Advertencia",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-                else
-                {
                     MessageBox.Show("Artículo guardado correctamente.", "Éxito",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    ReturnToArticlesView();
                 }
-
-                string action = originalId == 0 ? ActivityActions.Create : ActivityActions.Update;
-                ActivityLogger.LogActivity(action, ActivityModules.Articles, articleId: selectedArticle.Id);
-
-                ReturnToArticlesView();
+                else
+                {
+                    MessageBox.Show(result.ErrorMessage ?? "Error al guardar el artículo", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
             catch (Exception ex)
             {
@@ -342,9 +237,9 @@ namespace PrimeSystems.Views.Forms.Add
 
         private void ReturnToArticlesView()
         {
-            if (formMain != null)
+            if (_formMain != null)
             {
-                formMain.RestoreTabPage(formMain.tpArticles);
+                _formMain.RestoreTabPage(_formMain.tpArticles);
             }
         }
     }

@@ -6,18 +6,18 @@ using System.Diagnostics;
 using System.Linq;
 using PrimeSystems.Core;
 
-namespace PrimeSystems.Controllers
+namespace PrimeSystems.Services
 {
-    public class ActivityRecordController : IGenericController<ActivityRecordModel, int>
+    public class ActivityRecordService : IGenericController<ActivityRecordModel, int>
     {
         private readonly AppDbContext _context;
 
-        public ActivityRecordController()
+        public ActivityRecordService()
         {
             _context = new AppDbContext();
         }
 
-        public ActivityRecordController(AppDbContext context)
+        public ActivityRecordService(AppDbContext context)
         {
             _context = context;
         }

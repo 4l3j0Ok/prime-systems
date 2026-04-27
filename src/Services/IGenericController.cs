@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace PrimeSystems.Controllers
+namespace PrimeSystems.Services
 {
     public interface IGenericController<T, TId>
     {

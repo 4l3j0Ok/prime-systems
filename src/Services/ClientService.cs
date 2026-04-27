@@ -6,18 +6,18 @@ using System.Diagnostics;
 using System.Linq;
 using PrimeSystems.Core;
 
-namespace PrimeSystems.Controllers
+namespace PrimeSystems.Services
 {
-    public class ClientController : IGenericController<ClientModel, int>
+    public class ClientService : IGenericController<ClientModel, int>
     {
         private readonly AppDbContext _context;
 
-        public ClientController()
+        public ClientService()
         {
             _context = new AppDbContext();
         }
 
-        public ClientController(AppDbContext context)
+        public ClientService(AppDbContext context)
         {
             _context = context;
         }

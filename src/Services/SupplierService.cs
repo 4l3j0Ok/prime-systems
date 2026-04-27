@@ -6,18 +6,18 @@ using System.Diagnostics;
 using System.Linq;
 using PrimeSystems.Core;
 
-namespace PrimeSystems.Controllers
+namespace PrimeSystems.Services
 {
-    public class SupplierController : IGenericController<SupplierModel, int>
+    public class SupplierService : IGenericController<SupplierModel, int>
     {
         private readonly AppDbContext _context;
 
-        public SupplierController()
+        public SupplierService()
         {
             _context = new AppDbContext();
         }
 
-        public SupplierController(AppDbContext context)
+        public SupplierService(AppDbContext context)
         {
             _context = context;
         }

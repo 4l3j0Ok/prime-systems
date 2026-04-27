@@ -1,4 +1,4 @@
-﻿using PrimeSystems.Controllers;
+﻿using PrimeSystems.Services;
 using PrimeSystems.Core;
 using PrimeSystems.Models;
 using System;
@@ -13,8 +13,8 @@ namespace PrimeSystems.Views.Forms
 {
     public partial class CurrentAccountMovementsView : UserControl
     {
-        private CurrentAccountController currentAccountController;
-        private CurrentAccountMovementController movementController;
+        private CurrentAccountService currentAccountController;
+        private CurrentAccountMovementService movementController;
         private CurrentAccountModel currentAccount;
         private Main? formMain;
         private const int PAGE_SIZE = 20;
@@ -24,8 +24,8 @@ namespace PrimeSystems.Views.Forms
 
         public CurrentAccountMovementsView(CurrentAccountModel account)
         {
-            currentAccountController = new CurrentAccountController();
-            movementController = new CurrentAccountMovementController();
+            currentAccountController = new CurrentAccountService();
+            movementController = new CurrentAccountMovementService();
             currentAccount = account;
             formMain = Application.OpenForms.OfType<Main>().FirstOrDefault();
             InitializeComponent();

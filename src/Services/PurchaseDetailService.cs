@@ -6,18 +6,18 @@ using System.Diagnostics;
 using System.Linq;
 using PrimeSystems.Core;
 
-namespace PrimeSystems.Controllers
+namespace PrimeSystems.Services
 {
-    public class PurchaseDetailController : IGenericController<PurchaseDetailModel, int>
+    public class PurchaseDetailService : IGenericController<PurchaseDetailModel, int>
     {
         private readonly AppDbContext _context;
 
-        public PurchaseDetailController()
+        public PurchaseDetailService()
         {
             _context = new AppDbContext();
         }
 
-        public PurchaseDetailController(AppDbContext context)
+        public PurchaseDetailService(AppDbContext context)
         {
             _context = context;
         }

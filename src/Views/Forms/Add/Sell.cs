@@ -1,50 +1,40 @@
-﻿using PrimeSystems.Controllers;
+﻿using PrimeSystems.Services;
 using PrimeSystems.Core;
 using PrimeSystems.Models;
 using PrimeSystems.Views.Controls;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace PrimeSystems.Views.Forms.Add
 {
     public partial class Sell : UserControl
     {
-        private SellController sellController;
-        private ClientController clientController;
-        private SellDetailController sellDetailController;
-        private ArticleController articleController;
-        private StockController stockController;
-        private Main? formMain = Application.OpenForms.OfType<Main>().FirstOrDefault();
-        private TabPage ParentTabPage;
-        private SellModel? currentSell;
-        private bool isEditMode = false;
+        private readonly SellService _sellController;
+        private readonly ClientService _clientController;
+        private readonly ArticleService _articleController;
+        private Main? _formMain;
+        private TabPage _parentTabPage;
+        private SellModel? _currentSell;
+        private bool _isEditMode;
 
         public Sell(SellModel? sell = null, TabPage? parentTabPage = null)
         {
-            if (parentTabPage != null)
-                ParentTabPage = parentTabPage;
-            else
-                ParentTabPage = formMain?.tpSellsList ?? new TabPage();
-            sellController = new SellController();
-            clientController = new ClientController();
-            sellDetailController = new SellDetailController();
-            articleController = new ArticleController();
-            stockController = new StockController();
+            _sellController = new SellService();
+            _clientController = new ClientService();
+            _articleController = new ArticleService();
+            _formMain = Application.OpenForms.OfType<Main>().FirstOrDefault();
+            _parentTabPage = parentTabPage ?? _formMain?.tpSellsList ?? new TabPage();
+            _currentSell = sell;
+            _isEditMode = sell != null;
+
             InitializeComponent();
             SetupControls();
+            LoadClients();
 
             if (sell != null)
             {
-                currentSell = sell;
-                isEditMode = true;
                 LoadSellData(sell);
             }
         }
@@ -67,13 +57,14 @@ namespace PrimeSystems.Views.Forms.Add
                 }
                 else if (sell.ClientId.HasValue)
                 {
-                    var client = clientController.GetById(sell.ClientId.Value);
+                    var client = _clientController.GetById(sell.ClientId.Value);
                     if (client != null)
                     {
                         LoadClients();
                         cbClient.Text = client.Name;
                     }
                 }
+
                 if (!string.IsNullOrWhiteSpace(sell.Discount) && decimal.TryParse(sell.Discount, out decimal discountAmount))
                 {
                     if (!string.IsNullOrWhiteSpace(sell.Subtotal) && decimal.TryParse(sell.Subtotal, out decimal subtotal) && subtotal > 0)
@@ -82,6 +73,7 @@ namespace PrimeSystems.Views.Forms.Add
                         tbDiscount.Text = discountPercent.ToString("F2");
                     }
                 }
+
                 foreach (var detail in sell.Detail)
                 {
                     var articleItem = new Controls.ArticleItem();
@@ -91,6 +83,7 @@ namespace PrimeSystems.Views.Forms.Add
                     articleItem.tbArticleQuantity.TextChanged += (s, ev) => CalculateTotals(s, ev);
                     gbArticlesData.Controls.Add(articleItem);
                     gbArticlesData.Controls.SetChildIndex(articleItem, 0);
+
                     if (detail.Article != null)
                     {
                         articleItem.cbArticleName.Items.Add(detail.Article.Name);
@@ -98,46 +91,32 @@ namespace PrimeSystems.Views.Forms.Add
                     }
                     else if (detail.ArticleId.HasValue)
                     {
-                        var article = articleController.GetById(detail.ArticleId.Value);
+                        var article = _articleController.GetById(detail.ArticleId.Value);
                         if (article != null)
                         {
                             articleItem.cbArticleName.Items.Add(article.Name);
                             articleItem.cbArticleName.SelectedIndex = articleItem.cbArticleName.Items.Count - 1;
                         }
                     }
+
                     if (detail.Quantity.HasValue)
                         articleItem.tbArticleQuantity.Text = detail.Quantity.Value.ToString();
                 }
+
                 CalculateTotals(null, EventArgs.Empty);
             }
             catch (Exception ex)
             {
-                Debug.Write(ex.ToString());
-                MessageBox.Show(
-                    $"Error al cargar los datos de la venta:",
-                    "Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
+                MessageBox.Show($"Error al cargar los datos de la venta: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private void btnAddArticle_Click(object sender, EventArgs e)
-        {
-            var newArticleItem = new Controls.ArticleItem();
-            newArticleItem.Dock = DockStyle.Top;
-            newArticleItem.cbArticleName.SelectedIndexChanged += (s, ev) => CalculateTotals(s, ev);
-            newArticleItem.tbArticleUnitPrice.TextChanged += (s, ev) => CalculateTotals(s, ev);
-            newArticleItem.tbArticleQuantity.TextChanged += (s, ev) => CalculateTotals(s, ev);
-            gbArticlesData.Controls.Add(newArticleItem);
-            gbArticlesData.Controls.SetChildIndex(newArticleItem, 0);
         }
 
         private void LoadClients()
         {
             try
             {
-                var clients = clientController.GetAll();
+                var clients = _sellController.GetAllClients();
 
                 cbClient.Items.Clear();
                 cbClient.Items.Add("-- Seleccione un cliente --");
@@ -196,80 +175,37 @@ namespace PrimeSystems.Views.Forms.Add
             }
         }
 
-        private bool ValidateFields()
+        private List<(int ArticleId, int Quantity, decimal UnitPrice, string ArticleName)> GetArticleItemsData()
         {
-            List<string> errors = new List<string>();
-            if (cbClient.SelectedIndex <= 0 || string.IsNullOrWhiteSpace(cbClient.Text) || cbClient.Text.StartsWith("--"))
-            {
-                errors.Add("Debe seleccionar un cliente");
-            }
+            var items = new List<(int ArticleId, int Quantity, decimal UnitPrice, string ArticleName)>();
             var articleItems = gbArticlesData.Controls.OfType<Controls.ArticleItem>().ToList();
-            if (articleItems.Count == 0)
-            {
-                errors.Add("Debe agregar al menos un artículo");
-            }
+
             foreach (var item in articleItems)
             {
                 var cbArticle = item.Controls.Find("cbArticleName", true).FirstOrDefault() as ReaLTaiizor.Controls.HopeComboBox;
                 var tbUnitPrice = item.Controls.Find("tbArticleUnitPrice", true).FirstOrDefault() as ReaLTaiizor.Controls.MaterialTextBoxEdit;
                 var tbQuantity = item.Controls.Find("tbArticleQuantity", true).FirstOrDefault() as ReaLTaiizor.Controls.MaterialTextBoxEdit;
 
-                if (cbArticle == null || cbArticle.SelectedIndex < 0)
+                if (cbArticle?.SelectedIndex > 0 && tbUnitPrice != null && tbQuantity != null)
                 {
-                    errors.Add("Todos los artículos deben tener un nombre seleccionado");
-                    break;
-                }
-
-                if (string.IsNullOrWhiteSpace(tbUnitPrice?.Text) || !decimal.TryParse(tbUnitPrice.Text, out decimal price) || price <= 0)
-                {
-                    errors.Add("Todos los artículos deben tener un precio unitario válido mayor a 0");
-                    break;
-                }
-
-                if (string.IsNullOrWhiteSpace(tbQuantity?.Text) || !int.TryParse(tbQuantity.Text, out int qty) || qty <= 0)
-                {
-                    errors.Add("Todos los artículos deben tener una cantidad válida mayor a 0");
-                    break;
-                }
-                var article = articleController.GetByName(cbArticle.Text);
-                if (article != null)
-                {
-                    var stock = stockController.GetStockByArticuloId(article.Id);
-                    if (stock != null)
+                    var article = _articleController.GetByName(cbArticle.Text);
+                    if (article != null &&
+                        decimal.TryParse(tbUnitPrice.Text, out decimal price) &&
+                        int.TryParse(tbQuantity.Text, out int quantity))
                     {
-                        int availableStock = stock.Stock ?? 0;
-                        int requestedQty = int.Parse(tbQuantity.Text);
-                        if (isEditMode)
-                        {
-                            var originalDetail = currentSell.Detail?.FirstOrDefault(d => d.ArticleId == article.Id);
-                            if (originalDetail != null && originalDetail.Quantity.HasValue)
-                            {
-                                availableStock += originalDetail.Quantity.Value;
-                            }
-                        }
-                        if (requestedQty > availableStock)
-                        {
-                            errors.Add($"Stock insuficiente para '{cbArticle.Text}'. Disponible: {availableStock}, Solicitado: {requestedQty}");
-                        }
+                        items.Add((article.Id, quantity, price, article.Name));
                     }
                 }
             }
-            if (errors.Count > 0)
-            {
-                string message = "Se encontraron los siguientes errores:\n\n" + string.Join("\n", errors);
-                MessageBox.Show(message, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
-            }
-            return true;
+
+            return items;
         }
 
         private void mepSellAdd_SaveClick(object sender, EventArgs e)
         {
-            if (!ValidateFields())
-                return;
             try
             {
-                var clients = clientController.GetAll();
+                var clients = _sellController.GetAllClients();
                 var selectedClient = clients.FirstOrDefault(c => c.Name == cbClient.Text);
 
                 if (selectedClient == null)
@@ -277,119 +213,82 @@ namespace PrimeSystems.Views.Forms.Add
                     MessageBox.Show("Cliente no válido", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                SellModel sell;
-                if (isEditMode)
+
+                decimal.TryParse(tbSubtotal.Text, out decimal subtotal);
+                decimal.TryParse(tbDiscount.Text, out decimal discountPercent);
+
+                var articleItems = GetArticleItemsData();
+                var validationResult = _sellController.ValidateSell(
+                    selectedClient.Id,
+                    articleItems,
+                    _isEditMode,
+                    _currentSell
+                );
+
+                if (!validationResult.IsValid)
                 {
-                    sell = currentSell;
-                    sell.UserId = Session.CurrentUser?.Id;
-                    sell.ClientId = selectedClient.Id;
-                    sell.Date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                }
-                else
-                {
-                    sell = new SellModel
-                    {
-                        UserId = Session.CurrentUser?.Id,
-                        ClientId = selectedClient.Id,
-                        Date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
-                    };
-                }
-                sell.Subtotal = tbSubtotal.Text;
-                sell.Discount = decimal.TryParse(tbDiscount.Text, out decimal discPercent)
-                    ? (decimal.Parse(tbSubtotal.Text) * (discPercent / 100)).ToString("F2")
-                    : "0.00";
-                sell.Total = tbTotal.Text;
-                
-                // Set Title and Description after getting ID
-                if (!isEditMode)
-                {
-                    // For new sells, save first to get ID
-                    bool success = sellController.CreateVentaConDetalles(sell, GetSellDetails());
-                    
-                    if (success)
-                    {
-                        // Update with Title and Description
-                        sell.Title = $"Venta #{sell.Id}";
-                        sell.Description = $"Cliente: {selectedClient.Name} | Total: ${sell.Total} | Fecha: {DateTime.Now:dd/MM/yyyy}";
-                        sellController.Update(sell);
-                        
-                        MessageBox.Show("Venta registrada correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        ActivityLogger.LogActivity(ActivityActions.Create, ActivityModules.Sells, sellId: sell.Id, clientId: selectedClient.Id);
-                        ReturnToSellView();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Error al registrar la venta.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+                    MessageBox.Show("Se encontraron los siguientes errores:\n\n" + string.Join("\n", validationResult.Errors),
+                        "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-                else
-                {
-                    // For updates, set Title and Description
-                    sell.Title = $"Venta #{sell.Id}";
-                    sell.Description = $"Cliente: {selectedClient.Name} | Total: ${sell.Total} | Fecha: {DateTime.Now:dd/MM/yyyy}";
-                }
 
-                var details = GetSellDetails();
-                
-                bool successUpdate;
-                if (isEditMode) successUpdate = sellController.UpdateVentaConDetalles(sell, details);
-                else successUpdate = sellController.CreateVentaConDetalles(sell, details);
+                var details = articleItems.Select(i => (i.ArticleId, i.Quantity)).ToList();
 
-                if (successUpdate)
+                var result = _sellController.SaveSell(
+                    selectedClient.Id,
+                    subtotal,
+                    discountPercent,
+                    details,
+                    _isEditMode,
+                    _currentSell
+                );
+
+                if (result.Success)
                 {
-                    string message = "Venta actualizada correctamente.";
+                    string action = _isEditMode ? ActivityActions.Update : ActivityActions.Create;
+                    ActivityLogger.LogActivity(action, ActivityModules.Sells, result.SellId, result.ClientId);
+
+                    string message = _isEditMode ? "Venta actualizada correctamente." : "Venta registrada correctamente.";
                     MessageBox.Show(message, "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    ActivityLogger.LogActivity(ActivityActions.Update, ActivityModules.Sells, sellId: sell.Id, clientId: selectedClient.Id);
                     ReturnToSellView();
                 }
                 else
                 {
-                    MessageBox.Show("Error al actualizar la venta.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(result.ErrorMessage ?? "Error al guardar la venta", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al guardar la venta: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error al guardar la venta: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-        
-        private List<SellDetailModel> GetSellDetails()
-        {
-            var details = new List<SellDetailModel>();
-            var articleItems = gbArticlesData.Controls.OfType<Controls.ArticleItem>().ToList();
-
-            foreach (var item in articleItems)
-            {
-                var cbArticle = item.Controls.Find("cbArticleName", true).FirstOrDefault() as ReaLTaiizor.Controls.HopeComboBox;
-                var tbQuantity = item.Controls.Find("tbArticleQuantity", true).FirstOrDefault() as ReaLTaiizor.Controls.MaterialTextBoxEdit;
-
-                if (cbArticle != null && tbQuantity != null)
-                {
-                    int quantity = int.Parse(tbQuantity.Text);
-                    var article = articleController.GetByName(cbArticle.Text);
-                    var detail = new SellDetailModel
-                    {
-                        ArticleId = article?.Id,
-                        Quantity = quantity
-                    };
-                    details.Add(detail);
-                }
-            }
-            return details;
         }
 
         private void mepSellAdd_CancelClick(object sender, EventArgs e)
         {
             ReturnToSellView();
         }
+
         private void ReturnToSellView()
         {
-            if (ParentTabPage != null && formMain != null)
+            if (_parentTabPage != null && _formMain != null)
             {
-                formMain.RestoreTabPage(ParentTabPage);
+                _formMain.RestoreTabPage(_parentTabPage);
             }
         }
+
+        private void btnAddArticle_Click(object sender, EventArgs e)
+        {
+            var newArticleItem = new Controls.ArticleItem();
+            newArticleItem.Dock = DockStyle.Top;
+            newArticleItem.cbArticleName.SelectedIndexChanged += (s, ev) => CalculateTotals(s, ev);
+            newArticleItem.tbArticleUnitPrice.TextChanged += (s, ev) => CalculateTotals(s, ev);
+            newArticleItem.tbArticleQuantity.TextChanged += (s, ev) => CalculateTotals(s, ev);
+            gbArticlesData.Controls.Add(newArticleItem);
+            gbArticlesData.Controls.SetChildIndex(newArticleItem, 0);
+        }
+
         private void cbClient_DropDown(object sender, EventArgs e)
         {
             LoadClients();
