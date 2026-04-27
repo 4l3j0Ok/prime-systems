@@ -63,6 +63,19 @@ namespace PrimeSystems
 
             InitializePagination(tpFinancialState, pFinancialStateTableItems);
             InitializePagination(tpActivityLog, pActivityLogTableItems);
+
+            tcMain.SelectedIndexChanged += (s, e) =>
+            {
+                var selectedTab = tcMain.SelectedTab;
+                if (selectedTab != null)
+                {
+                    Debug.WriteLine($"Tab changed to: {selectedTab.Name}");
+                    LoadTabOnDemand(selectedTab);
+                }
+            };
+
+            LoadTabOnDemand(tcMain.SelectedTab ?? tcMain.TabPages[0]);
+
             PositionFloatingButtonsInTabControl(tcMain);
             Debug.WriteLine($"PositionFloatingButtonsInTabControl: {sw.ElapsedMilliseconds}ms");
 
@@ -295,25 +308,20 @@ namespace PrimeSystems
         }
         private void ReloadAllTabPages()
         {
+            // Tabs are now loaded on-demand via LoadTabOnDemand
+            // This method is kept for potential manual refresh scenarios
             var sw = Stopwatch.StartNew();
-            Debug.WriteLine($"ReloadAllTabPages START");
-
-            var activeTab = tcMain.SelectedTab;
-            int loaded = 0;
+            Debug.WriteLine($"ReloadAllTabPages START (lazy mode)");
 
             foreach (var tabPage in tabConfigurations.Keys)
             {
                 if (tcMain.TabPages.Contains(tabPage) || IsTabInNestedControl(tabPage))
                 {
                     InitializePagination(tabPage);
-                    bool isActive = tabPage == activeTab;
-                    ReloadTabPage(tabPage, append: false, skipIfNotActive: !isActive);
-                    loaded++;
-                    Debug.WriteLine($"Loaded tab {tabPage.Name}, active={isActive}, elapsed={sw.ElapsedMilliseconds}ms");
                 }
             }
 
-            Debug.WriteLine($"ReloadAllTabPages END: {loaded} tabs loaded in {sw.ElapsedMilliseconds}ms");
+            Debug.WriteLine($"ReloadAllTabPages END: {sw.ElapsedMilliseconds}ms");
         }
 
         private bool IsTabInNestedControl(TabPage tabPage)
@@ -339,16 +347,41 @@ namespace PrimeSystems
 
             foreach (TabPage mainTab in tcMain.TabPages)
             {
+                if (!mainTab.IsAccessible)
+                    continue;
+
                 foreach (Control control in mainTab.Controls)
                 {
                     if (control is MaterialTabControl nestedTabControl)
                     {
-                        if (nestedTabControl.SelectedTab == tabPage)
-                            return true;
+                        if (nestedTabControl.TabPages.Contains(tabPage))
+                        {
+                            return nestedTabControl.SelectedTab == tabPage;
+                        }
                     }
                 }
             }
             return false;
+        }
+
+        private readonly HashSet<TabPage> _loadedTabs = new();
+
+        private void LoadTabOnDemand(TabPage tabPage)
+        {
+            if (tabPage == null)
+                return;
+
+            if (_loadedTabs.Contains(tabPage))
+            {
+                Debug.WriteLine($"Tab {tabPage.Name} already loaded, skipping");
+                return;
+            }
+
+            Debug.WriteLine($"Loading tab on demand: {tabPage.Name}");
+            _loadedTabs.Add(tabPage);
+
+            InitializePagination(tabPage);
+            ReloadTabPage(tabPage, append: false, skipIfNotActive: false);
         }
 
         private void UpdateLoadMoreUI(TabPage tabPage, bool hasMore, Panel? targetPanel = null)
