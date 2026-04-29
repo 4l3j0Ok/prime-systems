@@ -1,4 +1,4 @@
-﻿using PrimeSystems.Controllers;
+﻿using PrimeSystems.Services;
 using PrimeSystems.Core;
 using PrimeSystems.Models;
 using System;
@@ -15,8 +15,8 @@ namespace PrimeSystems.Views.Controls
 {
     public partial class ArticleItem : UserControl
     {
-        private ArticleController articleController = new();
-        private StockController stockController = new();
+        private ArticleService articleController = new();
+        private StockService stockController = new();
         private ArticleModel? selectedArticle;
 
         public ArticleItem()

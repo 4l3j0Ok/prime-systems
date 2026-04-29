@@ -1,4 +1,4 @@
-﻿using PrimeSystems.Controllers;
+﻿using PrimeSystems.Services;
 using PrimeSystems.Core;
 using PrimeSystems.Models;
 using System;
@@ -15,8 +15,8 @@ namespace PrimeSystems.Views.Forms.Add
 {
     public partial class User : UserControl
     {
-        private UserController userController;
-        private UserTypeController usuarioTipoController;
+        private UserService userController;
+        private UserTypeService usuarioTipoController;
         private UserModel selectedUser;
         private Main? formMain = Application.OpenForms.OfType<Main>().FirstOrDefault();
         private TabPage ParentTabPage;
@@ -27,8 +27,8 @@ namespace PrimeSystems.Views.Forms.Add
                 ParentTabPage = parentTabPage;
             else
                 ParentTabPage = formMain?.tpUsersList ?? new TabPage();
-            userController = new UserController();
-            usuarioTipoController = new UserTypeController();
+            userController = new UserService();
+            usuarioTipoController = new UserTypeService();
             InitializeComponent();
             if (user == null)
             {

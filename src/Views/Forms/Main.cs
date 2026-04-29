@@ -1,4 +1,5 @@
-﻿using PrimeSystems.Controllers;
+﻿using PrimeSystems.Services;
+using PrimeSystems.Services;
 using PrimeSystems.Views.Controls;
 using PrimeSystems.Core;
 using PrimeSystems.Models;
@@ -6,6 +7,10 @@ using PrimeSystems.Views.Forms.Add;
 using ReaLTaiizor.Controls;
 using ReaLTaiizor.Forms;
 using System.Diagnostics;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Panel = System.Windows.Forms.Panel;
 using TabPage = System.Windows.Forms.TabPage;
 using GroupBox = System.Windows.Forms.GroupBox;
@@ -37,17 +42,67 @@ namespace PrimeSystems
             }
             UIConfig.GetSkinManager().AddFormToManage(this);
             InitializeComponent();
+            pictureBox1.Image = Config.GetBusinessLogo();
+            lblWelcome.Text = $"Bienvenido a {Config.GetBusinessName()}";
         }
 
         private void Main_Load(object sender, EventArgs e)
         {
+            System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+            Debug.WriteLine($"Main_Load START");
+
             SaveOriginalTabContents();
+            Debug.WriteLine($"SaveOriginalTabContents: {sw.ElapsedMilliseconds}ms");
+
             InitializeTabConfigurations();
+            Debug.WriteLine($"InitializeTabConfigurations: {sw.ElapsedMilliseconds}ms");
+
             ApplyRolePermissions();
+            Debug.WriteLine($"ApplyRolePermissions: {sw.ElapsedMilliseconds}ms");
+
             ReloadAllTabPages();
+            Debug.WriteLine($"ReloadAllTabPages: {sw.ElapsedMilliseconds}ms");
+
             InitializePagination(tpFinancialState, pFinancialStateTableItems);
             InitializePagination(tpActivityLog, pActivityLogTableItems);
+
+            tcMain.SelectedIndexChanged += (s, e) =>
+            {
+                var selectedTab = tcMain.SelectedTab;
+                if (selectedTab != null)
+                {
+                    Debug.WriteLine($"Tab changed to: {selectedTab.Name}");
+                    LoadTabOnDemand(selectedTab);
+
+                    // Also check if this tab has a nested MaterialTabControl
+                    var nestedTabControl = selectedTab.Controls.OfType<MaterialTabControl>().FirstOrDefault();
+                    if (nestedTabControl != null)
+                    {
+                        // Load the currently selected nested tab
+                        if (nestedTabControl.SelectedTab != null)
+                        {
+                            Debug.WriteLine($"Loading nested tab: {nestedTabControl.SelectedTab.Name}");
+                            LoadTabOnDemand(nestedTabControl.SelectedTab);
+                        }
+
+                        // Listen for nested tab changes too
+                        nestedTabControl.SelectedIndexChanged += (ns, ne) =>
+                        {
+                            if (nestedTabControl.SelectedTab != null)
+                            {
+                                Debug.WriteLine($"Nested tab changed to: {nestedTabControl.SelectedTab.Name}");
+                                LoadTabOnDemand(nestedTabControl.SelectedTab);
+                            }
+                        };
+                    }
+                }
+            };
+
+            LoadTabOnDemand(tcMain.SelectedTab ?? tcMain.TabPages[0]);
+
             PositionFloatingButtonsInTabControl(tcMain);
+            Debug.WriteLine($"PositionFloatingButtonsInTabControl: {sw.ElapsedMilliseconds}ms");
+
             dtpDateFrom.ValueChanged += (s, e) =>
             {
                 currentPages[tpFinancialState] = 0;
@@ -60,6 +115,9 @@ namespace PrimeSystems
                 hasMoreData[tpFinancialState] = true;
                 RefreshFinancialState(append: false);
             };
+
+            Debug.WriteLine($"Main_Load END: {sw.ElapsedMilliseconds}ms total");
+            sw.Stop();
         }
 
         private AccessLevel GetTabPagePermission(TabPage tabPage)
@@ -129,53 +187,60 @@ namespace PrimeSystems
         private void InitializeTabConfigurations()
         {
             tabConfigurations[tpUsersList] = new TabConfiguration<UserModel, int, User>(
-                () => new UserController(),
+                () => new UserService(),
                 u => u.Title ?? u.Username,
                 u => u.Description ?? $"{u.Name} {u.LastName}",
                 u => GetUserProfilePicture(u),
                 u => new User(u)
             );
             tabConfigurations[tpUsersRoles] = new TabConfiguration<RoleModel, string, Role>(
-                () => new UserTypeController(),
+                () => new UserTypeService(),
                 r => r.Title ?? r.Name ?? "",
                 r => r.Description ?? r.Id,
                 null,
                 r => new Role(r)
             );
             tabConfigurations[tpSuppliers] = new TabConfiguration<SupplierModel, int, Supplier>(
-                () => new SupplierController(),
+                () => new SupplierService(),
                 s => s.Title ?? s.Name ?? "Sin nombre",
                 s => s.Description ?? $"CUIT: {s.Cuit?.ToString() ?? "N/A"}",
                 null,
                 s => new Supplier(s)
             );
             tabConfigurations[tpSellsClients] = new TabConfiguration<ClientModel, int, Client>(
-                () => new ClientController(),
+                () => new ClientService(),
                 c => c.Title ?? c.Name ?? "Sin nombre",
                 c => c.Description ?? $"CUIT: {c.Cuit?.ToString() ?? "N/A"} | Entidad: {c.Entity ?? "N/A"}",
                 null,
                 c => new Client(c)
             );
             tabConfigurations[tpArticles] = new TabConfiguration<ArticleModel, int, Article>(
-                () => new ArticleController(),
+                () => new ArticleService(),
                 a => a.Title ?? a.Name ?? "Sin nombre",
                 a => a.Description ?? $"Código: {a.Code} | Categoría: {a.Category?.Name ?? "N/A"}",
                 a => Properties.Resources.article_placeholder,
                 a => new Article(a)
             );
             tabConfigurations[tpSellsList] = new TabConfiguration<SellModel, int, Sell>(
-                () => new SellController(),
+                () => new SellService(),
                 s => s.Title ?? $"Venta #{s.Id}",
                 s => s.Description ?? $"Cliente: {s.Client?.Name ?? "N/A"} | Fecha: {s.Date ?? "N/A"}",
                 s => Properties.Resources.sell_placeholder,
                 s => new Sell(s)
             );
             tabConfigurations[tpPurchasesList] = new TabConfiguration<PurchaseModel, int, Purchase>(
-                () => new PurchaseController(),
+                () => new PurchaseService(),
                 p => p.Title ?? $"Compra #{p.Id}",
                 p => p.Description ?? $"Proveedor: {p.Supplier?.Name ?? "N/A"} | Total: ${p.Total ?? "0.00"} | Fecha: {p.Date ?? "N/A"}",
                 p => Properties.Resources.purchase_placeholder,
                 p => new Purchase(p)
+            );
+            tabConfigurations[tpCurrentAccounts] = new TabConfiguration<CurrentAccountModel, int, CurrentAccount>(
+                () => new CurrentAccountService(),
+                ca => ca.Title ?? $"Cuenta #{ca.Id}",
+                ca => ca.Description ?? $"Saldo: ${ca.Balance:N2} | Tipo: {ca.EntityType}",
+                null,
+                ca => new CurrentAccount(ca)
             );
         }
 
@@ -239,7 +304,7 @@ namespace PrimeSystems
             return null;
         }
 
-        private void ReloadTabPage(TabPage tabPage, bool append = false)
+        private void ReloadTabPage(TabPage tabPage, bool append = false, bool skipIfNotActive = false)
         {
             if (!tabConfigurations.TryGetValue(tabPage, out var config))
                 return;
@@ -250,7 +315,15 @@ namespace PrimeSystems
                 hasMoreData[tabPage] = true;
             }
 
+            if (skipIfNotActive && !IsTabPageVisible(tabPage))
+            {
+                Debug.WriteLine($"Skipping load for non-visible tab: {tabPage.Name}");
+                return;
+            }
+
+            var sw = Stopwatch.StartNew();
             config.LoadCards(this, tabPage, append);
+            Debug.WriteLine($"LoadCards for {tabPage.Name}: {sw.ElapsedMilliseconds}ms");
 
             if (!append)
             {
@@ -259,14 +332,20 @@ namespace PrimeSystems
         }
         private void ReloadAllTabPages()
         {
+            // Tabs are now loaded on-demand via LoadTabOnDemand
+            // This method is kept for potential manual refresh scenarios
+            var sw = Stopwatch.StartNew();
+            Debug.WriteLine($"ReloadAllTabPages START (lazy mode)");
+
             foreach (var tabPage in tabConfigurations.Keys)
             {
                 if (tcMain.TabPages.Contains(tabPage) || IsTabInNestedControl(tabPage))
                 {
                     InitializePagination(tabPage);
-                    ReloadTabPage(tabPage);
                 }
             }
+
+            Debug.WriteLine($"ReloadAllTabPages END: {sw.ElapsedMilliseconds}ms");
         }
 
         private bool IsTabInNestedControl(TabPage tabPage)
@@ -283,6 +362,50 @@ namespace PrimeSystems
                 }
             }
             return false;
+        }
+
+        private bool IsTabPageVisible(TabPage tabPage)
+        {
+            if (tcMain.SelectedTab == tabPage)
+                return true;
+
+            foreach (TabPage mainTab in tcMain.TabPages)
+            {
+                if (!mainTab.IsAccessible)
+                    continue;
+
+                foreach (Control control in mainTab.Controls)
+                {
+                    if (control is MaterialTabControl nestedTabControl)
+                    {
+                        if (nestedTabControl.TabPages.Contains(tabPage))
+                        {
+                            return nestedTabControl.SelectedTab == tabPage;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        private readonly HashSet<TabPage> _loadedTabs = new();
+
+        private void LoadTabOnDemand(TabPage tabPage)
+        {
+            if (tabPage == null)
+                return;
+
+            if (_loadedTabs.Contains(tabPage))
+            {
+                Debug.WriteLine($"Tab {tabPage.Name} already loaded, skipping");
+                return;
+            }
+
+            Debug.WriteLine($"Loading tab on demand: {tabPage.Name}");
+            _loadedTabs.Add(tabPage);
+
+            InitializePagination(tabPage);
+            ReloadTabPage(tabPage, append: false, skipIfNotActive: false);
         }
 
         private void UpdateLoadMoreUI(TabPage tabPage, bool hasMore, Panel? targetPanel = null)
@@ -456,7 +579,6 @@ namespace PrimeSystems
             {
                 if (control is MaterialTabControl nestedTabControl)
                 {
-                    Debug.WriteLine($"SaveTabPageContents: Found nested TabControl in {tabPage.Name}");
                     foreach (TabPage nestedTab in nestedTabControl.TabPages)
                     {
                         SaveTabPageContents(nestedTab);
@@ -654,7 +776,7 @@ namespace PrimeSystems
             ReloadTabPage(tabPage, append: false);
         }
 
-        private void ShowControlInTabPage(TabPage tabPage, Control control, bool readOnly = false)
+        public void ShowControlInTabPage(TabPage tabPage, Control control, bool readOnly = false)
         {
             Debug.WriteLine($"ShowControlInTabPage: Showing control {control.GetType().Name} in tab {tabPage.Name}");
             if (!originalTabContents.ContainsKey(tabPage))
@@ -760,8 +882,17 @@ namespace PrimeSystems
         private void btnAddArticle_Click(object sender, EventArgs e) =>
             ShowControlInTabPage(tpArticles, new Article());
 
+        private void btnAddCurrentAccount_Click(object sender, EventArgs e) =>
+            ShowControlInTabPage(tpCurrentAccounts, new Views.Forms.Add.CurrentAccount());
+
         private void tpFinancialState_Paint(object sender, PaintEventArgs e)
         {
+            if (financialStateChart1 == null)
+                return;
+
+            if (!hasMoreData.ContainsKey(tpFinancialState))
+                hasMoreData[tpFinancialState] = true;
+
             DateTime today = DateTime.Today;
             DateTime oneMonthAgo = today.AddMonths(-1);
 
@@ -783,9 +914,9 @@ namespace PrimeSystems
             }
         }
 
-        private void RefreshFinancialState(bool append = false)
+        private async void RefreshFinancialState(bool append = false)
         {
-            ActivityRecordController activityController = new ActivityRecordController();
+            ActivityRecordService activityController = new ActivityRecordService();
             List<string> activityRecordModules = new List<string> { ActivityModules.Sells, ActivityModules.Purchases };
             DateTime dateFrom = dtpDateFrom.Value.Date;
             DateTime dateTo = dtpDateTo.Value.Date;
@@ -797,7 +928,8 @@ namespace PrimeSystems
             }
 
             int pageNumber = currentPages.ContainsKey(tpFinancialState) ? currentPages[tpFinancialState] : 0;
-            List<ActivityRecordModel> activityRecords = activityController.GetRecordByModulesAndDateRangePaged(
+
+            var pagedResult = await activityController.GetRecordByModulesAndDateRangePagedWithTotalsAsync(
                 activityRecordModules,
                 dateFrom,
                 dateTo,
@@ -805,7 +937,12 @@ namespace PrimeSystems
                 PAGE_SIZE
             );
 
-            bool hasMore = activityRecords.Count >= PAGE_SIZE;
+            List<ActivityRecordModel> activityRecords = pagedResult.Items;
+            bool hasMore = pagedResult.HasMore;
+            int totalSells = pagedResult.TotalSells;
+            int totalPurchases = pagedResult.TotalPurchases;
+            decimal totalRevenue = pagedResult.TotalRevenue;
+            decimal totalExpenses = pagedResult.TotalExpenses;
 
             if (!append)
             {
@@ -818,36 +955,53 @@ namespace PrimeSystems
 
                 pFinancialStateTableItems.ResumeLayout();
             }
-            var allRecordsForTotals = activityController.GetRecordByModulesAndDateRange(
-                activityRecordModules,
-                dateFrom,
-                dateTo
-            );
 
-            int totalSells = 0;
-            int totalPurchases = 0;
-            decimal totalRevenue = 0;
-            decimal totalExpenses = 0;
+            var sellDataByDate = new Dictionary<DateTime, decimal>();
+            var purchaseDataByDate = new Dictionary<DateTime, decimal>();
 
-            foreach (var record in allRecordsForTotals)
+            for (var date = dateFrom.Date; date <= dateTo.Date; date = date.AddDays(1))
+            {
+                sellDataByDate[date] = 0;
+                purchaseDataByDate[date] = 0;
+            }
+
+            foreach (var record in activityRecords)
             {
                 if (record.Module == ActivityModules.Sells && record.Sell != null)
                 {
-                    totalSells++;
-                    if (decimal.TryParse(record.Sell.Total, out decimal sellAmount))
+                    if (decimal.TryParse(record.Sell.Total, out decimal sellAmount) && record.Date.HasValue)
                     {
-                        totalRevenue += sellAmount;
+                        var dateKey = record.Date.Value.Date;
+                        if (sellDataByDate.ContainsKey(dateKey))
+                            sellDataByDate[dateKey] += sellAmount;
+                        else
+                            sellDataByDate[dateKey] = sellAmount;
                     }
                 }
                 else if (record.Module == ActivityModules.Purchases && record.Purchase != null)
                 {
-                    totalPurchases++;
-                    if (decimal.TryParse(record.Purchase.Total, out decimal purchaseAmount))
+                    if (decimal.TryParse(record.Purchase.Total, out decimal purchaseAmount) && record.Date.HasValue)
                     {
-                        totalExpenses += purchaseAmount;
+                        var dateKey = record.Date.Value.Date;
+                        if (purchaseDataByDate.ContainsKey(dateKey))
+                            purchaseDataByDate[dateKey] += purchaseAmount;
+                        else
+                            purchaseDataByDate[dateKey] = purchaseAmount;
                     }
                 }
             }
+
+            var sellDataPoints = sellDataByDate
+                .OrderBy(x => x.Key)
+                .Select(x => new FinancialDataPoint(x.Key, x.Value))
+                .ToList();
+
+            var purchaseDataPoints = purchaseDataByDate
+                .OrderBy(x => x.Key)
+                .Select(x => new FinancialDataPoint(x.Key, x.Value))
+                .ToList();
+
+            financialStateChart1?.UpdateData(sellDataPoints, purchaseDataPoints);
 
             var itemsToAdd = new List<FinancialStateTableItem>();
             var financialPermission = GetTabPagePermission(tpFinancialState);
@@ -923,7 +1077,7 @@ namespace PrimeSystems
 
         private void RefreshActivityLog(bool append = false)
         {
-            ActivityRecordController activityController = new ActivityRecordController();
+            ActivityRecordService activityController = new ActivityRecordService();
 
             if (!append)
             {
@@ -992,6 +1146,11 @@ namespace PrimeSystems
             UpdateLoadMoreUI(tpActivityLog, hasMore, pActivityLogTableItems);
 
             pActivityLogTableItems.ResumeLayout();
+        }
+
+        private void materialTabSelector1_Click(object sender, EventArgs e)
+        {
+
         }
 
         private interface ITabConfiguration

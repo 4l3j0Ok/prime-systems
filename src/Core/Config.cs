@@ -9,18 +9,22 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace PrimeSystems.Core
 {
-    /// <summary>
-    /// Configuration class loaded from YAML file
-    /// </summary>
     public class UserAppConfiguration
     {
         public DatabaseConfig Database { get; set; } = new DatabaseConfig();
+        public BusinessConfig? Business { get; set; }
     }
 
     public class DatabaseConfig
     {
         public string Provider { get; set; } = "sqlite";
         public string ConnectionString { get; set; } = string.Empty;
+    }
+
+    public class BusinessConfig
+    {
+        public string Name { get; set; } = "Prime Systems";
+        public string LogoPath { get; set; } = string.Empty;
     }
 
     internal class Config
@@ -32,10 +36,39 @@ namespace PrimeSystems.Core
         public static string random_password_characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;':,.<>?/~`";
         public static Bitmap default_profile_picture = Properties.Resources.user_placeholder;
 
+        public static string business_name = "Prime Systems";
+        public static string business_logo_path = string.Empty;
+        private static Bitmap? _business_logo;
+
         private static UserAppConfiguration? _configuration;
 
         public static string sql_connection_string = string.Empty;
         public static string sql_provider = "sqlite";
+
+        public static Bitmap GetBusinessLogo()
+        {
+            if (_business_logo != null)
+                return _business_logo;
+
+            if (!string.IsNullOrEmpty(business_logo_path) && File.Exists(business_logo_path))
+            {
+                try
+                {
+                    _business_logo = new Bitmap(business_logo_path);
+                    return _business_logo;
+                }
+                catch
+                {
+                    return Properties.Resources.logo;
+                }
+            }
+            return Properties.Resources.logo;
+        }
+
+        public static string GetBusinessName()
+        {
+            return string.IsNullOrWhiteSpace(business_name) ? "Prime Systems" : business_name;
+        }
 
         public static string GetConnectionString()
         {
@@ -64,13 +97,21 @@ namespace PrimeSystems.Core
 
                     _configuration = deserializer.Deserialize<UserAppConfiguration>(yamlContent);
 
-                    if (_configuration != null && !string.IsNullOrWhiteSpace(_configuration.Database?.ConnectionString))
+                    if (_configuration != null)
                     {
-                        sql_connection_string = _configuration.Database.ConnectionString;
-                    }
-                    if (_configuration != null && !string.IsNullOrWhiteSpace(_configuration.Database?.Provider))
-                    {
-                        sql_provider = _configuration.Database.Provider;
+                        if (!string.IsNullOrWhiteSpace(_configuration.Database?.ConnectionString))
+                        {
+                            sql_connection_string = _configuration.Database.ConnectionString;
+                        }
+                        if (!string.IsNullOrWhiteSpace(_configuration.Database?.Provider))
+                        {
+                            sql_provider = _configuration.Database.Provider;
+                        }
+                        if (_configuration.Business != null)
+                        {
+                            business_name = _configuration.Business.Name;
+                            business_logo_path = _configuration.Business.LogoPath;
+                        }
                     }
                     Console.WriteLine("Configuración YAML cargada exitosamente.");
                     return;

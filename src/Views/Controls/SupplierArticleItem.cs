@@ -1,5 +1,5 @@
 ﻿using PrimeSystems.Core;
-using PrimeSystems.Controllers;
+using PrimeSystems.Services;
 using PrimeSystems.Models;
 using System;
 using System.Collections.Generic;
@@ -15,12 +15,12 @@ namespace PrimeSystems.Views.Controls
 {
     public partial class SupplierArticleItem : UserControl
     {
-        private ArticleController articleController;
+        private ArticleService articleController;
         private List<ArticleModel> articles;
 
         public SupplierArticleItem()
         {
-            articleController = new ArticleController();
+            articleController = new ArticleService();
             articles = new List<ArticleModel>();
             InitializeComponent();
             SetupTextBoxes();

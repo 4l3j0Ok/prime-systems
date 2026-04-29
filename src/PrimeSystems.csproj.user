@@ -17,6 +17,9 @@
     <Compile Update="Views\Controls\FinancialStateCard.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="Views\Controls\FinancialStateChart.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="Views\Controls\FinancialStateTableHeader.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -32,10 +35,19 @@
     <Compile Update="Views\Controls\SupplierArticleItem.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="Views\Forms\Add\AddCurrentAccountMovement.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="Views\Forms\Add\Article.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Update="Views\Forms\Add\Client.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Views\Forms\Add\CurrentAccount.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Views\Forms\Add\CurrentAccountMovement.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Update="Views\Forms\Add\Purchase.cs">
@@ -52,6 +64,9 @@
     </Compile>
     <Compile Update="Views\Forms\ConfigurationWizard.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Views\Forms\CurrentAccountMovementsView.cs">
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Update="Views\Forms\CustomMessageBox.cs">
       <SubType>Form</SubType>

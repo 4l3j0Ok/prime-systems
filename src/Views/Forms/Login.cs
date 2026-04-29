@@ -5,7 +5,7 @@ using ReaLTaiizor.Controls;
 using ReaLTaiizor.Manager;
 using ReaLTaiizor.Util;
 using System.Windows.Forms;
-using PrimeSystems.Controllers;
+using PrimeSystems.Services;
 using PrimeSystems.Models;
 using System.Diagnostics;
 using PrimeSystems.Core;
@@ -19,6 +19,8 @@ namespace PrimeSystems
         {
             InitializeComponent();
             UIConfig.GetSkinManager().AddFormToManage(this);
+            pictureBox1.Image = Config.GetBusinessLogo();
+            lblAppName.Text = Config.GetBusinessName();
         }
 
         private void tbHandleEnter(object sender, KeyPressEventArgs e)
@@ -38,7 +40,7 @@ namespace PrimeSystems
             string username = tbUsername.Text;
             string password = tbPassword.Text;
 
-            UserController userController = new UserController();
+            UserService userController = new UserService();
             UserModel? user = userController.GetByUsername(username);
 
             if (user == null || user.Password != password)

@@ -43,6 +43,10 @@
             tbInitialUserPassword = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
             panel4 = new Panel();
             tbInitialUser = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
+            panel5 = new Panel();
+            lblLogoPath = new ReaLTaiizor.Controls.MaterialLabel();
+            btnSelectLogo = new ReaLTaiizor.Controls.MaterialButton();
+            tbBusinessName = new ReaLTaiizor.Controls.MaterialTextBoxEdit();
             tableLayoutPanel1.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
@@ -134,6 +138,10 @@
             // 
             panel1.Controls.Add(btnFinish);
             panel1.Controls.Add(btnTestDBConnection);
+            panel1.Controls.Add(panel5);
+            panel1.Controls.Add(lblLogoPath);
+            panel1.Controls.Add(btnSelectLogo);
+            panel1.Controls.Add(tbBusinessName);
             panel1.Controls.Add(panel3);
             panel1.Controls.Add(tbConnectionString);
             panel1.Controls.Add(panel2);
@@ -287,6 +295,86 @@
             panel4.Size = new Size(208, 10);
             panel4.TabIndex = 8;
             // 
+            // tbBusinessName
+            // 
+            tbBusinessName.AnimateReadOnly = false;
+            tbBusinessName.AutoCompleteMode = AutoCompleteMode.None;
+            tbBusinessName.AutoCompleteSource = AutoCompleteSource.None;
+            tbBusinessName.BackgroundImageLayout = ImageLayout.None;
+            tbBusinessName.CharacterCasing = CharacterCasing.Normal;
+            tbBusinessName.Depth = 0;
+            tbBusinessName.Dock = DockStyle.Top;
+            tbBusinessName.Font = new Font("Roboto", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
+            tbBusinessName.HelperText = "Nombre de tu negocio/empresa";
+            tbBusinessName.HideSelection = true;
+            tbBusinessName.Hint = "Nombre del negocio";
+            tbBusinessName.LeadingIcon = null;
+            tbBusinessName.Location = new Point(150, 278);
+            tbBusinessName.MaxLength = 100;
+            tbBusinessName.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
+            tbBusinessName.Name = "tbBusinessName";
+            tbBusinessName.PasswordChar = '\0';
+            tbBusinessName.PrefixSuffixText = null;
+            tbBusinessName.ReadOnly = false;
+            tbBusinessName.RightToLeft = RightToLeft.No;
+            tbBusinessName.SelectedText = "";
+            tbBusinessName.SelectionLength = 0;
+            tbBusinessName.SelectionStart = 0;
+            tbBusinessName.ShortcutsEnabled = true;
+            tbBusinessName.Size = new Size(208, 48);
+            tbBusinessName.TabIndex = 11;
+            tbBusinessName.TabStop = false;
+            tbBusinessName.TextAlign = HorizontalAlignment.Left;
+            tbBusinessName.TrailingIcon = null;
+            tbBusinessName.UseAccent = false;
+            tbBusinessName.UseSystemPasswordChar = false;
+            // 
+            // btnSelectLogo
+            // 
+            btnSelectLogo.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            btnSelectLogo.Density = ReaLTaiizor.Controls.MaterialButton.MaterialButtonDensity.Default;
+            btnSelectLogo.Depth = 0;
+            btnSelectLogo.Dock = DockStyle.Top;
+            btnSelectLogo.HighEmphasis = false;
+            btnSelectLogo.Icon = null;
+            btnSelectLogo.IconType = ReaLTaiizor.Controls.MaterialButton.MaterialIconType.Rebase;
+            btnSelectLogo.Location = new Point(150, 230);
+            btnSelectLogo.Margin = new Padding(4, 6, 4, 6);
+            btnSelectLogo.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
+            btnSelectLogo.Name = "btnSelectLogo";
+            btnSelectLogo.NoAccentTextColor = Color.Empty;
+            btnSelectLogo.Size = new Size(208, 36);
+            btnSelectLogo.TabIndex = 12;
+            btnSelectLogo.Text = "Seleccionar logo";
+            btnSelectLogo.Type = ReaLTaiizor.Controls.MaterialButton.MaterialButtonType.Outlined;
+            btnSelectLogo.UseAccentColor = false;
+            btnSelectLogo.UseVisualStyleBackColor = true;
+            btnSelectLogo.Click += btnSelectLogo_Click;
+            // 
+            // lblLogoPath
+            // 
+            lblLogoPath.AutoSize = true;
+            lblLogoPath.Depth = 0;
+            lblLogoPath.Dock = DockStyle.Top;
+            lblLogoPath.Font = new Font("Roboto", 10F, FontStyle.Regular, GraphicsUnit.Pixel);
+            lblLogoPath.FontType = ReaLTaiizor.Manager.MaterialSkinManager.FontType.Caption;
+            lblLogoPath.Location = new Point(150, 220);
+            lblLogoPath.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
+            lblLogoPath.Name = "lblLogoPath";
+            lblLogoPath.Size = new Size(208, 14);
+            lblLogoPath.TabIndex = 13;
+            lblLogoPath.Text = "Sin logo seleccionado";
+            lblLogoPath.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // panel5
+            // 
+            panel5.Dock = DockStyle.Top;
+            panel5.Location = new Point(150, 210);
+            panel5.Margin = new Padding(0);
+            panel5.Name = "panel5";
+            panel5.Size = new Size(208, 10);
+            panel5.TabIndex = 14;
+            // 
             // tbInitialUser
             // 
             tbInitialUser.AnimateReadOnly = false;
@@ -359,5 +447,9 @@
         private Panel panel4;
         private ReaLTaiizor.Controls.MaterialButton btnTestDBConnection;
         private ReaLTaiizor.Controls.MaterialButton btnFinish;
+        private ReaLTaiizor.Controls.MaterialTextBoxEdit tbBusinessName;
+        private ReaLTaiizor.Controls.MaterialButton btnSelectLogo;
+        private ReaLTaiizor.Controls.MaterialLabel lblLogoPath;
+        private Panel panel5;
     }
 }

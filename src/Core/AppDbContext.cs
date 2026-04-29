@@ -20,6 +20,8 @@ namespace PrimeSystems.Core
         public DbSet<PurchaseDetailModel> PurchaseDetail { get; set; }
         public DbSet<SellModel> Sell { get; set; }
         public DbSet<SellDetailModel> SellDetail { get; set; }
+        public DbSet<CurrentAccountModel> CurrentAccount { get; set; }
+        public DbSet<CurrentAccountMovementModel> CurrentAccountMovement { get; set; }
 
         // Default constructor
         public AppDbContext()
@@ -175,6 +177,67 @@ namespace PrimeSystems.Core
                 .WithMany()
                 .HasForeignKey(d => d.ArticleId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CurrentAccountMovementModel>()
+                .HasOne(m => m.CurrentAccount)
+                .WithMany(ca => ca.Movements)
+                .HasForeignKey(m => m.CurrentAccountId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CurrentAccountMovementModel>()
+                .HasOne(m => m.User)
+                .WithMany()
+                .HasForeignKey(m => m.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CurrentAccountMovementModel>()
+                .HasOne(m => m.RelatedSell)
+                .WithMany()
+                .HasForeignKey(m => m.RelatedSellId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CurrentAccountMovementModel>()
+                .HasOne(m => m.RelatedPurchase)
+                .WithMany()
+                .HasForeignKey(m => m.RelatedPurchaseId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ActivityRecordModel>()
+                .HasIndex(h => h.Module);
+
+            modelBuilder.Entity<ActivityRecordModel>()
+                .HasIndex(h => h.Date);
+
+            modelBuilder.Entity<ActivityRecordModel>()
+                .HasIndex(h => h.UserId);
+
+            modelBuilder.Entity<ActivityRecordModel>()
+                .HasIndex(h => new { h.Module, h.Date });
+
+            modelBuilder.Entity<ArticleModel>()
+                .HasIndex(a => a.Title);
+
+            modelBuilder.Entity<ArticleModel>()
+                .HasIndex(a => a.Code)
+                .IsUnique();
+
+            modelBuilder.Entity<SellModel>()
+                .HasIndex(s => s.Date);
+
+            modelBuilder.Entity<SellModel>()
+                .HasIndex(s => s.UserId);
+
+            modelBuilder.Entity<PurchaseModel>()
+                .HasIndex(p => p.Date);
+
+            modelBuilder.Entity<PurchaseModel>()
+                .HasIndex(p => p.UserId);
+
+            modelBuilder.Entity<CurrentAccountMovementModel>()
+                .HasIndex(m => m.CurrentAccountId);
+
+            modelBuilder.Entity<CurrentAccountMovementModel>()
+                .HasIndex(m => m.Date);
 
             base.OnModelCreating(modelBuilder);
         }
